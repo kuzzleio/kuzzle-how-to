@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  kuzzle:
+    image: kuzzleio/howto-syncdata-kuzzle
+    command: /custom_start.sh
+    volumes:
+      - ".:/var/app/plugins/enabled/kuzzle-plugin-export-cassandra"
+    depends_on:
+      - redis
+      - elasticsearch
+      - cassandra
+    ports:
+      - "8080:8080"
+      - "9229:9229"
+      - "7512:7512"
+    environment:
+      - kuzzle_services__db__client__host=http://elasticsearch:9200
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_server__maxRequestSize=1GB
+      - kuzzle_limits__documentsWriteCount=9999
+      - NODE_ENV=development
+      - DEBUG=kuzzle:plugins
+
+  redis:
+    image: redis:3.2
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.1
+    ports:
+      - "9200:9200"
+    environment:
+      - cluster.name=kuzzle
+      # disable xpack
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+
+  cassandra:
+    image: kuzzleio/howto-syncdata-cassandra
+    ports:
+      - "9042:9042"
+      - "7000:7000"
