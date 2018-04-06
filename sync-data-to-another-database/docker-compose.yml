@@ -19,7 +19,7 @@ services:
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
       - kuzzle_server__maxRequestSize=1GB
-      - kuzzle_limits__documentsWriteCount=9999
+      - kuzzle_limits__documentsWriteCount=100000
       - NODE_ENV=development
       - DEBUG=kuzzle:plugins
 

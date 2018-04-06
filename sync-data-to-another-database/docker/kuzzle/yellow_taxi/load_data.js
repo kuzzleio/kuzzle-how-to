@@ -6,7 +6,7 @@ const
 
 
 program
-  .option('--batch-size <size>', 'Size of each batch loaded in Kuzzle', 9999)
+  .option('--batch-size <size>', 'Size of each batch loaded in Kuzzle', 50000)
   .option('--max-count <count>', 'Max number of documents imported to Kuzzle (rounded to batch size)', 9999999)
   .parse(process.argv)
 

@@ -4,17 +4,15 @@
 
 Kuzzle uses Elasticsearch as a database, which allows it to offer very good search performance on large volumes.  
 
-However, it can also be useful to dump Kuzzle data into more traditional databases for analysis, for example.  
-[Cassandra](https://cassandra.apache.org/) is a NoSQL columns oriented database in cluster allowing to manage a large volume of data.  
+However, it can also be useful to dump Kuzzle data into more traditional databases, for example if you wanted to store and analyse historical data.  
+[Cassandra](https://cassandra.apache.org/) is a distributed NoSQL database designed to handle large volumes of data.  
 
-In this How-To, we will see how it is possible to use Cassandra as a secondary Kuzzle database thanks to the realization of a synchronization plugin.  
-For this example we will use data NYC Yellow Taxi dataset.  
+In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's Elasticsearch database with Cassandra.  
+For this example we will use data from the NYC Yellow Taxi dataset.  
 
 ## Architecture
 
-We will use the standard Kuzzle stack, Kuzzle, Elasticsearch and Redis, inside containers.  
-An additional container will contain a node of our Cassandra database. (Check [docker-compose.yml](docker-compose.yml) for more details)
-
+We will be using the Kuzzle stack (Kuzzle, Elasticsearch and Redis) along with an additional container that runs the Cassandra database. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
@@ -31,8 +29,11 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 ```
 
 On Cassandra's side, we will dump the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
-Elasticsearch has a specific type for GPS coordinates, in order to emulate this type in Cassandra we will also create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) named `geopoint` corresponding to that of Elasticsearch.  
+
+Elasticsearch has defined a specific type to store a coordinate, in order to emulate this type in Cassandra we will also create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) named `geopoint` which corresponds to the type in Elasticsearch.  
+
 Finally an additional column will be created to store the Kuzzle document id (`kuzzle_id`).  
+
 Just like the name of the table and keyspace, the columns will have a structure similar to the Kuzzle mapping :
 
 ```
@@ -50,18 +51,18 @@ The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins-reference/plugins-feat
   - Add a controller route
   - Add a new authentication strategy
 
-We will create a plugin [listening asynchronously](https://docs.kuzzle.io/plugins-reference/plugins-features/adding-hooks/) to Document controller events in order to report document changes in Cassandra.  
+We will create a plugin [listening asynchronously](https://docs.kuzzle.io/plugins-reference/plugins-features/adding-hooks/) to Document Controller events in order to report document changes in Cassandra.  
 
 ### Hook some events
 
 The first step is to declare which [Plugin Events](https://docs.kuzzle.io/kuzzle-events/plugin-events/) we are going to hook. These hooks must be declared in the plugin constructor.  
 Each hook is associated with a plugin method that will be called when the event occurs.  
 
-At the Document controller level, we have two main families of events:
- - action on a document
- - action on several documents
+At the Document Controller level, we have two main families of events:
+ - actions on a document
+ - actions on several documents
 
-We will intercept all these events after the corresponding action has been taken.
+We will intercept all of these events after the corresponding action has been taken.
 
 ```js
 constructor () {
@@ -73,7 +74,6 @@ constructor () {
     'document:afterDelete':           'hookDeleteDocument',
     'document:afterDeleteByQuery':    'hookDeleteDocuments',
     'document:afterUpdate':           'hookUpdateDocument',
-
     // Event concerning several documents
     'document:afterMCreate':          'hookPutDocuments',
     'document:afterMCreateOrReplace': 'hookPutDocuments',
@@ -86,12 +86,12 @@ constructor () {
 
 Each method will receive a [Request](https://github.com/kuzzleio/kuzzle-common-objects#request) object when an event occurs. Depending on the event triggered, the Request exposes a [Response](https://docs.kuzzle.io/api-documentation/kuzzle-response/) object that will contain the result of the controller's action corresponding to the event.  
 
-In order to reflect the changes in Cassandra, we need to know the content of the document and in which collection and index it is stored in Kuzzle.
+In order to reflect the changes in Cassandra, we need to know the content of the document as well as the collection and index it is stored in.
 
 Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api-documentation/controller-document/create/))
 (You can refer to the [Document controller documentation](https://docs.kuzzle.io/api-documentation/controller-document/) for the contents of the Response object)  
 
-For each event, we will transform the received data so that each document has the following format:
+For each event, we will transform the input data so that each document has the following format:
 
 ```js
 {
@@ -128,7 +128,7 @@ WHERE kuzzle_id = ?
 
 Placeholders allow the Cassandra NodeJS driver to correctly map javascript types to Cassandra types.  
 
-Finally we generate a query table that we concatenate in the same batch then we execute the batch query in a Promise.  
+Finally we generate a query table that we concatenate to the same batch and then we execute the batch query in a Promise.  
 
 ```js
 createOrUpdateDocuments (documents) {
@@ -166,12 +166,10 @@ createOrUpdateDocuments (documents) {
       // Create a promise to execute the query
       return this.client.execute(batchQuery, values, { prepare: true });
     });
-
   return Promise.all(requestPromises);
 }
 ```
-
-### Try yourself
+### Try it yourself
 
 You can use the [docker-compose.yml](docker-compose.yml) included in this How-To to test the export plugin to Cassandra.  
 The containers are preconfigured to work with NYC Open Data's Yellow Taxi dataset.  
@@ -180,7 +178,7 @@ The containers are preconfigured to work with NYC Open Data's Yellow Taxi datase
 docker-compose up
 ```
 
-In an other terminal:
+In another terminal:
 
 ```bash
 docker-compose exec kuzzle node /yellow_taxi/load_data.js
@@ -188,7 +186,9 @@ docker-compose exec kuzzle node /yellow_taxi/load_data.js
 docker-compose exec kuzzle node /yellow_taxi/load_data.js --max-count 10000 --batch-size 1000
 ```
 
-We can then check that the import work as expected:
+On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra export.  
+
+We can then check that the import worked as expected:
 
 ```bash
 docker-compose exec kuzzle node /yellow_taxi/count_data.js
