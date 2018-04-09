@@ -25,6 +25,6 @@ With this sample you are going to push Kuzzle within its limits by performing ma
 
 ## Learn something cool
 
-  - [Massive data importation](massive-data-import/) (wip)
+  - [Massive data importation](massive-data-import/)
   - [Synchronize Kuzzle with another database](sync-data-to-another-database/)
   - [Keep only warm data into Kuzzle](keep-only-warm-data/) (wip)
