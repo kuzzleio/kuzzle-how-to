@@ -30,6 +30,8 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 
 ## Importing data to Kuzzle
 
+### Bulk API
+
 The first way to import important data sets into Kuzzle is to use the [Bulk Controller](https://docs.kuzzle.io/api-documentation/controller-bulk/) [import action](https://docs.kuzzle.io/api-documentation/controller-bulk/import/).
 Its operation and syntax is similar to that of the [Elasticsearch Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).
 
@@ -83,12 +85,34 @@ kuzzle
   })
 ```
 
+### mCreate API
+
 The second method is about half as fast but it allows you to benefit from all the usual features of Kuzzle.  
 
 It uses the [Document Controller's mCreate](https://docs.kuzzle.io/api-documentation/controller-document/m-create/) action to insert multiple documents into the same query.  
 The creation of documents will send notifications to customers who have subscribed to a request corresponding to them.  
 
-The documents to be inserted will have to be collected in a table before being passed to the [SDK method](https://docs.kuzzle.io/sdk-reference/collection/mcreate-document/) corresponding to the mCreate action of the Document Controller :
+We are going to use a geofencing subscription to get notified every time a taxi drop a passenger on the Time Square area.  
+First we have to get the coordinate of the top left and the bottom right corner of our area and then we can use the Kuzzle SDK to start our subscription.  
+
+```js
+const timeSquareArea = {
+  topLeft:      { lat: 40.759507, lon: -73.985384 },
+  bottomRight:  { lat: 40.758372, lon: -73.984591 }
+};
+let count = 0;
+
+kuzzle
+  .collection('yellow-taxi', 'nyc-open-data')
+  .subscribe({ geoBoundingBox: { dropoff_position: timeSquareArea } }, (err, notification) => {
+    count++;
+    console.log(`[${count}] ${notification.document.content.passenger_count} passengers just arrived, and paid ${notification.document.content.fare_amount}$`);
+  })
+  .onDone(() => console.log('Subscribed. Waiting for passengers...'));
+```
+
+After that we are going to import our documents.  
+The documents to be inserted will have to be collected in an array before being passed to the [SDK method](https://docs.kuzzle.io/sdk-reference/collection/mcreate-document/) corresponding to the mCreate action of the Document Controller :
 
 ```js
 const documents = [
