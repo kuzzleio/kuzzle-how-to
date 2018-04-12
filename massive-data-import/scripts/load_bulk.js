@@ -61,8 +61,12 @@ function bulkInsert(bulkData) {
     kuzzle
       .queryPromise({ controller: 'bulk', action: 'import' }, bulkQuery)
       .catch(error => {
-        console.error('Error: ');
-        console.dir(error, {colors: true, depth: null})
+        if (error.status = 206) {
+          console.error(`PartialError: ${error.errors.length} documents insertion fail`);
+        } else {
+          console.error('Error: ');
+          console.dir(error, {colors: true, depth: null});
+        }
         process.exit(1);
       })
       .then(() => {

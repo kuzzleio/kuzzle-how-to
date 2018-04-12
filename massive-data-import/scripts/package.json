@@ -1,5 +1,5 @@
 {
-  "name": "kuzzle",
+  "name": "kuzzle-howto-massive-import",
   "version": "1.0.0",
   "description": "",
   "main": "load_bulk.js",

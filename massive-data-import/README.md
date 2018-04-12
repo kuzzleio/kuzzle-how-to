@@ -1,11 +1,12 @@
-# Massive Data Import to Kuzzle with Geofencing subscription
+# Massive Data Import to Kuzzle
 
 ## Introduction
 
 When processing large volumes of data with Kuzzle, you may need to import large datasets quickly.  
 
-Kuzzle offers two massive data import systems according to your needs.  
-In some cases, you only want to quickly import data into the database to make subsequent queries on and in others you need all the features (Real-Time notifications, ...) of Kuzzle also during import.
+Kuzzle offers two massive data import systems according to your needs:
+- Using [bulk imports](https://docs.kuzzle.io/api-documentation/controller-bulk/import/), when you need to import data as fast as possible
+- With [multi-documents creations](https://docs.kuzzle.io/api-documentation/controller-document/m-create/), a bit slower, but this method allows the use of real-time notifications or plugin events during import
 
 In this How-To, we will explore the two massive import techniques of Kuzzle.
 For this example we will use data from the NYC Yellow Taxi dataset.  
@@ -35,7 +36,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 The first way to import important data sets into Kuzzle is to use the [Bulk Controller](https://docs.kuzzle.io/api-documentation/controller-bulk/) [import action](https://docs.kuzzle.io/api-documentation/controller-bulk/import/).
 Its operation and syntax is similar to that of the [Elasticsearch Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).
 
-This method is very fast but it writes almost directly in Elasticsearch. Other Kuzzle features such as [Real-Time Notifications](https://docs.kuzzle.io/guide/essentials/real-time/) will not be available.  
+This method is very fast but it writes almost directly in Elasticsearch. Other Kuzzle features such as [real-time notifications](https://docs.kuzzle.io/guide/essentials/real-time/) will not be available.  
 
 To use it, you must go directly through a request sent to the Bulk Controller.  
 This query contains an array of objects organized by peers. The n element of the array is an object containing the name of the index and the collection and the n+1 element contains the document to insert.  
@@ -76,13 +77,16 @@ This request is then sent to the Bulk Controller with the [Kuzzle SDK](https://d
 kuzzle
   .queryPromise({ controller: 'bulk', action: 'import' }, bulkQuery)
   .catch(error => {
-    console.error('Error: ');
-    console.dir(error, {colors: true, depth: null})
-    process.exit(1);
+    if (error.status = 206) {
+      console.error(`PartialError: ${error.errors.length} documents insertion fail`);
+    } else {
+      console.error('Error: ');
+      console.dir(error, {colors: true, depth: null});
+    }
   })
   .then(() => {
     console.log(`${bulkQuery.body.bulkData.length / 2} lines inserted`);
-  })
+  });
 ```
 
 ### mCreate API
@@ -143,8 +147,12 @@ kuzzle
     console.log(`${documents.length} lines inserted`);
   })
   .catch(error => {
-    console.dir(error, {depth: null, colors: true});
-    process.exit(1);
+    if (error.status = 206) {
+      console.error(`PartialError: ${error.errors.length} documents insertion fail`);
+    } else {
+      console.error('Error: ');
+      console.dir(error, {colors: true, depth: null});
+    }
   });
 ```
 

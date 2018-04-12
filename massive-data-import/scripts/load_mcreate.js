@@ -62,8 +62,12 @@ function mcreate(docs) {
       inserted += docs.length;
       console.log(`${inserted} lines inserted`);
     })
-    .catch(err => {
-      console.dir(err, {depth: null, colors: true});
-      process.exit(1);
+    .catch(error => {
+      if (error.status = 206) {
+        console.error(`PartialError: ${error.errors.length} documents insertion fail`);
+      } else {
+        console.error('Error: ');
+        console.dir(error, {colors: true, depth: null});
+      }
     });
 }
