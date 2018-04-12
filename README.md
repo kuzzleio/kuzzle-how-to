@@ -19,7 +19,7 @@ This data lets you test out Kuzzle functionalities using real world datasets.
 #### NYC Open Data (Yellow Taxi)
 
 This sample came from the [NYC OpenData](https://opendata.cityofnewyork.us/) initiative which provides datasets specific to New York city.  
-We use the [Yellow Taxi Trip Data](https://data.cityofnewyork.us/Transportation/2016-Yellow-Taxi-Trip-Data/k67s-dv2t) which consists of 1 million Taxi entries and includes dates and geolocation information.  
+We use a small subset of the [Yellow Taxi Trip Data](https://data.cityofnewyork.us/Transportation/2016-Yellow-Taxi-Trip-Data/k67s-dv2t) which consists of 1 million Taxi entries and includes dates and geolocation information.  
 
 With this sample you will be able to perform a massive data import with live geofencing subscription ([here](massive-data-import/)) or synchronize the data with another database in real-time ([here](sync-data-to-another-database/)).  
 

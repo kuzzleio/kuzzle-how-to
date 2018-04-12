@@ -2,17 +2,17 @@
 
 ## Introduction
 
-Kuzzle uses Elasticsearch as a database, which allows it to offer very good search performance on large volumes.  
+Kuzzle uses Elasticsearch, which allows it to offer very good search performance on large volumes.  
 
-However, it can also be useful to dump Kuzzle data into more traditional databases, for example if you wanted to store and analyse historical data.  
+However, it can also be useful to dump Kuzzle data into external databases, for example if you wanted to store and analyse historical data.  
 [Cassandra](https://cassandra.apache.org/) is a distributed NoSQL database designed to handle large volumes of data.  
 
-In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's Elasticsearch database with Cassandra.  
+In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's data with any other database system by taking Cassandra as an example.  
 For this example we will use data from the NYC Yellow Taxi dataset.  
 
 ## Architecture
 
-We will be using the Kuzzle stack (Kuzzle, Elasticsearch and Redis) along with an additional container that runs the Cassandra database. (Check [docker-compose.yml](docker-compose.yml) for more details)
+We will be using the Kuzzle stack (Kuzzle, Elasticsearch and Redis) along with an additional container that runs the Cassandra database. (check [docker-compose.yml](docker-compose.yml) for more details)
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
