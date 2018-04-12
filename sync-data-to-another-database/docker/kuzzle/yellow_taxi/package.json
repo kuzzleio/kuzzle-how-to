@@ -1,0 +1,16 @@
+{
+  "name": "kuzzle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "load_data.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cassandra-driver": "^3.4.1",
+    "commander": "^2.15.1",
+    "kuzzle-sdk": "^5.0.11"
+  }
+}
