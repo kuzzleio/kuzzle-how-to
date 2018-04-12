@@ -67,18 +67,20 @@ const query = {
   body: {
     query: {
       bool: {
-        filter: {
-          range: {
-            '_kuzzle_info.createdAt': {
-              lte: retentionTimestamp
+        filter: [
+          {
+            range: {
+              '_kuzzle_info.createdAt': {
+                lte: retentionTimestamp
+              }
+            }
+          },
+          {
+            term: {
+              '_kuzzle_info.active': true
             }
           }
-        },
-        filter: {
-          term: {
-            '_kuzzle_info.active': true
-          }
-        }
+        ]
       }
     }
   }
