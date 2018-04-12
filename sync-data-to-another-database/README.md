@@ -30,7 +30,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 
 On Cassandra's side, we will dump the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
 
-Elasticsearch has defined a specific type to store a coordinate, in order to emulate this type in Cassandra we will also create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) named `geopoint` which corresponds to the type in Elasticsearch.  
+In Elasticseach we use the geo_point type to index our documents geographically. With Cassandra, we will have to create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) emulating that type, and we will name it geopoint
 
 Finally an additional column will be created to store the Kuzzle document id (`kuzzle_id`).  
 
@@ -38,7 +38,9 @@ Just like the name of the table and keyspace, the columns will have a structure 
 
 ```
 CREATE KEYSPACE IF NOT EXISTS nyc_open_data WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1' };
+
 CREATE TYPE IF NOT EXISTS nyc_open_data.geopoint ( lat double, lon double );
+
 CREATE TABLE IF NOT EXISTS nyc_open_data.yellow_taxi (kuzzle_id text, pickup_datetime timestamp, dropoff_datetime timestamp, passenger_count int, trip_distance double, fare_amount double, pickup_position frozen<geopoint>, dropoff_position frozen<geopoint>, PRIMARY KEY (kuzzle_id));
 ```
 
