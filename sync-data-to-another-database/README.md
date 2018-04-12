@@ -1,5 +1,12 @@
 # Synchronize Kuzzle with another database
 
+## Requirements
+
+Kuzzle : `>= 1.2.11`  
+Elasticsearch : `>= 5.4.1`  
+Redis : `>= 3.2`  
+Cassandra : `>= 3`
+
 ## Introduction
 
 Kuzzle uses Elasticsearch, which allows it to offer very good search performance on large volumes.  
