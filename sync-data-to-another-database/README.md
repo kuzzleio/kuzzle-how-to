@@ -34,7 +34,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 }
 ```
 
-On Cassandra's side, we will dump the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
+On Cassandra's side, we will synchronize the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
 
 In Elasticseach we use the geo_point type to index our documents geographically. With Cassandra, we will have to create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) emulating that type, and we will name it geopoint
 
