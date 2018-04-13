@@ -1,0 +1,6 @@
+{
+  "name": "kuzzle-plugin-export-cassandra",
+  "version": "1.2.0",
+  "threadable": false,
+  "kuzzleVersion": "^1.1.x"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "kuzzle-plugin-export-cassandra",
+  "author": "The Kuzzle Team <support@kuzzle.io>",
+  "version": "0.0.1",
+  "description": "Kuzzle plugin export Cassandra",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npm run --silent lint && npm run --silent unit-test",
+    "lint": "eslint --max-warnings=0 ./lib ./test",
+    "unit-test": "istanbul cover _mocha"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "4.18.2"
+  },
+  "dependencies": {
+    "cassandra-driver": "^3.4.1",
+    "kuzzle": "file:docker/kuzzle/yellow_taxi"
+  }
+}
