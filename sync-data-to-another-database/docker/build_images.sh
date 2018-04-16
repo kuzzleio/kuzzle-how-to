@@ -1,20 +1,13 @@
 #!/bin/sh
 
-echo "Kuzzle: Move Yellow Taxi data"
-mv ../../samples/yellow_taxi/yellow_taxi_data.csv.gz kuzzle/yellow_taxi/.
-
 echo "Kuzzle: Unziping Yellow Taxi data"
-gunzip kuzzle/yellow_taxi/yellow_taxi_data.csv.gz
+gunzip -k ../../samples/yellow_taxi/yellow_taxi_data.csv.gz
+
+echo "Kuzzle: Move Yellow Taxi data"
+mv ../../samples/yellow_taxi/yellow_taxi_data.csv kuzzle/yellow_taxi/.
 
 echo "Kuzzle: Build docker image"
 docker build -t kuzzleio/howto-syncdata-kuzzle kuzzle/.
-
-echo "Kuzzle: Ziping Yellow Taxi data"
-gzip -9 kuzzle/yellow_taxi/yellow_taxi_data.csv
-
-echo "Kuzzle: Move Yellow Taxi data"
-mv kuzzle/yellow_taxi/yellow_taxi_data.csv.gz ../../samples/yellow_taxi/.
-
 
 echo "Cassandra: Build docker image"
 docker build -t kuzzleio/howto-syncdata-cassandra cassandra/.

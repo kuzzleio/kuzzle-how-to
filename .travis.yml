@@ -27,6 +27,7 @@ install:
 script:
 - mkdir build
 - for dir in */; do base=$(basename "$dir"); if [[ $base != "samples" ]]; then tar -cvzf ${base}.tar.gz build/${base}; fi; done
+- ruby test/end2end.rb
 
 deploy:
   - aws s3 cp build/* s3://$BUCKET_NAME/how-to/
