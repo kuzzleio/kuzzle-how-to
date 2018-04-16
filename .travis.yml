@@ -11,7 +11,7 @@ env:
   - BUCKET_NAME=dl.kuzzle.io
 
 before_install:
-- sudo sysctl -w vm.max_map_count=262144
+  - sudo sysctl -w vm.max_map_count=262144
 
 addons:
   apt:
@@ -20,13 +20,13 @@ addons:
     - python-pip
 
 install:
-- pip install awscli --upgrade --user
+  - pip install awscli --upgrade --user
 
 script:
-- mkdir build
-- for dir in */; do base=$(basename "$dir"); if [[ $base != "samples" ]]; then tar -cvzf ${base}.tar.gz build/${base}; fi; done
+  - mkdir build
+  - for dir in */; do base=$(basename "$dir"); if [[ $base != "samples" ]]; then tar --exclude=docker -cvzf ${base}.tar.gz build/${base}; fi; done
 
-deploy:
+after_succes:
   - aws s3 cp build/* s3://$BUCKET_NAME/how-to/
   on:
     branch: master
