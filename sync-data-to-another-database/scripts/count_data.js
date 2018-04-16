@@ -3,7 +3,7 @@ const
   Cassandra = require('cassandra-driver'),
   fs = require('fs');
 
-const cassandraClient = new Cassandra.Client({ contactPoints: [ 'localhost' ] });
+const cassandraClient = new Cassandra.Client({ contactPoints: [ 'cassandra', 'localhost' ] });
 const kuzzle = new Kuzzle('localhost', { port: 7512 })
 
 kuzzle

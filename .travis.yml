@@ -9,7 +9,7 @@ env:
   # ID
   - secure: oPl7aI9rCab0Q1qWu+ikMWKsFUhzkvqyXNwrPzeKtg9AifBMGmil2H5A877yajwbU6cyPxmRr8HGrUo4kMoOn8eqaVhSjt41Qi0X11ftx4gjz+MRpSMXso3dKxXsS2vh72B23tm9MqnP8OBkxESEDCBiV7IRIuS9B9zvCEr8jkfLw4BpZy7unyEMkXW3yrPuoehZ4voN7igUgn0+1EqK7aAeev3zCRcehW8rq3Zis+0IOw0KZeF8+kvi56FLXUzR96FfxxS+DoCRiU3T/+o7bKROGabZnc4aCrmMwGiUfGiffNoJSc3OzhqzNubYalRhZyrf//tRWewnQlUtIQzn8CHONwOxQFIw8RzIOwAej05Qr32lOLdtivUxMerokRA3Hc4l0IKeyaR7tMuzHs2T/i/IborBF5rUKBKbVTABvzVhuID79KXTxvp9y1MHdT5tybJLI4CqBH5XuT3GW5LweaDJ5MIIeRRKyQDjq08l1z5Btd65y/FyaZcFGzvkjzgxRj8g1+mXdUwiW6f/FmtFP8T+d9LNxW/30tx9rtPi/XBoi5RyewN88VUAeZq36sgmunLWozLQppdzhtSpDUc2GO48HxYsasuQUOdgQWy24sGFpWtT1/h79Wl1dxUkHTAw5a6OcXYfH6HoWanhSQ20vxBS1ZbcpoVHoqf1RdGJ/XU=
   - BUCKET_NAME=dl.kuzzle.io
-  - DOCKER_COMPOSE_VERSION=1.9.0
+  - DOCKER_COMPOSE_VERSION=1.12.0
 
 before_install:
 - sudo sysctl -w vm.max_map_count=262144
@@ -20,7 +20,7 @@ addons:
     - python
     - python-pip
     - ruby
-    
+
 install:
 - pip install awscli --upgrade --user
 
