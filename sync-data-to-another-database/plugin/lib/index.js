@@ -40,23 +40,23 @@ class ExportCassandra {
     this.context = context;
 
     if (! this.config.cassandra.contactPoints || this.config.cassandra.contactPoints.length < 1) {
-      return Promise.reject(new this.context.errors.InternalError('[kuzzle-plugin-export-cassandra] You must provide at least one contactPoints'));
+      return Promise.reject(new this.context.errors.InternalError('[kuzzle-plugin-sync-cassandra] You must provide at least one contactPoints'));
     }
 
     this.exporter = new Exporter(this.config.cassandra, context);
 
     return this.exporter.connectWithRetry()
       .then(() => this)
-      .catch(error => Promise.reject(error))
+      .catch(error => Promise.reject(error));
   }
 
   hookPutDocument (request) {
     const document = request.response.result;
 
     this.exporter.createOrUpdateDocuments([document])
-      .then(() => this.context.log.debug('[kuzzle-plugin-export-cassandra] Document inserted'))
+      .then(() => this.context.log.debug('[kuzzle-plugin-sync-cassandra] Document inserted'))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error inserting document');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error inserting document');
         this.context.log.error(error);
       });
   }
@@ -65,9 +65,9 @@ class ExportCassandra {
     const response = request.response;
 
     this.exporter.createOrUpdateDocuments(response.result.hits)
-      .then(() => this.context.log.debug(`[kuzzle-plugin-export-cassandra] ${response.result.hits.length} Document inserted`))
+      .then(() => this.context.log.debug(`[kuzzle-plugin-sync-cassandra] ${response.result.hits.length} Document inserted`))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error inserting document');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error inserting document');
         this.context.log.error(error);
       });
   }
@@ -82,9 +82,9 @@ class ExportCassandra {
     };
 
     this.exporter.createOrUpdateDocuments([document])
-      .then(() => this.context.log.debug('[kuzzle-plugin-export-cassandra] Document updated'))
+      .then(() => this.context.log.debug('[kuzzle-plugin-sync-cassandra] Document updated'))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error inserting document');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error inserting document');
         this.context.log.error(error);
       });
   }
@@ -101,9 +101,9 @@ class ExportCassandra {
     });
 
     this.exporter.createOrUpdateDocuments(documents)
-      .then(() => this.context.log.debug(`[kuzzle-plugin-export-cassandra] ${documents.length} document updated`))
+      .then(() => this.context.log.debug(`[kuzzle-plugin-sync-cassandra] ${documents.length} document updated`))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error updating documents');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error updating documents');
         this.context.log.error(error);
       });
   }
@@ -112,9 +112,9 @@ class ExportCassandra {
     const response = request.response;
 
     this.exporter.deleteDocuments({ keyspace: response.index, table: response.collection, kuzzleIds: [response.result._id] })
-      .then(() => this.context.log.debug('[kuzzle-plugin-export-cassandra] Document deleted'))
+      .then(() => this.context.log.debug('[kuzzle-plugin-sync-cassandra] Document deleted'))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error deleting document');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error deleting document');
         this.context.log.error(error);
       });
   }
@@ -123,9 +123,9 @@ class ExportCassandra {
     const response = request.response;
 
     this.exporter.deleteDocuments({ keyspace: response.index, table: response.collection, kuzzleIds: response.result.hits })
-      .then(() => this.context.log.debug(`[kuzzle-plugin-export-cassandra] ${response.result.hits.length} documents deleted`))
+      .then(() => this.context.log.debug(`[kuzzle-plugin-sync-cassandra] ${response.result.hits.length} documents deleted`))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error deleting document');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error deleting document');
         this.context.log.error(error);
       });
   }
@@ -134,9 +134,9 @@ class ExportCassandra {
     const response = request.response;
 
     this.exporter.deleteDocuments({ keyspace: response.index, table: response.collection, kuzzleIds: response.result })
-      .then(() => this.context.log.debug(`[kuzzle-plugin-export-cassandra] ${response.result.length} documents deleted`))
+      .then(() => this.context.log.debug(`[kuzzle-plugin-sync-cassandra] ${response.result.length} documents deleted`))
       .catch(error => {
-        this.context.log.error('[kuzzle-plugin-export-cassandra] Error deleting documents');
+        this.context.log.error('[kuzzle-plugin-sync-cassandra] Error deleting documents');
         this.context.log.error(error);
       });
   }

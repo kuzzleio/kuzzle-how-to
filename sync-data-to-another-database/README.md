@@ -190,9 +190,9 @@ docker-compose up
 In another terminal:
 
 ```bash
-docker-compose exec kuzzle node /yellow_taxi/load_data.js
+docker-compose exec kuzzle node /scripts/load_data.js
 # or
-docker-compose exec kuzzle node /yellow_taxi/load_data.js --max-count 10000 --batch-size 1000
+docker-compose exec kuzzle node /scripts/load_data.js --max-count 10000 --batch-size 1000
 ```
 
 On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra export.  
@@ -200,5 +200,5 @@ On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes appr
 We can then check that the import worked as expected:
 
 ```bash
-docker-compose exec kuzzle node /yellow_taxi/count_data.js
+docker-compose exec kuzzle node /scripts/count_data.js
 ```

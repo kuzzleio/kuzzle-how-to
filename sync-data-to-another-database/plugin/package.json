@@ -1,5 +1,5 @@
 {
-  "name": "kuzzle-plugin-export-cassandra",
+  "name": "kuzzle-plugin-sync-cassandra",
   "author": "The Kuzzle Team <support@kuzzle.io>",
   "version": "0.0.1",
   "description": "Kuzzle plugin export Cassandra",
