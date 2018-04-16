@@ -20,6 +20,4 @@ addons:
 script:
   - mkdir build
   - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then tar --exclude=docker -cvzf build/${base}.tar.gz ${base}; fi; done
-
-after_succes:
   - aws s3 cp build/* s3://$BUCKET_NAME/how-to/
