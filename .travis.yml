@@ -1,7 +1,11 @@
-sudo: required
 group: edge
+
 services:
-- docker
+  - docker
+
+on:
+  branch: master
+
 env:
   global:
   # Secret
@@ -17,19 +21,12 @@ before_install:
 addons:
   apt:
     packages:
-    - python
-    - python-pip
-    - ruby
-
-install:
-- pip install awscli --upgrade --user
+      - ruby
+      - awscli
 
 script:
-- mkdir build
-- for dir in */; do base=$(basename "$dir"); if [[ $base != "samples" ]]; then tar -cvzf ${base}.tar.gz build/${base}; fi; done
-- ruby test/end2end.rb
+  - mkdir build
+  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then tar --exclude=docker -cvzf build/${base}.tar.gz ${base}; fi; done
 
-deploy:
+after_succes:
   - aws s3 cp build/* s3://$BUCKET_NAME/how-to/
-  on:
-    branch: master
