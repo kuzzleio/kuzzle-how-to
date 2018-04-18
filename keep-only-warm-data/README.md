@@ -114,6 +114,18 @@ Now we can use our Kuzzle cleaner script.
 ```bash
 docker-compose exec kuzzle node /scripts/database-cleaner.js --help
 
+  Usage: database-cleaner [options]
+
+  Options:
+
+    -h, --host <s>        Elastic host (default: elasticsearch)
+    -p, --port <n>        Elastic port (default: 9200)
+    -i, --index <s>       Index name
+    -c, --collection <s>  Collection name
+    -r, --retention <s>   Retention time specified in days (d), hours (h) or minutes (m) (default: 30d)
+    --confirm             Confirm deletion
+    -h, --help            output usage information
+
 # Show documents older than 30 days
 docker-compose exec kuzzle node /scripts/database-cleaner.js -i nyc-open-data -c yellow-taxi -r 30d
 # Use --confirm to delete matching documents
