@@ -27,7 +27,7 @@ Given("A Kuzzle stack with Cassandra running") do
   end
 
   puts "Kuzzle is up !"
-  sleep 5 # Wait for Cassandra initialization
+  sleep 5 # Wait for Cassandra keyspace initialization
 end
 
 Then("I can check the Cassandra plugin presence") do
@@ -54,8 +54,7 @@ Then("I can load the test data into Kuzzle") do
 end
 
 Then("I can check if they are synchronized in Cassandra") do
-  sleep 2 # Wait import to complete..
-
+  sleep 2 # Wait Cassandra refreshing his indexes
   Open3.popen3('docker-compose exec kuzzle node /scripts/count_data.js') do |stdin, stdout, stderr, waiter|
     status = waiter.value
 
