@@ -113,7 +113,6 @@ Now we can use our Kuzzle cleaner script.
 
 ```bash
 docker-compose exec kuzzle node /scripts/database-cleaner.js --help
-
   Usage: database-cleaner [options]
 
   Options:
