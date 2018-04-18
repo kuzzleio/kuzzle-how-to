@@ -1,0 +1,36 @@
+group: edge
+
+services:
+  - docker
+
+on:
+  branch: master
+
+env:
+  global:
+  # Secret
+  - secure: I98SvXLnFp5GzJkjBCnwOUVHHZCfzRuuKXYfMjf2T9st7UNSNIvKJUW0kTyrHWyrN0uOeB3LC4IB5oVSjwnsMjxu3oFiUpozaTMWpbjormMEs2kg8akHSTrrokTlJpBjTM6PMMKi3O08FrA3zzRVOJW0jqvtZmtE+/rtNfv2cptdHhx3lLEkuyWVgN5CXN6cvfSE2CJcYVHvEf3YUeDoWsi3Vdj0lXKXFvLL2I1IvVBv4DQWTUBpddjZES1amN2bbw5zX1jegxT3aka6qTjSlVY4lU+8g/PP2Ro66xB7YdWVthBxexNFFZEQT4sIrRpRhBX7Ha09eG2vUIdPUZZ789+H3MewAOL/YNoSn8pc5lwCud4A3l1XojM8bZBmQ3B1tqdCxo39w4gqD7ZLl3l/LFOZ26WLuw3GeJwDo787NdTxM34eLRsGfpu/t3fZC5GXnb65Lfvg/QTJ9J/gMugZdGt+FwPPUbas3CqaiwArT3XoD9gR31ZnUA/g45oUtjqsoF1dhTkxHzQ3xfOHVknx037dvjciypsh8EezTgZeuEFXoLXkUPPj3XTlnOoP5Xo9Ye75j+KKWasKvBpD+lgCmA4hX6OnlEfSmCG2KrvAy31fQLyIblm6hdRGvPoStDecWIhSuZR5EoGJlJFuE0+rQDr7C/KVYdPRHFPnchu/IoY=
+  # ID
+  - secure: oPl7aI9rCab0Q1qWu+ikMWKsFUhzkvqyXNwrPzeKtg9AifBMGmil2H5A877yajwbU6cyPxmRr8HGrUo4kMoOn8eqaVhSjt41Qi0X11ftx4gjz+MRpSMXso3dKxXsS2vh72B23tm9MqnP8OBkxESEDCBiV7IRIuS9B9zvCEr8jkfLw4BpZy7unyEMkXW3yrPuoehZ4voN7igUgn0+1EqK7aAeev3zCRcehW8rq3Zis+0IOw0KZeF8+kvi56FLXUzR96FfxxS+DoCRiU3T/+o7bKROGabZnc4aCrmMwGiUfGiffNoJSc3OzhqzNubYalRhZyrf//tRWewnQlUtIQzn8CHONwOxQFIw8RzIOwAej05Qr32lOLdtivUxMerokRA3Hc4l0IKeyaR7tMuzHs2T/i/IborBF5rUKBKbVTABvzVhuID79KXTxvp9y1MHdT5tybJLI4CqBH5XuT3GW5LweaDJ5MIIeRRKyQDjq08l1z5Btd65y/FyaZcFGzvkjzgxRj8g1+mXdUwiW6f/FmtFP8T+d9LNxW/30tx9rtPi/XBoi5RyewN88VUAeZq36sgmunLWozLQppdzhtSpDUc2GO48HxYsasuQUOdgQWy24sGFpWtT1/h79Wl1dxUkHTAw5a6OcXYfH6HoWanhSQ20vxBS1ZbcpoVHoqf1RdGJ/XU=
+  - BUCKET_NAME=dl.kuzzle.io
+  - DOCKER_COMPOSE_VERSION=1.12.0
+  - TAR_EXCLUDES="--exclude=docker --exclude=features --exclude=run_tests.sh --exclude=*node_modules"
+
+before_install:
+- sudo sysctl -w vm.max_map_count=262144
+
+addons:
+  apt:
+    packages:
+      - ruby
+      - awscli
+
+script:
+  - mkdir build
+  # Run tests
+  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then cd ${base} ; ./run_tests.sh ; cd ..; fi; done
+
+after_succes:
+  # Create how-to.tar.gz
+  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}; fi; done
+  - aws s3 cp build/* s3://$BUCKET_NAME/how-to/ --region us-west-2

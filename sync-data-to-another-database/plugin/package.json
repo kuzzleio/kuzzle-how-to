@@ -1,0 +1,18 @@
+{
+  "name": "kuzzle-plugin-sync-cassandra",
+  "author": "The Kuzzle Team <support@kuzzle.io>",
+  "version": "0.0.1",
+  "description": "Kuzzle plugin export Cassandra",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "eslint --max-warnings=0 ./lib",
+    "test": "npm run --silent lint"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "4.18.2"
+  },
+  "dependencies": {
+    "cassandra-driver": "^3.4.1"
+  }
+}

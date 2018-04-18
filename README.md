@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kuzzleio/kuzzle-how-to.svg?branch=master)](https://travis-ci.org/kuzzleio/kuzzle-how-to)
+
 # Kuzzle How-To
 
 In this repository we are going to explore different features of Kuzzle.  
@@ -28,3 +30,12 @@ With this sample you will be able to perform a massive data import with live geo
  - [Massive data import](massive-data-import/) (wip)
  - [Synchronize Kuzzle with another database](sync-data-to-another-database/)
  - [Keep only warm data in Kuzzle](keep-only-warm-data/) (wip)
+
+## Distribution process
+
+All Scenarios are tested and built with Travis CI. They're available [here](https://dl.kuzzle.io)
+
+## Run tests
+
+Each How-To come with End2End tests against the latest version of Kuzzle.  
+You can run them by executing the `run_tests.sh` script present in each How-To folder.

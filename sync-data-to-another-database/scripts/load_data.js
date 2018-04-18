@@ -8,16 +8,16 @@ const
 program
   .option('--batch-size <size>', 'Size of each batch loaded in Kuzzle', 50000)
   .option('--max-count <count>', 'Max number of documents imported to Kuzzle (rounded to batch size)', 9999999)
-  .parse(process.argv)
+  .parse(process.argv);
 
-program.batchSize = parseInt(program.batchSize)
+program.batchSize = parseInt(program.batchSize);
 if (isNaN(program.batchSize)) {
   console.error('Error: invalid batch size');
   program.outputHelp();
   process.exit(1);
 }
 
-program.maxCount = parseInt(program.maxCount)
+program.maxCount = parseInt(program.maxCount);
 if (isNaN(program.maxCount)) {
   console.error('Error: invalid max count');
   program.outputHelp();
@@ -26,14 +26,13 @@ if (isNaN(program.maxCount)) {
 
 const
   dataPath = '/yellow_taxi/yellow_taxi_data.csv',
-  maxDocumentsCount = parseInt(program.maxCount),
   host = 'localhost',
   port = 7512,
   collection = 'yellow-taxi',
   index = 'nyc-open-data';
 
 
-console.log(`Insert maximum of ${program.maxCount} documents in batch of ${program.batchSize}.`)
+console.log(`Insert maximum of ${program.maxCount} documents in batch of ${program.batchSize}.`);
 
 let
   inserted = 0,
