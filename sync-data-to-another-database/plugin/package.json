@@ -5,9 +5,8 @@
   "description": "Kuzzle plugin export Cassandra",
   "main": "lib/index.js",
   "scripts": {
-    "test": "npm run --silent lint && npm run --silent unit-test",
-    "lint": "eslint --max-warnings=0 ./lib ./test",
-    "unit-test": "istanbul cover _mocha"
+    "lint": "eslint --max-warnings=0 ./lib",
+    "test": "npm run --silent lint"
   },
   "license": "Apache-2.0",
   "devDependencies": {

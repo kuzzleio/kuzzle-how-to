@@ -26,11 +26,11 @@ class Exporter {
       .connect()
       .then(() => {
         this.context.log.info('[kuzzle-plugin-sync-cassandra] Cassandra client connected');
-        return Promise.resolve(true);
+        return true;
       })
       .catch(error => {
         if (this.config.retryCount <= 0) {
-          return Promise.reject(new this.context.errors.InternalError(`[kuzzle-plugin-sync-cassandra] Unable to connect the client : ${error.message}`));
+          throw new this.context.errors.ExternalServiceError(`[kuzzle-plugin-sync-cassandra] Unable to connect the client : ${error.message}`);
         } else {
           this.context.log.info(`[kuzzle-plugin-sync-cassandra] Failed to connect to Cassandra on startup - ${error.message} - retrying in 2 sec`);
           this.config.retryCount -= 1;
