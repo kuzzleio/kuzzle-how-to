@@ -45,9 +45,7 @@ class ExportCassandra {
 
     this.exporter = new Exporter(this.config.cassandra, context);
 
-    return this.exporter.connectWithRetry()
-      .then(() => this)
-      .catch(error => Promise.reject(error))
+    return this.exporter.connectWithRetry().then(() => this);
   }
 
   hookPutDocument (request, callback) {
@@ -171,7 +169,7 @@ class ExportCassandra {
 
   hookError(request, callback) {
     this.context.log.error(request.error);
-    callback(null, request)
+    callback(null, request);
   }
 }
 
