@@ -1,4 +1,4 @@
-# Keep only warm data into Kuzzle
+# Keeping only warm data in Kuzzle
 
 ## Requirements
 
@@ -6,15 +6,16 @@ Kuzzle : `>= 1.2.11`
 
 ## Introduction
 
-Kuzzle is capable of handling large number of documents, with high performances.  
-However, it can be interesting to rationalize the cost of the infrastructure necessary to Kuzzle by keeping on Kuzzle only the relevant data.  
-Coupled with a secondary database, Kuzzle can be used in a Hot/Warm architecture where the Kuzzle is synchronized with an external database and only the most recent data are kept on Kuzzle. (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database))
+Kuzzle is capable of handling  large amounts of data while maintaining a high level of performance.  
+However, in some scenarios,  it can be useful  to manage a smaller volume of data in Kuzzle and use a secondary datastore synchronized with Kuzzle (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)) to maintain a larger dataset.
+This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where “Hot” data needs to be accessed quickly and “Warm” data needs to be maintained but is not accessed frequently.  
+This could be the case for an App that uses a “Hot” store to provide data to its users and a “Warm” store to generate insights into user behavior through analytics.
 
 ## Architecture
 
 We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
-On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
+Kuzzle will store “Hot” data in the `yellow-taxi` collection of the `nyc-open-data` index. This data will have the following mapping:
 
 ```js
 {
@@ -30,19 +31,17 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 
 In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/guide/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).  
 
-Documents will be inserted directly in Elasticsearch, without going through Kuzzle, in order to be able to change the value of the metadata field `createdAt` at our convenience.  
+For our tests, documents will be inserted directly in Elasticsearch, without going through Kuzzle, in order to be able to change the value of the metadata field `createdAt` at our convenience.  
 
 For that we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).  
 
-## Clean old data
+## Cleaning old data
 
-The objective is to delete the oldest data from Kuzzle. However it is excluded to use the traditional Kuzzle APIs to do this because these changes could be automatically replicated in a possible external database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)).  
+Since we only want to keep relevant data in Kuzzle, we need to  remove any older and irrelevant data . However, we cannot use the traditional Kuzzle APIs to do this because these changes could automatically be propagated to another external database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)). So, we will bypass the Kuzzle API and use the Elasticsearch API instead.  
 
-So we will bypass Kuzzle and use the Elasticsearch API directly.  
+To delete data through the Elasticsearch API, we will perform a query that targets the oldest documents based on the `createdAt` field in the metadata. This field stores the date the document was created in Epoch-millis format.
 
-We will perform a query targeting the oldest documents based on the `createdAt` field in the Kuzzle metadata that indicates the date the document was created in Epoch-millis format.
-
-Kuzzle uses a trash system to indicate that a document has been deleted and should no longer appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes tagged the Elasticsearch documents.   
+Kuzzle uses a trash system to indicate that a document has been deleted and should no longer appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes these documents based on the `active` metadata field.   
 We should therefore only take into account files that are still active, for this we will use the `active` metadata field.
 
 ```js
@@ -91,19 +90,19 @@ elasticsearchClient
 
 ## Try it yourself
 
-You try by yourself the concepts developed in this How-To using the supplied [docker-compose.yml](docker-compose.yml) as well as the [database-cleaner.js](scripts/database-cleaner.js) script.  
+You can try this How-to yourself  by using the supplied [docker-compose.yml](docker-compose.yml) as well as the [database-cleaner.js](scripts/database-cleaner.js) script.  
 
-This script allows you to specify a retention period for document retention. It will delete all documents prior to this period.  
+This script lets you specify a retention period to delete all documents prior to this period.  
 
-A test dataset is also available via the [load_data.js](scripts/load_data.js) script. This script will allow us to load directly into Elasticsearch one document per day over a period of two months.  
+A test dataset is also available via the [load_data.js](scripts/load_data.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.  
 
-We start by launching the containers with Docker Compose:
+Start by launching the containers with Docker Compose:
 
 ```bash
 docker-compose up
 ```
 
-Then we load our test data:
+Then load the test data by running the following command:
 
 ```bash
 docker-compose exec kuzzle node /scripts/load_data.js
