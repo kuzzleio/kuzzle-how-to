@@ -9,10 +9,9 @@ Cassandra : `>= 3`
 
 Kuzzle uses Elasticsearch, which allows it to offer very good search performance on large volumes.  
 
-However, it can also be useful to dump Kuzzle data into external databases, for example if you wanted to store and analyse historical data.  
-[Cassandra](https://cassandra.apache.org/) is a distributed NoSQL database designed to handle large volumes of data.  
+However, when integrating Kuzzle into an existing infrastructure, you may want Kuzzle to also dump its data into your databases for use by your other applications.  
 
-In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's data with any other database system by taking Cassandra as an example.  
+In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's data with any other database system by taking [Cassandra](https://cassandra.apache.org/) as an example.  
 For this example we will use data from the NYC Yellow Taxi dataset.  
 
 ## Architecture
@@ -33,7 +32,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 }
 ```
 
-On Cassandra's side, we will dump the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
+On Cassandra's side, we will store the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
 
 In Elasticseach we use the geo_point type to index our documents geographically. With Cassandra, we will have to create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) emulating that type, and we will name it geopoint
 
@@ -54,16 +53,16 @@ CREATE TABLE IF NOT EXISTS nyc_open_data.yellow_taxi (kuzzle_id text, pickup_dat
 The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins-reference/plugins-features/) lets you extend Kuzzle's functionality by adding code modules that offer auxiliary features. These modules can:
 
   - Listen asynchronously to events
-  - Listen synchronously to events (and intercept a request)
+  - Listen synchronously to events (and pipe a request)
   - Add a controller route
   - Add a new authentication strategy
 
-We will create a plugin [listening asynchronously](https://docs.kuzzle.io/plugins-reference/plugins-features/adding-hooks/) to Document Controller events in order to report document changes in Cassandra.  
+We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins-reference/plugins-features/adding-pipes/) to Document Controller events in order to report document changes in Cassandra.  
 
-### Hook some events
+### Pipe some events
 
-The first step is to declare which [Plugin Events](https://docs.kuzzle.io/kuzzle-events/plugin-events/) we are going to hook. These hooks must be declared in the plugin constructor.  
-Each hook is associated with a plugin method that will be called when the event occurs.  
+The first step is to declare which [Plugin Events](https://docs.kuzzle.io/kuzzle-events/plugin-events/) we are going to pipe. These pipes must be declared in the plugin constructor.  
+Each pipe is associated with a plugin method that will be called when the event occurs.  
 
 At the Document Controller level, we have two main families of events:
  - actions on a document
@@ -73,7 +72,7 @@ We will intercept all of these events after the corresponding action has been ta
 
 ```js
 constructor () {
-  this.hooks = {
+  this.pipes = {
     // Event concerning a single document
     'document:afterCreate':           'hookPutDocument',
     'document:afterCreateOrReplace':  'hookPutDocument',
@@ -91,7 +90,9 @@ constructor () {
 }
 ```
 
-Each method will receive a [Request](https://github.com/kuzzleio/kuzzle-common-objects#request) object when an event occurs. Depending on the event triggered, the Request exposes a [Response](https://docs.kuzzle.io/api-documentation/kuzzle-response/) object that will contain the result of the controller's action corresponding to the event.  
+Each method will receive two parameters :
+ - a [Request](https://github.com/kuzzleio/kuzzle-common-objects#request) object when an event occurs. Depending on the event triggered, the Request exposes a [Response](https://docs.kuzzle.io/api-documentation/kuzzle-response/) object that will contain the result of the controller's action corresponding to the event.
+ - a callback that should be called when the pipe has finished processing the data. The callback take two arguments, an eventual error and the request object : `callback(error, request)`.
 
 In order to reflect the changes in Cassandra, we need to know the content of the document as well as the collection and index it is stored in.
 
@@ -178,7 +179,7 @@ createOrUpdateDocuments (documents) {
 ```
 ### Try it yourself
 
-You can use the [docker-compose.yml](docker-compose.yml) included in this How-To to test the export plugin to Cassandra.  
+You can use the [docker-compose.yml](docker-compose.yml) included in this How-To to test the synchronization plugin to Cassandra.  
 The containers are preconfigured to work with NYC Open Data's Yellow Taxi dataset.  
 
 ```bash
@@ -193,9 +194,9 @@ docker-compose exec kuzzle node /yellow_taxi/load_data.js
 docker-compose exec kuzzle node /yellow_taxi/load_data.js --max-count 10000 --batch-size 1000
 ```
 
-On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra export.  
+On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra synchronization.  
 
-We can then check that the import worked as expected:
+We can then check that the synchronization worked as expected:
 
 ```bash
 docker-compose exec kuzzle node /yellow_taxi/count_data.js
