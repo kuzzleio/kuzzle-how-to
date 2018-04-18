@@ -3,20 +3,16 @@
 ## Requirements
 
 Kuzzle : `>= 1.2.11`  
-Elasticsearch : `>= 5.4.1`  
-Redis : `>= 3.2`  
 
 ## Introduction
 
-Kuzzle is capable of managing a very large number of documents and offering very good performances.  
-However in a Big Data context, it can be interesting to rationalize the cost of the infrastructure necessary to Kuzzle by keeping on Kuzzle only the relevant data.  
-Coupled with a secondary database, Kuzzle can be used in a Hot/Warm architecture where the most recent data is kept on Kuzzle and the oldest data in a secondary DBMS.  
-
-In most cases, deleting your oldest data from Kuzzle will only make sense if you have previously dumped it into another database. (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database))
+Kuzzle is capable of handling large number of documents, with high performances.  
+However, it can be interesting to rationalize the cost of the infrastructure necessary to Kuzzle by keeping on Kuzzle only the relevant data.  
+Coupled with a secondary database, Kuzzle can be used in a Hot/Warm architecture where the Kuzzle is synchronized with an external database and only the most recent data are kept on Kuzzle. (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database))
 
 ## Architecture
 
-We will be using the standard Kuzzle stack (Kuzzle, Elasticsearch and Redis). (Check [docker-compose.yml](docker-compose.yml) for more details)
+We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
@@ -34,7 +30,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 
 In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/guide/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).  
 
-The documents will be inserted directly in Elasticsearch, without going through Kuzzle, in order to be able to change the value of the metadata field `createdAt` at our convenience.  
+Documents will be inserted directly in Elasticsearch, without going through Kuzzle, in order to be able to change the value of the metadata field `createdAt` at our convenience.  
 
 For that we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).  
 
@@ -44,7 +40,7 @@ The objective is to delete the oldest data from Kuzzle. However it is excluded t
 
 So we will bypass Kuzzle and use the Elasticsearch API directly.  
 
-We will perform a query targeting the oldest documents based on the `createdAt` field in the Kuzzle metadata that indicates the date the document was created in milli timestamp format.
+We will perform a query targeting the oldest documents based on the `createdAt` field in the Kuzzle metadata that indicates the date the document was created in Epoch-millis format.
 
 Kuzzle uses a trash system to indicate that a document has been deleted and should no longer appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes tagged the Elasticsearch documents.   
 We should therefore only take into account files that are still active, for this we will use the `active` metadata field.

@@ -1,39 +1,9 @@
 'use strict';
 
-const oneMinute = 60 * 1000;
-const oneHour = 60 * oneMinute;
-const oneDay = 24 * oneHour;
-
 const
   ElasticSearch = require('elasticsearch'),
-  program = require('commander');
-
-function parseDuration (durationString) {
-  const duration = (durationString.match(/\d+/) || []).map(Number)[0];
-  const unit = (durationString.toLowerCase().match(/[a-z]+/) || [])[0];
-
-  if (! duration || ! unit) {
-    return -1;
-  }
-
-  switch (unit) {
-    case 'd':
-    case 'day':
-    case 'days':
-      return duration * oneDay;
-    case 'h':
-    case 'hour':
-    case 'hours':
-      return duration * oneHour;
-    case 'm':
-    case 'minute':
-    case 'minutes':
-    case 'min':
-      return duration * oneMinute;
-    default:
-      return -1;
-  }
-}
+  program = require('commander'),
+  ms = require('ms');
 
 program
   .option('-h, --host <s>', 'Elastic host', 'elasticsearch')
@@ -54,7 +24,7 @@ if (! program.collection) {
   process.exit(1);
 }
 
-const retentionTime = parseDuration(program.retention);
+const retentionTime = ms(program.retention);
 if (retentionTime <= 0) {
   console.error(`Invalid retention time '${program.retention}'`);
   process.exit(1);
