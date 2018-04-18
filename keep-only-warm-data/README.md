@@ -90,11 +90,11 @@ elasticsearchClient
 
 ## Try it yourself
 
-You can try this How-to yourself  by using the supplied [docker-compose.yml](docker-compose.yml) as well as the [database-cleaner.js](scripts/database-cleaner.js) script.  
+You can try this How-to yourself  by using the supplied [docker-compose.yml](docker-compose.yml) as well as the [databaseCleaner.js](scripts/databaseCleaner.js) script.  
 
 This script lets you specify a retention period to delete all documents prior to this period.  
 
-A test dataset is also available via the [load_data.js](scripts/load_data.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.  
+A test dataset is also available via the [loadData.js](scripts/loadData.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.  
 
 Start by launching the containers with Docker Compose:
 
@@ -105,14 +105,14 @@ docker-compose up
 Then load the test data by running the following command:
 
 ```bash
-docker-compose exec kuzzle node /scripts/load_data.js
+docker-compose exec kuzzle node /scripts/loadData.js
 ```
 
 Now we can use our Kuzzle cleaner script.
 
 ```bash
-docker-compose exec kuzzle node /scripts/database-cleaner.js --help
-  Usage: database-cleaner [options]
+docker-compose exec kuzzle node /scripts/databaseCleaner.js --help
+  Usage: databaseCleaner [options]
 
   Options:
 
@@ -125,7 +125,7 @@ docker-compose exec kuzzle node /scripts/database-cleaner.js --help
     -h, --help            output usage information
 
 # Show documents older than 30 days
-docker-compose exec kuzzle node /scripts/database-cleaner.js -i nyc-open-data -c yellow-taxi -r 30d
+docker-compose exec kuzzle node /scripts/databaseCleaner.js -i nyc-open-data -c yellow-taxi -r 30d
 # Use --confirm to delete matching documents
-docker-compose exec kuzzle node /scripts/database-cleaner.js -i nyc-open-data -c yellow-taxi -r 30d --confirm
+docker-compose exec kuzzle node /scripts/databaseCleaner.js -i nyc-open-data -c yellow-taxi -r 30d --confirm
 ```

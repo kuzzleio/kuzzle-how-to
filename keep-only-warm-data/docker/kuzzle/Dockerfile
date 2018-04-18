@@ -1,7 +1,9 @@
 FROM kuzzleio/kuzzle:develop
 
-ADD custom_start.sh /custom_start.sh
+MAINTAINER amaret@kuzzle.io
 
-RUN chmod +x /custom_start.sh
+COPY custom_start.sh /custom_start.sh
 
-ADD yellow_taxi /yellow_taxi
+COPY yellow_taxi /yellow_taxi
+
+CMD /custom_start.sh
