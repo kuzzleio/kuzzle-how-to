@@ -47,7 +47,7 @@ class ExportCassandra {
 
     return this.exporter.connectWithRetry()
       .then(() => this)
-      .catch(error => Promise.reject(error))
+      .catch(error => Promise.reject(error));
   }
 
   hookPutDocument (request, callback) {

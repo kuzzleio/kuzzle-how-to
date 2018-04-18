@@ -5,7 +5,8 @@ services:
     image: kuzzleio/howto-syncdata-kuzzle
     command: /custom_start.sh
     volumes:
-      - ".:/var/app/plugins/enabled/kuzzle-plugin-sync-cassandra"
+      - "./plugin:/var/app/plugins/enabled/kuzzle-plugin-sync-cassandra"
+      - "./scripts:/scripts"
     depends_on:
       - redis
       - elasticsearch

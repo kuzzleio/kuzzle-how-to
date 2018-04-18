@@ -32,11 +32,11 @@ class Exporter {
         if (this.config.retryCount <= 0) {
           return Promise.reject(new this.context.errors.InternalError(`[kuzzle-plugin-sync-cassandra] Unable to connect the client : ${error.message}`));
         } else {
-          this.context.log.info(`[kuzzle-plugin-sync-cassandra] Failed to connect to Cassandra on startup - ${error.message} - retrying in 2 sec`)
+          this.context.log.info(`[kuzzle-plugin-sync-cassandra] Failed to connect to Cassandra on startup - ${error.message} - retrying in 2 sec`);
           this.config.retryCount -= 1;
           setTimeout(() => {
-            this.connectWithRetry()
-          }, 5000)
+            this.connectWithRetry();
+          }, 5000);
         }
       });
   }
