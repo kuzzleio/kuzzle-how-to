@@ -4,21 +4,22 @@ const
   readline = require('readline');
 
 const step = 100000;
+const fileName = './yellow_taxi_data.csv';
+const hostName = 'localhost';
 
 let
   inserted = 0,
   headerSkipped = false;
 
-const kuzzle = new Kuzzle('localhost', error => {
+const kuzzle = new Kuzzle(hostName, error => {
   if (error) {
     console.error('Error: ', error);
     process.exit(1);
   }
-
   let bulk = [];
 
   const dataFile = readline.createInterface({
-    input: fs.createReadStream('/yellow_taxi/yellow_taxi_data.csv')
+    input: fs.createReadStream(fileName)
   });
 
   dataFile.on('line', line => {

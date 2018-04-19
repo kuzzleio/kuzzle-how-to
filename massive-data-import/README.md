@@ -13,7 +13,7 @@ For this example we will use data from the NYC Yellow Taxi dataset.
 
 ## Architecture
 
-We will be using the standard Kuzzle stack (Kuzzle, Elasticsearch and Redis). (Check [docker-compose.yml](docker-compose.yml) for more details)
+We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
@@ -174,9 +174,9 @@ docker-compose exec kuzzle node /scripts/subscribe.js
 In another terminal we are going to import the dataset with the two methods.
 
 ```bash
-time docker-compose exec kuzzle node /scripts/load_bulk.js
+time docker-compose exec kuzzle node /scripts/loadBulk.js
 
-time docker-compose exec kuzzle node /scripts/load_mcreate.js
+time docker-compose exec kuzzle node /scripts/loadMCreate.js
 ```
 
 On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 1 minutes to load 1 millions of document in Kuzzle with the Bulk Api method and approximatively 2 minutes with mCreate method.  

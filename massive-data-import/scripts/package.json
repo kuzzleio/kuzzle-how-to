@@ -2,7 +2,7 @@
   "name": "kuzzle-howto-massive-import",
   "version": "1.0.0",
   "description": "",
-  "main": "load_bulk.js",
+  "main": "loadBulk.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
