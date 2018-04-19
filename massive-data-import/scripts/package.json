@@ -4,10 +4,14 @@
   "description": "",
   "main": "loadBulk.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --max-warnings=0 *.js",
+    "test": "npm run --silent lint"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "eslint": "4.18.2"
+  },
   "dependencies": {
     "kuzzle-sdk": "^5.0.11"
   }
