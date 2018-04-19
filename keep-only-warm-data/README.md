@@ -6,16 +6,18 @@ Kuzzle : `>= 1.2.11`
 
 ## Introduction
 
-Kuzzle is capable of handling  large amounts of data while maintaining a high level of performance.  
-However, in some scenarios,  it can be useful  to manage a smaller volume of data in Kuzzle and use a secondary datastore synchronized with Kuzzle (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)) to maintain a larger dataset.
-This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where “Hot” data needs to be accessed quickly and “Warm” data needs to be maintained but is not accessed frequently.  
-This could be the case for an App that uses a “Hot” store to provide data to its users and a “Warm” store to generate insights into user behavior through analytics.
+Kuzzle is capable of handling  large amounts of data without impacting performance.   
+
+However, in some scenarios, it can be useful  to manage a smaller volume of data in Kuzzle and use a secondary datastore synchronized with Kuzzle (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)) to maintain a larger dataset.
+This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where a set of data needs to be accessed quickly (Hot data) and another set of data needs to be stored but is not accessed frequently (Warm data).  
+
+An example of this is a platform that manages both a set of data that is accessed by users in real-time through a Mobile App (Hot) and a historical aggregate of this data used to generate insights into user behavior through analytics (Warm).
 
 ## Architecture
 
 We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
-Kuzzle will store “Hot” data in the `yellow-taxi` collection of the `nyc-open-data` index. This data will have the following mapping:
+Kuzzle will store "Hot" data in the `yellow-taxi` collection of the `nyc-open-data` index. This data will have the following mapping:
 
 ```js
 {
@@ -31,18 +33,17 @@ Kuzzle will store “Hot” data in the `yellow-taxi` collection of the `nyc-ope
 
 In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/guide/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).  
 
-For our tests, documents will be inserted directly in Elasticsearch, without going through Kuzzle, in order to be able to change the value of the metadata field `createdAt` at our convenience.  
+For the purpose of this How-To, we will insert documents directly into Elasticsearch so that we can override the value of the `createdAt` metadata field. This way we can set a `createdAt` date in the past and simulate a scenario where Kuzzle has older data in its datastore (i.e Elasticsearch).
 
-For that we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).  
+To do this we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).  
 
 ## Cleaning old data
 
-Since we only want to keep relevant data in Kuzzle, we need to  remove any older and irrelevant data . However, we cannot use the traditional Kuzzle APIs to do this because these changes could automatically be propagated to another external database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)). So, we will bypass the Kuzzle API and use the Elasticsearch API instead.  
+Since we only want to keep relevant data in Kuzzle, we need to  remove any older and irrelevant data. However, we cannot use the Kuzzle APIs to do this because these changes could automatically be propagated to the secondary database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)).  So, we will bypass the Kuzzle API and use the Elasticsearch API instead.   
 
 To delete data through the Elasticsearch API, we will perform a query that targets the oldest documents based on the `createdAt` field in the metadata. This field stores the date the document was created in Epoch-millis format.
 
-Kuzzle uses a trash system to indicate that a document has been deleted and should no longer appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes these documents based on the `active` metadata field.   
-We should therefore only take into account files that are still active, for this we will use the `active` metadata field.
+Kuzzle uses a trash bin to temporarily store documents that have been deleted. These documents are flagged as inactive and do not appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes documents from the trash bin (i.e where `active` metadata field is set to `false`). In our scenario, we want to delete old documents which are active, so we need to ignore documents that are in the trash bin. To do this we will query documents where the `active` metadata field is set to true.
 
 ```js
 // Get all documents created before the 12 April 2018
@@ -90,9 +91,9 @@ elasticsearchClient
 
 ## Try it yourself
 
-You can try this How-to yourself  by using the supplied [docker-compose.yml](docker-compose.yml) as well as the [databaseCleaner.js](scripts/databaseCleaner.js) script.  
+You can try this How-To yourself by using the [docker-compose.yml](docker-compose.yml) we provided as well as the [database-cleaner.js](scripts/database-cleaner.js) script.  
 
-This script lets you specify a retention period to delete all documents prior to this period.  
+This script lets you set a retention period and will delete all documents prior to the specified period.  
 
 A test dataset is also available via the [loadData.js](scripts/loadData.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.  
 
