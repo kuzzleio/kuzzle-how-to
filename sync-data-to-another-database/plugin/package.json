@@ -2,7 +2,7 @@
   "name": "kuzzle-plugin-sync-cassandra",
   "author": "The Kuzzle Team <support@kuzzle.io>",
   "version": "0.0.1",
-  "description": "Kuzzle plugin export Cassandra",
+  "description": "Kuzzle plugin sync Cassandra",
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint --max-warnings=0 ./lib",

@@ -3,6 +3,9 @@
 echo "Install cucumber"
 gem install cucumber
 
+echo "Pull latests images from Docker Hub"
+docker-compose pull
+
 echo "Start test"
 cucumber
 

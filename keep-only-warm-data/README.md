@@ -6,7 +6,7 @@ Kuzzle : `>= 1.2.11`
 
 ## Introduction
 
-Kuzzle is capable of handling  large amounts of data without impacting performance.   
+Kuzzle is capable of managing a large number of documents while maintaining high performance.  
 
 However, in some scenarios, it can be useful  to manage a smaller volume of data in Kuzzle and use a secondary datastore synchronized with Kuzzle (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)) to maintain a larger dataset.
 This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where a set of data needs to be accessed quickly (Hot data) and another set of data needs to be stored but is not accessed frequently (Warm data).  

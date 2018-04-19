@@ -1,5 +1,4 @@
 require 'open3'
-require 'byebug'
 
 Before do |scenario|
   # this fixes the input device is not a TTY .. see https://github.com/docker/compose/issues/5696
