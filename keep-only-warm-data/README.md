@@ -108,6 +108,12 @@ Then load the test data by running the following command:
 docker-compose exec kuzzle node /scripts/loadData.js
 ```
 
+Verify the number of imported documents:
+
+```bash
+docker-compose exec kuzzle node /scripts/countData.js
+```
+
 Now we can use our Kuzzle cleaner script.
 
 ```bash
@@ -128,4 +134,10 @@ docker-compose exec kuzzle node /scripts/databaseCleaner.js --help
 docker-compose exec kuzzle node /scripts/databaseCleaner.js -i nyc-open-data -c yellow-taxi -r 30d
 # Use --confirm to delete matching documents
 docker-compose exec kuzzle node /scripts/databaseCleaner.js -i nyc-open-data -c yellow-taxi -r 30d --confirm
+```
+
+Check documents deletion:
+
+```bash
+docker-compose exec kuzzle node /scripts/countData.js
 ```
