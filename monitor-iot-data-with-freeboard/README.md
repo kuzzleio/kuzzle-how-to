@@ -122,14 +122,14 @@ Settings:
 | Kuzzle port | The port through which Kuzzle Server is accessible, default is *7512* |
 | Token | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/api-documentation/controller-auth/login/) to learn how to generate a JWT encrypted token |
 | Index | The Kuzzle *index* that holds the documents your are interested in. |
-| Collection | The Kuzzle *collectino* that holds the documents your are interested in. |
+| Collection | The Kuzzle *collection* that holds the documents your are interested in. |
 | Filter | The filter the document you are interested in must match. Refer [Koncord documentation](https://docs.kuzzle.io/kuzzle-dsl/essential/koncorde/) for further information about Kuzzle realtime filters.|
 
 The Kuzzle Datasource plugin will receive a notification for each **created** document in the specified `index/collection` that matches the `filter`.
 
 For the  purpose of this howto, we will leave `Kuzzle host` and `Kuzzle port` to their default value, e.g. *`localhost`* and *`7512`*
 
-We will set the `index` and `collection` settings to *`fb-howto-index`* and *`fg-howto-collection`* respectively. If you didn't create those yet, please refer to [Step 0: Getting Kuzzle Reading](#step-0-getting-kuzzle-reading) section
+We will set the `index` and `collection` settings to *`fb-howto-index`* and *`fb-howto-collection`* respectively. If you didn't create those yet, please refer to [Step 0: Getting Kuzzle Reading](#step-0-getting-kuzzle-reading) section
 
 ### Step 3: Adding datasource for the SIN_GENERATOR device
 
