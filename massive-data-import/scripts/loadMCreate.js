@@ -4,8 +4,13 @@ const
   readline = require('readline');
 
 const step = 100000;
-const fileName = './yellow_taxi_data.csv';
+const fileName = '/yellow_taxi/yellow_taxi_data.csv';
 const hostName = 'localhost';
+const testOnly = process.argv[2] == 'test' || false;
+
+if (testOnly) {
+  console.log(`Test mode : load only ${step} documents`);
+}
 
 let
   inserted = 0,
@@ -41,7 +46,13 @@ const kuzzle = new Kuzzle(hostName, error => {
         const packet = documents;
         documents = [];
         dataFile.pause();
-        mcreate(packet).then(() => dataFile.resume());
+        mcreate(packet).then(() => {
+          if (testOnly) {
+            dataFile.close();
+          } else {
+            dataFile.resume();
+          }
+        });
       }
     }
     else {
@@ -50,8 +61,13 @@ const kuzzle = new Kuzzle(hostName, error => {
   });
 
   dataFile.on('close', () => {
-    if (documents.length > 0) {
-      mcreate(documents).then(() => kuzzle.disconnect());
+    // Avoid sending extra data on test mode
+    if (testOnly) {
+      kuzzle.disconnect();
+    } else {
+      if (documents.length > 0) {
+        mcreate(documents).then(() => kuzzle.disconnect());
+      }
     }
   });
 });
@@ -65,7 +81,7 @@ function mcreate(docs) {
     })
     .catch(error => {
       if (error.status = 206) {
-        console.error(`PartialError: ${error.errors.length} documents insertion fail`);
+        console.error('PartialError: ', error);
       } else {
         console.error('Error: ');
         console.dir(error, {colors: true, depth: null});

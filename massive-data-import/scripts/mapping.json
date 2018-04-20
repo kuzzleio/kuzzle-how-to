@@ -1,9 +1,0 @@
-{
-  "pickup_datetime": {"type": "date", "format": "MM/dd/yyyy hh:mm:ss a"},
-  "dropoff_datetime": {"type": "date", "format": "MM/dd/yyyy hh:mm:ss a"},
-  "passenger_count": {"type": "long"},
-  "trip_distance": {"type": "double"},
-  "pickup_position": {"type": "geo_point"},
-  "dropoff_position": {"type": "geo_point"},
-  "fare_amount": {"type": "double"}
-}

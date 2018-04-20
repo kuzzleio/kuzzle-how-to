@@ -5,9 +5,11 @@ const timeSquareArea = {
   bottomRight: { lat: 40.758372, lon: -73.984591 }
 };
 
+const hostName = 'localhost';
+
 let count = 0;
 
-const kuzzle = new Kuzzle('localhost', error => {
+const kuzzle = new Kuzzle(hostName, error => {
   if (error) {
     console.error('Error: ', error);
     process.exit(1);

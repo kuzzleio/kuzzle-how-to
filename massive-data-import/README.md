@@ -1,5 +1,9 @@
 # Massive Data Import to Kuzzle
 
+## Requirements
+
+Kuzzle : `>= 1.2.11`  
+
 ## Introduction
 
 When processing large volumes of data with Kuzzle, you may need to import large datasets quickly.  
@@ -7,6 +11,8 @@ When processing large volumes of data with Kuzzle, you may need to import large 
 Kuzzle offers two massive data import systems according to your needs:
 - Using [bulk imports](https://docs.kuzzle.io/api-documentation/controller-bulk/import/), when you need to import data as fast as possible
 - With [multi-documents creations](https://docs.kuzzle.io/api-documentation/controller-document/m-create/), a bit slower, but this method allows the use of real-time notifications or plugin events during import
+
+Using an AWS production environment with Kuzzle on a `m5.large`, Elasticsearch on a `i3.xlarge.elasticsearch` and Redis on a `cache.t2.micro` instance, we were able to achieve 9700 docs/sec with Bulk import and 5800 docs/sec with the mCreate route.  
 
 In this How-To, we will explore the two massive import techniques of Kuzzle.
 For this example we will use data from the NYC Yellow Taxi dataset.  
@@ -180,5 +186,6 @@ time docker-compose exec kuzzle node /scripts/loadMCreate.js
 ```
 
 On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 1 minutes to load 1 millions of document in Kuzzle with the Bulk Api method and approximatively 2 minutes with mCreate method.  
+This is faster than the cluster result because we don't have any latency.
 
 As we can see, although the bulk method is twice as fast as the mcreate method, it doesn't trigger any subscription notification.  
