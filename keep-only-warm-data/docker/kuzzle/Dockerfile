@@ -1,6 +1,6 @@
 FROM kuzzleio/kuzzle:develop
 
-LABEL maintainer="amaret@kuzzle.io"
+LABEL maintainer="support@kuzzle.io"
 
 COPY custom_start.sh /custom_start.sh
 

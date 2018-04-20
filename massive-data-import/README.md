@@ -14,12 +14,18 @@ Kuzzle offers two massive data import systems according to your needs:
 
 Using an AWS production environment with Kuzzle on a `m5.large`, Elasticsearch on a `i3.xlarge.elasticsearch` and Redis on a `cache.t2.micro` instance, we were able to achieve 9700 docs/sec with Bulk import and 5800 docs/sec with the mCreate route.  
 
-In this How-To, we will explore the two massive import techniques of Kuzzle.
-For this example we will use data from the NYC Yellow Taxi dataset.  
+In this How-To, we will explore the two massive import techniques of Kuzzle.  
+For this example we will use data from the [NYC Yellow Taxi dataset](https://github.com/kuzzleio/kuzzle-how-to/blob/master/README.md#nyc-open-data-yellow-taxi).  
 
 ## Architecture
 
 We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
+
+We are going to change some Kuzzle configuration for this How-To to allow insertion of large bulk:
+  - `documentsWriteCount` will be set to 100 000
+  - `maxRequestSize` will be set to `1GB`
+
+These configuration are set in the [/etc/kuzzle/config](etc/kuzzle/config) , check [Kuzzle Configuration](https://docs.kuzzle.io/guide/essentials/configuration/) for more informations.  
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
@@ -186,6 +192,9 @@ time docker-compose exec kuzzle node /scripts/loadMCreate.js
 ```
 
 On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 1 minutes to load 1 millions of document in Kuzzle with the Bulk Api method and approximatively 2 minutes with mCreate method.  
-This is faster than the cluster result because we don't have any latency.
+This is 40% faster than the cluster result because we don't have any latency.
 
-As we can see, although the bulk method is twice as fast as the mcreate method, it doesn't trigger any subscription notification.  
+In conclusion, Kuzzle offers 2 methods for mass data import, each one with a different purpose:
+
+* [bulk](https://docs.kuzzle.io/api-documentation/controller-bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
+* [multi-documents creation](https://docs.kuzzle.io/api-documentation/controller-document/m-create/): allowing any real-time subscribers to be notified about what's going on. While it's quite fast, it's about 40% slower than its bulk method counterpart

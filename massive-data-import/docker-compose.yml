@@ -5,6 +5,7 @@ services:
     image: kuzzleio/howto-massiveimport-kuzzle
     volumes:
       - "./scripts:/scripts"
+      - "./etc/kuzzle:/etc/kuzzle"
     depends_on:
       - redis
       - elasticsearch
@@ -14,8 +15,6 @@ services:
       - kuzzle_services__db__client__host=http://elasticsearch:9200
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
-      - kuzzle_server__maxRequestSize=1GB
-      - kuzzle_limits__documentsWriteCount=100000
       - NODE_ENV=development
       - DEBUG=kuzzle:plugins
 

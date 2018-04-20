@@ -73,24 +73,21 @@ const kuzzle = new Kuzzle(hostName, error => {
 
 function bulkInsert(bulkData) {
   console.log("Run query")
-  return new Promise(resolve => {
-    const bulkQuery = { body: { bulkData } };
+  const bulkQuery = { body: { bulkData } };
 
-    kuzzle
-      .queryPromise({ controller: 'bulk', action: 'import' }, bulkQuery)
-      .catch(error => {
-        if (error.status = 206) {
-          console.error('PartialError: ', error);
-        } else {
-          console.error('Error: ');
-          console.dir(error, {colors: true, depth: null});
-        }
-        process.exit(1);
-      })
-      .then(() => {
-        inserted += bulkData.length / 2;
-        console.log(`${inserted} lines inserted`);
-        return resolve();
-      });
+  return kuzzle
+    .queryPromise({ controller: 'bulk', action: 'import' }, bulkQuery)
+    .catch(error => {
+      if (error.status = 206) {
+        console.error('PartialError: ', error);
+      } else {
+        console.error('Error: ');
+        console.dir(error, {colors: true, depth: null});
+      }
+      process.exit(1);
+    })
+    .then(() => {
+      inserted += bulkData.length / 2;
+      console.log(`${inserted} lines inserted`);
     });
 }
