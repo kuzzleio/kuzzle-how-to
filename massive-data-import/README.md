@@ -8,9 +8,9 @@ Kuzzle : `>= 1.2.11`
 
 When processing large volumes of data with Kuzzle, you may need to import large datasets quickly.  
 
-Kuzzle offers two massive data import systems according to your needs:
-- Using [bulk imports](https://docs.kuzzle.io/api-documentation/controller-bulk/import/), when you need to import data as fast as possible
-- With [multi-documents creations](https://docs.kuzzle.io/api-documentation/controller-document/m-create/), a bit slower, but this method allows the use of real-time notifications or plugin events during import
+Kuzzle supports two massive data import options:
+1. [Bulk Import](https://docs.kuzzle.io/api-documentation/controller-bulk/import/): used when you need to import data as fast as possible
+2. [Multi-document Creation](https://docs.kuzzle.io/api-documentation/controller-document/m-create/): used when you want to allow real-time notifications or plugin events during import (this option is a bit slower than the bulk import).
 
 Using an AWS production environment with Kuzzle on a `m5.large`, Elasticsearch on a `i3.xlarge.elasticsearch` and Redis on a `cache.t2.micro` instance, we were able to achieve 9700 docs/sec with Bulk import and 5800 docs/sec with the mCreate route.  
 
@@ -48,7 +48,7 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 The first way to import important data sets into Kuzzle is to use the [Bulk Controller](https://docs.kuzzle.io/api-documentation/controller-bulk/) [import action](https://docs.kuzzle.io/api-documentation/controller-bulk/import/).
 Its operation and syntax is similar to that of the [Elasticsearch Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).
 
-This method is very fast but it writes almost directly in Elasticsearch. Other Kuzzle features such as [real-time notifications](https://docs.kuzzle.io/guide/essentials/real-time/) will not be available.  
+This method is very fast but it writes almost directly into Elasticsearch. Other Kuzzle features such as [real-time notifications](https://docs.kuzzle.io/guide/essentials/real-time/) will not be available.  
 
 To use it, you must go directly through a request sent to the Bulk Controller.  
 This query contains an array of objects organized by peers. The n element of the array is an object containing the name of the index and the collection and the n+1 element contains the document to insert.  
@@ -103,10 +103,10 @@ kuzzle
 
 ### mCreate API
 
-The second method is about half as fast but it allows you to benefit from all the usual features of Kuzzle.  
+The second method is about half as fast but it allows you to benefit from all the usual Kuzzle features.  
 
 It uses the [Document Controller's mCreate](https://docs.kuzzle.io/api-documentation/controller-document/m-create/) action to insert multiple documents into the same query.  
-The creation of documents will send notifications to customers who have subscribed to a request corresponding to them.  
+When a document is created, Kuzzle will send a notification to clients that have subscribed to the document changes.  
 
 We are going to use a geofencing subscription to get notified every time a taxi drop a passenger on the Time Square area.  
 First we have to get the coordinate of the top left and the bottom right corner of our area and then we can use the Kuzzle SDK to start our subscription.  
@@ -191,7 +191,7 @@ time docker-compose exec kuzzle node /scripts/loadBulk.js
 time docker-compose exec kuzzle node /scripts/loadMCreate.js
 ```
 
-On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 1 minutes to load 1 millions of document in Kuzzle with the Bulk Api method and approximatively 2 minutes with mCreate method.  
+On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximately 1 minute to load 1 million documents in Kuzzle using the Bulk Api method and approximately 2 minutes to load the same number of documents with the mCreate method.  
 This is 40% faster than the cluster result because we don't have any latency.
 
 In conclusion, Kuzzle offers 2 methods for mass data import, each one with a different purpose:
