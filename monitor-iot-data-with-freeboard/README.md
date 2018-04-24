@@ -43,6 +43,12 @@ To follow this howto, you will need:
 $ git clone https://github.com/Freeboard/freeboard.git
 ```
 
+- Install **freeboard**
+
+```console
+$ cd freeboard && npm install
+```
+
 - Get Kuzzle Feeboard Datasource plugin
 
 ```console
