@@ -26,7 +26,7 @@ The purpose of this howto is to learn how to create a realtime visualization das
 We will be using:
 
 - an instance of *Kuzzle Server* running locally
-- Kuzzle Freeboard Datasource plugin available on github: [http://github.com/etrousset/kuzzle-freeboard-plugin](http://github.com/etrousset/kuzzle-freeboard-plugin)
+- Kuzzle Freeboard Datasource plugin available on github: [http://github.com/kuzzleio/kuzzle-freeboard-plugin](http://github.com/kuzzleio/kuzzle-freeboard-plugin)
 - *freeboard* running locally
 
 We will be demonstrating how to use Kuzzle Freeboard Datasource plugin to monitor IoT devices. The IoT devices will be simulated by two scripts that will generate data in the way reel IoT devices would. One will generate a sinus function, while the other will generate a square function.
@@ -52,7 +52,7 @@ $ cd freeboard && npm install
 - Get Kuzzle Feeboard Datasource plugin
 
 ```console
-$ git clone https://github.com/etrousset/kuzzle-freeboard-plugin.git
+$ git clone https://github.com/kuzzleio/kuzzle-freeboard-plugin.git
 ```
 
 It is recommended to clone both repositories from the same folder so that you don't have to adapt paths from when following the steps.
@@ -205,6 +205,6 @@ Generating square function as "device_id" : my_square_gen_id
 
 ## Conclusion
 
-Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/etrousset/kuzzle-freeboard-plugin), and the correct [subscription](https://docs.kuzzle.io/sdk-reference/collection/subscribe/) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
+Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/kuzzleio/kuzzle-freeboard-plugin), and the correct [subscription](https://docs.kuzzle.io/sdk-reference/collection/subscribe/) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
 
 For now, Kuzzle Freeboard Datasource plugin is limited to monitoring document when they are **created**, but you could easily adapt it to monitor document when they are **updated**, **deleted**, or **published** for pure realtime documents (documents that are not stored).
