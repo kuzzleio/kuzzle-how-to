@@ -9,7 +9,7 @@
     - [Purpose](#purpose)
     - [Prerequisite](#prerequisite)
     - [Howto steps](#howto-steps)
-        - [Step 0: Getting Kuzzle Reading](#step-0-getting-kuzzle-reading)
+        - [Step 0: Getting Kuzzle Ready](#step-0-getting-kuzzle-ready)
         - [Step 1: Enable Kuzzle Datasource Plugin](#step-1-enable-kuzzle-datasource-plugin)
         - [Step 2: Kuzzle Datasource Configuration](#step-2-kuzzle-datasource-configuration)
         - [Step 3: Adding datasource for the SIN_GENERATOR device](#step-3-adding-datasource-for-the-sin_generator-device)
@@ -21,7 +21,7 @@
 
 ## Purpose
 
-The purpose of this howto is to learn how to create a realtime visualisation dashboard for your [Kuzzle](http://www.kuzzle.io) based application using [freeboard](http://freeboard.io), an open source dashboard.
+The purpose of this howto is to learn how to create a realtime visualization dashboard for your [Kuzzle](http://www.kuzzle.io)-based by adding a simple plugin to [freeboard](http://freeboard.io), an open source dashboard.
 
 We will be using:
 
@@ -55,7 +55,7 @@ $ cd freeboard && npm install
 $ git clone https://github.com/etrousset/kuzzle-freeboard-plugin.git
 ```
 
-It is recommanded to clone both repositories from the same folder so that you don't have to adapt paths from when following the steps.
+It is recommended to clone both repositories from the same folder so that you don't have to adapt paths from when following the steps.
 You should end up with a folder containing the following folders:
 
 ```console
@@ -66,7 +66,7 @@ You should end up with a folder containing the following folders:
 
 ## Howto steps
 
-### Step 0: Getting Kuzzle Reading
+### Step 0: Getting Kuzzle Ready
 
 Assuming you already have an intance of Kuzzle running on *localhost*, we will need to add some fixtures. You will need to create a new *index* and *collection*.
 
@@ -77,7 +77,7 @@ In `scripts` folder, you can launch `fb-kuzzle-fixtures.sh` to create the requir
 ### Step 1: Enable Kuzzle Datasource Plugin
 
 First we have to make Kuzzle JS sdk available to *freeboard* plugins.
-One way to do this, is to *kuzzle-sdk* it to *freeboard* depndencies using *npm*.
+One way to do this, is to import the *kuzzle-sdk* into *freeboard*, using *npm*.
 
 In `freeboard` folder enter the following command:
 
@@ -124,8 +124,8 @@ Settings:
 
 | Name | Description |
 |----------------------|------|
-|Kuzzle host  | The hostname of the machine on which Kuzzle Server instance si running, default is *localhost*. |
-| Kuzzle port | The port through which Kuzzle Server is accessible, default is *7512* |
+|Kuzzle host  | The hostname of the machine on which Kuzzle Server instance is running, default is `localhost`. |
+| Kuzzle port | The port through which Kuzzle Server is accessible, default is `7512` |
 | Token | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/api-documentation/controller-auth/login/) to learn how to generate a JWT encrypted token |
 | Index | The Kuzzle *index* that holds the documents your are interested in. |
 | Collection | The Kuzzle *collection* that holds the documents your are interested in. |
@@ -168,13 +168,13 @@ Now, for the filter, as we want to match only created documents whose `device_id
 
 Give a name to this datasource: *MySinGenerator*
 
-Click **SAVE**. *MySinGenerator* should now appear in your **DATASOURCES** and be updating regularly.
+Click **SAVE**. *MySinGenerator* should now appear in your **DATASOURCES** and be updated regularly.
 
 ### Step 4: Adding a widget to visualize data from SIN_GENERATOR device
 
 We will use the *Sparkline* widget to visualize the SIN_GENERATOR device `value` field.
 
-- First add a new pane by clinking the **ADD PANE** button
+- First add a new pane by clicking the **ADD PANE** button
 - In the newly created pane, click the **+** button to add a new widget
 - Select *Sparkline* widget
 - Give a title to the widget: *My Sin Generator*

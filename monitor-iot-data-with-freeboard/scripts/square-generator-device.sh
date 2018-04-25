@@ -14,7 +14,7 @@ v=`echo "if ($a%10 <5) print 0 else print 1" | bc`
 a=`expr $a + 1`
 
 #echo $a ":" $v
-wget --header="Content-Type: application/json"  --post-data="{ \"device_id\" : \"$DEVICE_ID\", \"value\" : $v }" http://localhost:7512/fb-howto-index/fb-howto-collection/_create?pretty -q -O - > /dev/null
-sleep .25
+wget --header="Content-Type: application/json"  --post-data="{ \"device_id\" : \"$DEVICE_ID\", \"value\" : $v }" http://localhost:7512/fb-howto-index/fb-howto-collection/_create -q -O - > /dev/null
+sleep 1
 done
 
