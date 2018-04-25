@@ -191,10 +191,7 @@ time docker-compose exec kuzzle node /scripts/loadBulk.js
 time docker-compose exec kuzzle node /scripts/loadMCreate.js
 ```
 
-On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximately 1 minute to load 1 million documents in Kuzzle using the Bulk Api method and approximately 2 minutes to load the same number of documents with the mCreate method.  
-This is 40% faster than the cluster result because we don't have any latency.
-
 In conclusion, Kuzzle offers 2 methods for mass data import, each one with a different purpose:
 
-* [bulk](https://docs.kuzzle.io/api-documentation/controller-bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
+* [bulk import](https://docs.kuzzle.io/api-documentation/controller-bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
 * [multi-documents creation](https://docs.kuzzle.io/api-documentation/controller-document/m-create/): allowing any real-time subscribers to be notified about what's going on. While it's quite fast, it's about 40% slower than its bulk method counterpart
