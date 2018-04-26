@@ -25,7 +25,7 @@ Given("A Kuzzle stack running") do
     raise StandardError, "Unable to start docker-compose stack"
   end
 
-  puts "Kuzzle is up !"
+  puts "Kuzzle is up!"
 end
 
 Then("I can load data in the past") do

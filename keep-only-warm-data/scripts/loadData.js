@@ -16,9 +16,9 @@ let
   headerSkipped = false,
   currentDay = 0;
 
-let currentDate = moment().subtract(currentDay, 'days');
+const currentDate = moment().subtract(currentDay, 'days');
 
-let documents = [];
+const documents = [];
 
 function flatten(arr) {
   return arr.reduce((flat, toFlatten) => flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten), []);
@@ -80,13 +80,13 @@ dataFile.on('close', () => {
 
 function createPacket(docs) {
   const kuzzle_meta = {
-    '_kuzzle_info': {
-      'active':     true,
-      'author':     '-1',
-      'updater':    null,
-      'updatedAt':  null,
-      'deletedAt':  null,
-      'createdAt':  currentDate.valueOf() // Date in milli timestamp
+    _kuzzle_info: {
+      active:     true,
+      author:     '-1',
+      updater:    null,
+      updatedAt:  null,
+      deletedAt:  null,
+      createdAt:  currentDate.valueOf() // Date in milli timestamp
     }
   };
 

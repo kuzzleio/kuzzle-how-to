@@ -1,6 +1,6 @@
 FROM cassandra:3
 
-LABEL maintainer="amaret@kuzzle.io"
+LABEL maintainer="support@kuzzle.io"
 
 COPY create_keyspace.cql docker-entrypoint-initdb.d/create_keyspace.cql
 
