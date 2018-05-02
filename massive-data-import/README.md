@@ -108,7 +108,7 @@ The second method is about half as fast but it allows you to benefit from all th
 It uses the [Document Controller's mCreate](https://docs.kuzzle.io/api-documentation/controller-document/m-create/) action to insert multiple documents into the same query.  
 When a document is created, Kuzzle will send a notification to clients that have subscribed to the document changes.  
 
-We are going to use a geofencing subscription to get notified every time a taxi drop a passenger on the Time Square area.  
+We are going to use a geofencing subscription to get notified every time a taxi drops a passenger off at Time Square.  
 First we have to get the coordinate of the top left and the bottom right corner of our area and then we can use the Kuzzle SDK to start our subscription.  
 
 ```js
@@ -177,7 +177,7 @@ The containers are preconfigured to work with NYC Open Data's Yellow Taxi datase
 docker-compose up
 ```
 
-Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/kuzzle-dsl/terms/geo-bounding-box/) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger dropped in this area.  
+Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/kuzzle-dsl/terms/geo-bounding-box/) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.  
 
 ```bash
 docker-compose exec kuzzle node /scripts/subscribe.js
