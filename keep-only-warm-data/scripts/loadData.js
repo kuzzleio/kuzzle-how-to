@@ -1,8 +1,7 @@
 const
-  Kuzzle = require('kuzzle-sdk'),
   fs = require('fs'),
   readline = require('readline'),
-  Moment = require('moment'),
+  moment = require('moment'),
   ElasticSearch = require('elasticsearch');
 
 const
@@ -10,23 +9,19 @@ const
   batchSize = 1,
   maxDocuments = 60,
   host = 'elasticsearch',
-  port = 9200,
-  collection = 'yellow-taxi',
-  index = 'nyc-open-data';
+  port = 9200;
 
 let
   inserted = 0,
   headerSkipped = false,
   currentDay = 0;
 
-let currentDate = Moment().subtract(currentDay, 'days');
+const currentDate = moment().subtract(currentDay, 'days');
 
-let documents = [];
+const documents = [];
 
 function flatten(arr) {
-  return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
+  return arr.reduce((flat, toFlatten) => flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten), []);
 }
 
 const elasticsearchClient = new ElasticSearch.Client({
@@ -79,37 +74,35 @@ dataFile.on('close', () => {
   if (documents.length > 0) {
     const packet = createPacket(documents);
 
-    bulkImport(packet).then(() => {
-    });
-  } else {
+    bulkImport(packet).then(() => true);
   }
 });
 
-function createPacket(documents) {
+function createPacket(docs) {
   const kuzzle_meta = {
-    "_kuzzle_info": {
-      "active":     true,
-      "author":     "-1",
-      "updater":    null,
-      "updatedAt":  null,
-      "deletedAt":  null,
-      "createdAt":  currentDate.valueOf() // Date in milli timestamp
+    _kuzzle_info: {
+      active:     true,
+      author:     '-1',
+      updater:    null,
+      updatedAt:  null,
+      deletedAt:  null,
+      createdAt:  currentDate.valueOf() // Date in milli timestamp
     }
-  }
+  };
 
   currentDay += 1;
-  currentDate = Moment().subtract(currentDay, 'days');
+  currentDate = moment().subtract(currentDay, 'days');
 
-  return flatten(documents.map(document => {
+  return flatten(docs.map(document => {
     return [
-      { index: { _index : "nyc-open-data", _type: "yellow-taxi" } },
+      { index: { _index : 'nyc-open-data', _type: 'yellow-taxi' } },
       Object.assign({}, kuzzle_meta, document)
-    ]
+    ];
   }));
 }
 
 function bulkImport(packet) {
   return elasticsearchClient.bulk({
     body: packet
-  })
+  });
 }
