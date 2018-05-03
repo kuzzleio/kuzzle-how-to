@@ -30,6 +30,7 @@ With this sample you will be able to perform a massive data import with live geo
  - [Massive data import](massive-data-import/) (wip)
  - [Synchronize Kuzzle with another database](sync-data-to-another-database/)
  - [Keep only warm data in Kuzzle](keep-only-warm-data/) (wip)
+ - [Monitor IoT data with Freeboard](monitor-iot-data-with-freeboard/)
 
 ## Distribution process
 
