@@ -35,7 +35,7 @@ script:
   # Run tests
   - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then cd ${base} ; ./run_tests.sh ; cd ..; fi; done
 
-after_succes:
+after_success:
   # Create how-to.tar.gz
   - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}; fi; done
   - aws s3 cp build/* s3://$BUCKET_NAME/how-to/ --region us-west-2
