@@ -1,0 +1,6 @@
+#ifndef KUZZLE_STORAGE_H
+#define KUZZLE_STORAGE_H
+
+
+
+#endif // KUZZLE_STORAGE_H
