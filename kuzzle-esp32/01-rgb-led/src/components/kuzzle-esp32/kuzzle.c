@@ -24,7 +24,7 @@
                  //! to this collection with filter to check for firmware updates
 
 /// Kuzzle controllers
-/// See http:// TODO:   for more details on Kuzzle controllers
+/// See https://docs.kuzzle.io/api-documentation/connecting-to-kuzzle for more details on Kuzzle controllers
 #define K_CONTROLLER_REALTIME "realtime" //!< This the controller responsible for handling subscribtions
 #define K_CONTROLLER_DOCUMENT "document" //!< This is the controller responsible for handle documents
 
@@ -72,7 +72,6 @@ static const char* subscribe_req_fmt =
 /// Kuzzle DSL queries for subscribing to own state and to fw update
 static const char* subscribe_own_state_fmt  =
         "{\"and\":[{\"equals\":{\"device_id\": \"" K_DEVICE_ID_FMT "\"}},{\"equals\": {\"partial_state\": true}}]}";
-        //"{\"equals\":{\"device_id\": \"" K_DEVICE_ID_FMT "\"}}";
 static const char* subscribe_fw_updates_fmt = "{\"equals\":{\"target\": \"%s\"}}";
 
 static const char* get_fw_update_req_fmt =

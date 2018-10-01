@@ -85,12 +85,11 @@ To allow your application to communicate with Kuzzle Backend, you will need 2 co
 
 **espmqtt**: <https://github.com/etrousset/espmqtt> forked from <https://github.com/etrousset/espmqtt> (fixed a bug with receiving longish MQTT messages).
 
-**kuzzle-esp32**: <https://github.com/etrousset/kuzzle-esp32>.
+**kuzzle-esp32**: [](./src/components/kuzzle-esp32).
 Components must be located in the components subfolder of your project, you can clone them using the following commands in you my-connected-rgb-light subfolder:
 
 ``` console
 $ git submodule add https://github.com/etrousset/espmqtt components/espmqtt
-$ git submodule add https://github.com/etrousset/kuzzle-esp32 components/kuzzle-esp32
 ```
 
 In this tutorial, for the sake of simplicity, there is no security layer to Kuzzle's MQTT protocol. So we need to disable security from the espmqtt component. In 'components/espmqtt/include/mqtt_config.h', change the line
@@ -315,11 +314,15 @@ If your device booted up, you should see a document representing the state of yo
 
 ## Get in Control...
 
-In this last step, we'll change the color of the RGB light by creating a new document in device-state collection.
+In this last step, we'll change the color of the RGB light by creating a new document in `device-state` collection.
 
-We will mark this document avec being a 'partial_state', meaning the device will have to merge it with its current state in order to get its new complete state. This allow changing only one parameter of the state with out having to publish the whole state. Also, the device is responsible for accepting or not the state change.
+Since our device has subscribed to changes in that collection, Kuzzle will automatically notify it about that new document, in real-time.
 
-In the case where it will update its state (turning ON or OFF, changing color) it will then publish its new complete state.
+We will send a partial state change to our device, which is responsible for accepting it, or not. If the state change is accepted, it'll be merged into the full state maintained by the device.
+
+To do so, we will create our new document with the new value for the state we want to change, and the `partial_state` property set to `true`.
+
+In return, the device will send to Kuzzle its complete state, updated, with the `partial_state` property set to `false`.
 
 Click on the **Create** button and enter the following Json:
 
@@ -347,4 +350,4 @@ Once you click on the Create button to validate your document, the RGB light sho
 
 ## Going Further
 
-Check out the Kuzzle JS SDK to control your RGB light using an Javascript application: <http://docs.kuzzle.io/guide/getting-started/>
+Check out the Kuzzle JS SDK to control your RGB light using a Javascript application: <http://docs.kuzzle.io/guide/getting-started/>
