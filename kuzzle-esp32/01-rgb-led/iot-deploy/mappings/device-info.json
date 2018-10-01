@@ -1,0 +1,23 @@
+{
+  "device_id": {
+    "type": "keyword"
+  },
+  "friendly_name": {
+    "type": "keyword"
+  },
+  "device_type": {
+    "type": "keyword"
+  },
+  "location": {
+    "type": "keyword"
+  },
+  "sub_loc": {
+    "type": "keyword"
+  },
+  "geo_loc": {
+    "type": "geo_point"
+  },
+  "owner": {
+    "type": "keyword"
+  }
+}

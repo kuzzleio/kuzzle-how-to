@@ -1,0 +1,12 @@
+{
+  "kuzzle" : {
+    "host" : "localhost",
+    "port": "7512",
+    "index": "iot",
+    "user": {
+      "username": "",
+      "password": ""
+
+    }
+  }
+}
