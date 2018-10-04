@@ -16,7 +16,7 @@ With the team we do meetings and workshops to decide important points and priori
 
 All the team agreed on one points. We need to refund our documentation! We also decide that we want our SDKs snippets have to be tested functionally to make our documentation easier to maintains. And also preventing breaking changes with the releases of the next versions of our SDKs.
 
-This task seemed to be my job. Because all eyes turned to me when the decision was taken. And above all I'm in charge to maintain and improve the documentation. At this point I have no idea of how I can make this miracle happen. My first reflex was to search on the web: nothing. I finally found one article speaking about testing documentation, but very briefly and it concludes that is a very good idea but al
+This task seemed to be my job. Because all eyes turned to me when the decision was taken. And above all I'm in charge to maintain and improve the documentation. At this point I have no idea of how I can make this miracle happen. My first reflex was to search on the web: nothing. I finally found one article speaking about testing documentation, but very briefly and it concludes that is a very good idea but also a very complicate one.
 
 So here I am, I have to develop an end to end testing framework plugged on our documentation. Its have to be easy for redactors to write snippets and also easy to tests them in each language our SDKs was released. With the help of our favorite scrum master (special thanks to Eric). We slice this labor in many tasks. Things began to be real!
 
