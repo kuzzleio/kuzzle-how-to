@@ -81,20 +81,34 @@ Make sure you are able to build and flash the application to your ESP32 module.
 
 ## Dependencies
 
-To allow your application to communicate with Kuzzle Backend, you will need 2 components:
+To allow your application to communicate with Kuzzle Backend, you will need 2 components.
 
-**espmqtt**: <https://github.com/etrousset/espmqtt> forked from <https://github.com/etrousset/espmqtt> (fixed a bug with receiving longish MQTT messages).
+**esp-mqtt**: MQTT communication layer library for ESP32: <https://github.com/espressif/esp-mqtt>
 
-**kuzzle-esp32**: [](./src/components/kuzzle-esp32).
-Components must be located in the components subfolder of your project, you can clone them using the following commands in you my-connected-rgb-light subfolder:
+**kuzzle-esp32**: A convinent component that takes care of communication with Kuzzle over MQTT. <https://github.com/kuzzleio/kuzzle-esp32>.
+
+Components must be located in the `components` subfolder of your project as explained in [Espressif build system](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html) documentation.
+
+To add the **esp-mqtt** and **kuzzle-esp32** components, you can clone them using the following commands in you project folder:
 
 ``` console
-$ git submodule add https://github.com/etrousset/espmqtt components/espmqtt
+$ git submodule add https://github.com/espressif/esp-mqtt components/esp-mqtt
+$ git submodule add https://github.com/kuzzleio/kuzzle-esp32 components/kuzzle-esp32
 ```
 
-In this tutorial, for the sake of simplicity, there is no security layer to Kuzzle's MQTT protocol. So we need to disable security from the espmqtt component. In 'components/espmqtt/include/mqtt_config.h', change the line
+Your project folder structure should look like this:
+``` console
+$ tree -d -L 2
+.
+├── components
+│   ├── esp-mqtt
+│   └── kuzzle-esp32
+└── main
+```
 
-``` c
+<!-- In this tutorial, for the sake of simplicity, there is no security layer to Kuzzle's MQTT protocol. So we need to disable security from the `esp-mqtt` component. In `components/espmqtt/include/mqtt_config.h`, change the line -->
+
+<!-- ``` c
 #define CONFIG_MQTT_SECURITY_ON 1
 ```
 
@@ -102,7 +116,7 @@ to
 
  ``` c
  #define CONFIG_MQTT_SECURITY_ON 0
-```
+``` -->
 
 ## Wiring the RGB LED to ESP32 DevKit C
 
@@ -113,7 +127,8 @@ The RGB LED will be driven by GPIO 25, 26 and 27.
 
 ### Setup WIFI
 
-The first step is to provide the Wifi credentials so that the device is able to connect to your local network. In app_main() update the following code with the credentials for your WIFI access point:
+The first step is to provide the Wifi credentials so that the device is able to connect to your local network. In `app_main()` update the following code with the credentials for your WIFI access point:
+
 ``` c
  wifi_config_t sta_config = {
    .sta = {
@@ -271,7 +286,7 @@ void on_light_state_update(cJSON* jresponse)
                  _light_state.b,
                  _light_state.on ? "true" : "false");
         _update_light();
-    } 
+    }
 }
 
 static void _update_light()
@@ -294,11 +309,7 @@ static void _update_light()
 
 ## Get the Code
 
-You can get the whole source code for the rgb light from my github repository: <https://github.com/etrousset/instructable.git>. It's located on the 'rbg-light' branch. You can get it using the following git command:
-
-``` console
-$ git clone -b rgb-light https://github.com/etrousset/instructable.git
-```
+The whole source code for the rgb light is availlable in the `src` folder.
 
 ## Visualize Device State
 
