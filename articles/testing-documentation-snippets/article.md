@@ -157,7 +157,7 @@ The last step and not the least was to put all of this process in a CI/CD workfl
 
 ![reports](./images/reports.png)
 
-Additionally, Alex our team's devOps guy(aka "AWS lambda gardener") developed a tool in Go to automatically add a comment to github in each pull-request to add a summary of the tests reports, which makes it even easier to detect a problem in our documentation before send it to production
+Additionally, Alex our team's devOps guy (aka "AWS lambda gardener") developed a tool in Go to automatically add a comment to github in each pull-request to add a summary of the tests reports, which makes it even easier to detect a problem in our documentation before send it to production
 
 ![kuttlefish](./images/kuttlefish.png)
 
