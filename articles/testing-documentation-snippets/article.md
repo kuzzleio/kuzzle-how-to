@@ -73,7 +73,7 @@ At this point, we have many source files, in many languages. The first version o
 
 ![use docker](./images/use-docker.jpg)
 
-The first thing I did was creating a Dockerfile for each supported language containing the whole toolchain to compile/interpret the generated file.We also decided to add a linter in each container to unify the coding style and minimize errors (you can see an exemple of a dockerfile [here](https://hub.docker.com/r/kuzzleio/documentation-v2/~/dockerfile/)).
+The first thing I did was creating a Dockerfile for each supported language containing the whole toolchain to compile/interpret the generated file.We also decided to add a linter in each container to unify the coding style and minimize errors (you can see an exemple of a dockerfile [here](https://github.com/kuzzleio/documentation-V2/blob/master/docker/java)).
 
 At this point, we could run each snippet in its dedicated container and things seem to work perfectly!!
 
