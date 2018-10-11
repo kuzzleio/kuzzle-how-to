@@ -1,30 +1,29 @@
 # USE KUZZLE AS AN IOT BACKEND WITH ESP32 MCU
 
-![kuzzle](img/lanceur-backend-1900.jpg)
+![kuzzle](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
 
 ## Intro: Use Kuzzle as an IoT backend With ESP32
 
 Kuzzle is an open-source backend suite that can be installed on-premises and includes a multi-protocol API that can be used to integrate IoT devices.
 
-In this article we will show you how to develop an IoT application using an ESP32 module and Kuzzle Backend, communicating using MQTT.
+In this article we will show you how to develop an IoT application using an ESP32 module and *Kuzzle Backend*, communicating using MQTT.
 
-Specifically, we will build a basic IoT device featuring a RGB LED, and change its colors using Kuzzle Admin Console.
+Specifically, we will build a basic IoT device featuring a RGB LED, and change its colors using *Kuzzle Admin Console*.
 
 ## Installing Kuzzle Backend and Kuzzle Admin Console
 
-First you will need to install Kuzzle Backend, an open source IoT backend solution, on your favorite Linux distribution.
+First you will need to install *Kuzzle Backend*, an open source IoT backend solution, on your favorite Linux distribution.
 
-The following guide will allow you to quickly run a Kuzzle Backend instance: [Getting Started](http://docs.kuzzle.io/guide/getting-started).
+The following guide will allow you to quickly run a *Kuzzle Backend* instance: [Getting Started](http://docs.kuzzle.io/guide/getting-started).
 
 By default, Kuzzle does not support MQTT communication.  
 Fortunately, Kuzzle features an extendable protocol architecture: all you need is to install our official [MQTT Protocol](https://github.com/kuzzleio/protocol-mqtt) to add MQTT capabilities to Kuzzle.  
 
 Our documentation contains the necessary instructions to add a new network protocol to Kuzzle: [Install a Protocol](https://docs.kuzzle.io/plugins-reference/protocols#installing-a-protocol)
 
+Then you can install *Kuzzle Admin Console* or use the online version [here](http://console.kuzzle.io). This is the administration tool that allows you to manage and browse your data. The online version of *Kuzzle Admin Console* can be configured to connect to your local *Kuzzle Backend* (although it is hosted online, all the code to access your *Kuzzle Backend* instance will run locally in your browser, thus there is no need for NAT).
 
-Then you can install Kuzzle Admin Console or use the online version. This is the administration tool that allows you to manage and browse your data. The online version of Kuzzle Admin Console can be configured to connect to your local Kuzzle Backend (although it is hosted online, all the code to access your Kuzzle Backend instance will run locally in your browser, thus there is no need for NAT).
-
-If you want to install a local Kuzzle Admin Console instance on your machine, the instructions can be found on github: <https://github.com/kuzzleio/kuzzle-admin-console>.
+If you want to install a local *Kuzzle Admin Console* instance on your machine, the instructions can be found on github: <https://github.com/kuzzleio/kuzzle-admin-console>.
 
 ![esp32 picture](img/esp32-rgb-led-1.jpg)
 
@@ -48,11 +47,11 @@ Our IoT application will require a simple setup:
 
 ![kuzzle admin console](img/kuzzle-iot-backoffice.png)
 
-To deploy this basic setup to your Kuzzle Backend I have prepared a script available here: [iot-deploy](./iot-deploy)
+To deploy this basic setup to your *Kuzzle Backend* I have prepared a script available here: [iot-deploy](./iot-deploy)
 
 Follow the instructions in the README file to deploy your IoT environment.
 
-Once you have run the script, open Kuzzle Admin Console, and you should see an **iot** index that contains these 3 collections:
+Once you have run the script, open *Kuzzle Admin Console*, and you should see an **iot** index that contains these 3 collections:
 
 **device-info**: can contain static information about a device like the user it belongs to, its friendly name, and so on.
 
@@ -81,7 +80,7 @@ Make sure you are able to build and flash the application to your ESP32 module.
 
 ## Dependencies
 
-To allow your application to communicate with Kuzzle Backend, you will need 2 components.
+To allow your application to communicate with *Kuzzle Backend*, you will need 2 components.
 
 **esp-mqtt**: MQTT communication layer library for ESP32: <https://github.com/espressif/esp-mqtt>
 
@@ -125,6 +124,8 @@ The RGB LED will be driven by GPIO 25, 26 and 27.
 
 ## Application Code
 
+The following code snippets are excerpts. The whole source code is availlable [here](./src).
+ 
 ### Setup WIFI
 
 The first step is to provide the Wifi credentials so that the device is able to connect to your local network. In `app_main()` update the following code with the credentials for your WIFI access point:
@@ -141,12 +142,12 @@ The first step is to provide the Wifi credentials so that the device is able to 
 
 ### Initialize Kuzzle
 
-Once connected to the WIFI, we can initialize the Kuzzle Backend library:
+Once connected to the WIFI, we can initialize the *Kuzzle Backend* library:
 
 ``` c
 void on_light_state_update(cJSON* state); // State change from Kuzzle callback
 static kuzzle_settings_t _k_settings = {
-                    .host  = "this_ip_addr_hosting_kuzzle",
+                    .host  = "kuzzle_host_ip_or_addr",
                     .port  = 1883,
                     .device_type  = "my-rgb-light",  // Any string that identifies you device type
                     .username = KUZZLE_IOT_DEVICE_USERNAME,
@@ -248,7 +249,7 @@ static light_state_t _light_state = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .on = true
 
 ### Applying new state from Kuzzle to hardware
 
-When the state of the RGB light is changed from Kuzzle Backend, we will receive a callback and need to update the LED driver accordingly:
+When the state of the RGB light is changed from *Kuzzle Backend*, we will receive a callback and need to update the LED driver accordingly:
 
 ```C
 void on_light_state_update(cJSON* jresponse)
@@ -315,13 +316,13 @@ The whole source code for the rgb light is availlable in the `src` folder.
 
 ![visualise device state](img/admin-console-device-state.png)
 
-For this last step we will use Kuzzle Admin Console to visualize and change the state of the RGB light.
+For this last step we will use *Kuzzle Admin Console* to visualize and change the state of the RGB light.
 
-When booting, the device will publish its current state. You should be able to visualize it in Kuzzle Admin Console as shown in the picture.
+When booting, the device will publish its current state. You should be able to visualize it in *Kuzzle Admin Console* as shown in the picture.
 
-To do so, open Kuzzle Admin Console and connect it to your Kuzzle Backend instance. Then open the **iot** index, and then the **device-state** collection.
+To do so, open *Kuzzle Admin Console* and connect it to your *Kuzzle Backend* instance. Then open the **iot** index, and then the **device-state** collection.
 
-If your device booted up, you should see a document representing the state of your RBG light. The last step is to control the RBG light through Kuzzle Backend. The easiest way to do this for now is using Kuzzle Admin Console.
+If your device booted up, you should see a document representing the state of your RBG light. The last step is to control the RBG light through *Kuzzle Backend*. The easiest way to do this for now is using *Kuzzle Admin Console*.
 
 ## Get in Control...
 
