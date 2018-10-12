@@ -1,6 +1,6 @@
 # iot-deploy
 
-Tools to deploy a simple IoT environment to your Kuzzle.
+A tool creating the data structures necessary to this how-to in a Kuzzle instance.
 
 ## Configuration
 
@@ -22,9 +22,9 @@ This work is an early stage WIP
 
 ```javascript
 {
-  "device_id" : "string_uid",          // an UID that identify the device the state represents
+  "device_id" : "string_uid",          // Device unique identifier
   "device_type": "string_dev_type_id", // An ID that identity the kind of device at hardware level
-  "state" : {                          // Set of properties that represents the current state of the device.
+  "state" : {                          // The device's current state
     "prop_1" : value1,
     "prop_2" : value2,
     .
