@@ -65,43 +65,42 @@ async function choose_config () {
 }
 
 async function run () {
-  choose_config()
-    .then((kuzzle_cfg) => {
-      kuzzle = new Kuzzle('websocket', { host: kuzzle_cfg.host, port: kuzzle_cfg.port})
-      return kuzzle.connect()
-        .then(()=> {
-          if (kuzzle.user && kuzzle.username) {
-            return kuzzle.auth.login('local', kuzzle_cfg.user, '1d')
-              .catch((e) => {
-                console.log('Login with config password error: ', e.message)
-                const config_question = [{
-                  name: 'password',
-                  message: 'Admin password: ',
-                  type: 'password',
-                }]
+  const kuzzle_cfg = await choose_config()
+  kuzzle = new Kuzzle('websocket', { host: kuzzle_cfg.host, port: kuzzle_cfg.port})
+  await kuzzle.connect()
+    .catch(e => {
+      console.log('Connection error: ', e.message)
+      process.exit(-1)
+    })
 
-                return enquirer.ask(config_question)
-                  .then(r => {
-                    return kuzzle.auth.login('local', {
-                      username: kuzzle_cfg.user.username,
-                      password: r.password
-                    },
-                    '1d')
-                  })
-              })
-              .catch((e) => {
-                console.log('Login error: ', e.message)
-                process.exit(-1)
-              })
-          }
-        })
-        .then(() => create_index(kuzzle_cfg.index))
-        .then(() => create_collections(kuzzle_cfg.index))
-    })
-    .then(() => {
-      kuzzle.disconnect()
-      console.log('[DONE] Your IoT environement is ready to use...')
-    })
+  if (kuzzle.user && kuzzle.username) {
+    await kuzzle.auth.login('local', kuzzle_cfg.user, '1d')
+      .catch((e) => {
+        console.log('Login with config password error: ', e.message)
+        const config_question = [{
+          name: 'password',
+          message: 'Admin password: ',
+          type: 'password',
+        }]
+
+        return enquirer.ask(config_question)
+          .then(r => {
+            return kuzzle.auth.login('local', {
+              username: kuzzle_cfg.user.username,
+              password: r.password
+            },
+            '1d')
+          })
+      })
+      .catch((e) => {
+        console.log('Login error: ', e.message)
+        process.exit(-1)
+      })
+  }
+  await create_index(kuzzle_cfg.index)
+  await create_collections(kuzzle_cfg.index)
+  kuzzle.disconnect()
+  console.log('[DONE] Your IoT environement is ready to use...')
 }
 
 run()
