@@ -47,7 +47,7 @@ Our IoT application will require a simple setup:
 
 ![kuzzle admin console](img/kuzzle-iot-backoffice.png)
 
-To deploy this basic setup to your *Kuzzle Backend* I have prepared a script available here: [iot-deploy](./iot-deploy)
+To deploy this basic setup to your *Kuzzle Backend* we have prepared a script available here: [iot-deploy](./iot-deploy)
 
 Follow the instructions in the README file to deploy your IoT environment.
 
@@ -58,7 +58,8 @@ Once you have run the script, open *Kuzzle Admin Console*, and you should see an
 **device-state**: keeps track of the device state history. Will also be used to subscribe to state changes.
 
 **fw-update**: this collection is used to keep track of available firmware updates.
-For this first tutorial, we will only use the ̀-state collection.
+
+For this first tutorial, we will only use the `device-state` collection.
 
 ## Preparing the ESP32 Development Environment
 
@@ -358,7 +359,7 @@ Once you click on the Create button to validate your document, the RGB light sho
 * The partial one you entered to turn r to 0
 * The new complete state published by the device with r set to 0 and g and b still set to 255
 
-![kuzzle](img/lanceur-backend-1900.jpg)
+![image](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
 
 ## Going Further
 
