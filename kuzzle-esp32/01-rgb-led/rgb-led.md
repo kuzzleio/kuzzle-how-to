@@ -4,32 +4,25 @@
 
 ## Intro: Use Kuzzle as an IoT backend With ESP32
 
-Kuzzle is an open-source backend suite that can be installed on-premises and includes a multi-protocol API that can be used to integrate IoT devices.
+Kuzzle is an open-source backend. It can be installed on-premises, and it features a multi-protocol API allowing to integrate IoT devices.
 
-In this article we will show you how to develop an IoT application using an ESP32 module and *Kuzzle Backend*, communicating using MQTT.
+This article explains how to develop an IoT application using an ESP32 module and Kuzzle, communicating using MQTT.
 
-Specifically, we will build a basic IoT device featuring a RGB LED, and change its colors using *Kuzzle Admin Console*.
+Specifically, we will build a basic IoT device featuring a RGB LED, and change its colors using Kuzzle's Admin Console.
 
-## Installing Kuzzle Backend and Kuzzle Admin Console
+## Install Kuzzle
 
-First you will need to install *Kuzzle Backend*, an open source IoT backend solution, on your favorite Linux distribution.
+The following guide allows you to quickly run a Kuzzle instance: [Getting Started](http://docs.kuzzle.io/guide/getting-started)
 
-The following guide will allow you to quickly run a *Kuzzle Backend* instance: [Getting Started](http://docs.kuzzle.io/guide/getting-started).
+By default, Kuzzle does not support MQTT communication, but it features an extensible protocol system: install our official [MQTT Protocol](https://github.com/kuzzleio/protocol-mqtt) to add MQTT capabilities.
 
-By default, Kuzzle does not support MQTT communication.  
-Fortunately, Kuzzle features an extendable protocol architecture: all you need is to install our official [MQTT Protocol](https://github.com/kuzzleio/protocol-mqtt) to add MQTT capabilities to Kuzzle.  
-
-Our documentation contains the necessary instructions to add a new network protocol to Kuzzle: [Install a Protocol](https://docs.kuzzle.io/plugins-reference/protocols#installing-a-protocol)
-
-Then you can install *Kuzzle Admin Console* or use the online version [here](http://console.kuzzle.io). This is the administration tool that allows you to manage and browse your data. The online version of *Kuzzle Admin Console* can be configured to connect to your local *Kuzzle Backend* (although it is hosted online, all the code to access your *Kuzzle Backend* instance will run locally in your browser, thus there is no need for NAT).
-
-If you want to install a local *Kuzzle Admin Console* instance on your machine, the instructions can be found on github: <https://github.com/kuzzleio/kuzzle-admin-console>.
+To browse and manage your data, either install Kuzzle's [administration console](https://github.com/kuzzleio/kuzzle-admin-console), or use the online version available [here](http://console.kuzzle.io) (although it is hosted online, no data will ever leave your network).
 
 ![esp32 picture](img/esp32-rgb-led-1.jpg)
 
-## What you need
+## Components prerequisites
 
-To follow this tutorial, you will need the following components:
+For this tutorial, you need the following components:
 
 * 1 × ESP32 DevKit C
 * 1 × USB A / micro USB B cable
@@ -39,39 +32,28 @@ To follow this tutorial, you will need the following components:
 
 ## Preparing the Kuzzle IoT Environment
 
-Our IoT application will require a simple setup:
-
-* an "iot" index (an index is where we will store collections of data).
-* a set of collections to store device data (device state and more...)
-* data mappings for each collection the define the data type for fields we store.
+Our IoT application requires a simple storage setup: a data index, data collections and their corresponding mappings.  
+Read our [persistence layer documentation](https://docs.kuzzle.io/guide/essentials/persisted/#working-with-persistent-data) for more information.
 
 ![kuzzle admin console](img/kuzzle-iot-backoffice.png)
 
-To deploy this basic setup to your *Kuzzle Backend* we have prepared a script available here: [iot-deploy](./iot-deploy)
+The script [iot-deploy](./iot-deploy/README.md) creates the necessary storage structures in a Kuzzle instance.
 
-Follow the instructions in the README file to deploy your IoT environment.
+Once you have run the script, open the administration console. There should now be an `iot` index containing these 3 collections:
 
-Once you have run the script, open *Kuzzle Admin Console*, and you should see an **iot** index that contains these 3 collections:
+* `device-info`: contains information about devices (proprietary, friendly name, ...)
+* `device-state`: keeps track of the device state history. Also used to subscribe to state changes
+* `fw-update`: keeps track of available firmware updates
 
-**device-info**: can contain static information about a device like the user it belongs to, its friendly name, and so on.
-
-**device-state**: keeps track of the device state history. Will also be used to subscribe to state changes.
-
-**fw-update**: this collection is used to keep track of available firmware updates.
-
-For this first tutorial, we will only use the `device-state` collection.
+This first tutorial only uses the `device-state` collection.
 
 ## Preparing the ESP32 Development Environment
 
-The first step is to install the ESP32 toolchain and SDK.
+First, install the ESP32 toolchain and SDK: <https://esp-idf.readthedocs.io/en/latest/get-started/index.html>
 
-You can follow these instructions to install the tools required to build and deploy firmware to your ESP32 module: <https://esp-idf.readthedocs.io/en/latest/get-started/index.html>
+Then, create your project by cloning Espressif's [application template](https://github.com/espressif/esp-idf-template): 
 
-Once the toolchain and the SDK are installed and ready to use, you can create your project.
-
-Espressif provides an application template you can clone from Github: <https://github.com/espressif/esp-idf-template>
-
-``` console
+```console
 $ git clone https://github.com/espressif/esp-idf-template my-connected-rgb-light
 ```
 
@@ -81,22 +63,22 @@ Make sure you are able to build and flash the application to your ESP32 module.
 
 ## Dependencies
 
-To allow your application to communicate with *Kuzzle Backend*, you will need 2 components.
+To allow your application to communicate with Kuzzle, you need 2 components:
 
-**esp-mqtt**: MQTT communication layer library for ESP32: <https://github.com/espressif/esp-mqtt>
+* `esp-mqtt`: MQTT communication layer library for ESP32
+* `kuzzle-esp32`: custom component, for communicating with Kuzzle over MQTT
 
-**kuzzle-esp32**: A convinent component that takes care of communication with Kuzzle over MQTT. <https://github.com/kuzzleio/kuzzle-esp32>.
-
-Components must be located in the `components` subfolder of your project as explained in [Espressif build system](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html) documentation.
-
-To add the **esp-mqtt** and **kuzzle-esp32** components, you can clone them using the following commands in you project folder:
+Clone the esp-mqtt and kuzzle-esp32 components in the `components` folder to add them to your project:
 
 ``` console
 $ git submodule add https://github.com/espressif/esp-mqtt components/esp-mqtt
 $ git submodule add https://github.com/kuzzleio/kuzzle-esp32 components/kuzzle-esp32
 ```
 
-Your project folder structure should look like this:
+(components must be located in the project's `components` subfolder, as explained in the [Espressif build system](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html) documentation)
+
+Your project folder structure should now look like this:
+
 ``` console
 $ tree -d -L 2
 .
@@ -106,30 +88,20 @@ $ tree -d -L 2
 └── main
 ```
 
-<!-- In this tutorial, for the sake of simplicity, there is no security layer to Kuzzle's MQTT protocol. So we need to disable security from the `esp-mqtt` component. In `components/espmqtt/include/mqtt_config.h`, change the line -->
-
-<!-- ``` c
-#define CONFIG_MQTT_SECURITY_ON 1
-```
-
-to
-
- ``` c
- #define CONFIG_MQTT_SECURITY_ON 0
-``` -->
-
 ## Wiring the RGB LED to ESP32 DevKit C
 
 ![wiring](img/esp32-rgb-led-sch.png)
+
 The RGB LED will be driven by GPIO 25, 26 and 27.
 
 ## Application Code
 
-The following code snippets are excerpts. The whole source code is available [here](./src).
+The following code snippets are excerpts. The whole source code is available in the `src` folder of this repository.
 
-### Setup WIFI
+### WIFI setup
 
-The first step is to provide the Wifi credentials so that the device is able to connect to your local network. In `app_main()` update the following code with the credentials for your WIFI access point:
+To connect the device to your local WIFI network, you need to configure its credentials information.  
+To do so, update the `app_main()` function, in the file `src/main/main.c`:
 
 ``` c
  wifi_config_t sta_config = {
@@ -143,14 +115,14 @@ The first step is to provide the Wifi credentials so that the device is able to 
 
 ### Initialize Kuzzle
 
-Once connected to the WIFI, we can initialize the *Kuzzle Backend* library:
+Once connected to the WIFI netwok, initialize the Kuzzle library:
 
 ``` c
 void on_light_state_update(cJSON* state); // State change from Kuzzle callback
 static kuzzle_settings_t _k_settings = {
                     .host  = "kuzzle_host_ip_or_addr",
                     .port  = 1883,
-                    .device_type  = "my-rgb-light",  // Any string that identifies you device type
+                    .device_type  = "my-rgb-light",  // device identifier
                     .username = KUZZLE_IOT_DEVICE_USERNAME,
                     .password = KUZZLE_IOT_DEVICE_PASSWORD,
                     .on_fw_update_notification = NULL,
@@ -176,9 +148,9 @@ esp_err_t event_handler(void* ctx, system_event_t* event)
 }
 ```
 
-### LED Driving Code
+### LED Driver Code
 
-First we need to initialise the LED driver
+Initialize the LED driver:
 
 ``` C
 // -- Hardware definition --
@@ -235,14 +207,14 @@ static void _setup_light()
 }
 ```
 
-The device will keep track of its current state (ON/OFF, RGB color...)
+The device keeps track of its current state (ON/OFF, RGB color...):
 
 ``` C
 typedef struct light_state {
     uint8_t r;
     uint8_t g;
     uint8_t b;
-    bool on; ///< true if light is on, false if off
+    bool on; /// true if light is on
 } light_state_t;
 
 static light_state_t _light_state = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .on = true};
@@ -250,7 +222,8 @@ static light_state_t _light_state = {.r = 0xFF, .g = 0xFF, .b = 0xFF, .on = true
 
 ### Applying new state from Kuzzle to hardware
 
-When the state of the RGB light is changed from *Kuzzle Backend*, we will receive a callback and need to update the LED driver accordingly:
+When the state of the RGB light is changed in Kuzzle, our state callback is called.  
+It then updates the LED driver accordingly:
 
 ```C
 void on_light_state_update(cJSON* jresponse)
@@ -311,37 +284,30 @@ static void _update_light()
 
 ## Get the Code
 
-The whole source code for the rgb light is availlable in the `src` folder.
+The whole source code for the rgb light is available in the `src` folder.
 
-## Visualize Device State
+## Visualize the device state
 
-![visualise device state](img/admin-console-device-state.png)
+![visualize device state](img/admin-console-device-state.png)
 
-For this last step we will use *Kuzzle Admin Console* to visualize and change the state of the RGB light.
+When booting, the device publishes its current state to Kuzzle. It can then be viewed in the administration console, as shown in the screenshot above:
 
-When booting, the device will publish its current state. You should be able to visualize it in *Kuzzle Admin Console* as shown in the picture.
+* Open Kuzzle's Admin Console and connect it to your Kuzzle instance
+* Open the `iot` index, and the `device-state` collection in it 
+* There should be a document representing the state of your RBG light
+* Note the `device_id` value down, as it will be used in the next step (it is built using the device MAC address)
 
-To do so, open *Kuzzle Admin Console* and connect it to your *Kuzzle Backend* instance. Then open the **iot** index, and then the **device-state** collection.
+## Control the device state
 
-If your device booted up, you should see a document representing the state of your RBG light. The last step is to control the RBG light through *Kuzzle Backend*. The easiest way to do this for now is using *Kuzzle Admin Console*.
+The device has subscribed to new documents written in the `device-state` collection: whenever a new document is created, Kuzzle notifies the device about it, in real-time.
 
-## Get in Control...
+We'll propose a partial state change to our device, to modify its color. The device then decides whether it accepts the new value, or not. If the change is accepted, the device sends its updated complete state to Kuzzle.
 
-In this last step, we'll change the color of the RGB light by creating a new document in `device-state` collection.
-
-Since our device has subscribed to changes in that collection, Kuzzle will automatically notify it about that new document, in real-time.
-
-We will send a partial state change to our device, which is responsible for accepting it, or not. If the state change is accepted, it'll be merged into the full state maintained by the device.
-
-To do so, we will create our new document with the new value for the state we want to change, and the `partial_state` property set to `true`.
-
-In return, the device will send to Kuzzle its complete state, updated, with the `partial_state` property set to `false`.
-
-Click on the **Create** button and enter the following Json:
+Click on the `Create` button and enter the following JSON:
 
 ``` JSON
 {
-  "device_id": "30AEA480838D",
+  "device_id": "<the device_id retrieved from the previous step>",
   "partial_state": true,
   "state": {
     "r": 0
@@ -349,14 +315,12 @@ Click on the **Create** button and enter the following Json:
 }
 ```
 
-The **device_id** field must be the same as the one from the document published in the previous step, it is built using the device MAC address.
-
 ![new state](img/admin-console-new-state.png)
 
 Once you click on the Create button to validate your document, the RGB light should turn to bright blue. When you refresh your browser, you should now have 3 documents:
 
 * The initial one with r,g and b all set to 255,
-* The partial one you entered to turn r to 0
+* The partial one you entered, turning r to 0
 * The new complete state published by the device with r set to 0 and g and b still set to 255
 
 ![image](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
