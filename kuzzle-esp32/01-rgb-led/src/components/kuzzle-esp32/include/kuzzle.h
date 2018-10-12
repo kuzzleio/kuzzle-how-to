@@ -1,4 +1,4 @@
-/*! \mainpage Kuzzle ESP32 User's Guide
+/*! \mainpage Kuzzle ESP32 User Guide
  *
  * \section intro_sec Introduction
  *
@@ -13,12 +13,12 @@
 
 /** \page receiving_partial_states Receiving state changes from Kuzzle
  * 
- * Once Kuzzle ESP32 component has been initialized, it will have subscribed et will receive
- * any request requiering the device to change his state. 
+ * Once the Kuzzle ESP32 component has been initialized, it subscribes to state changes,
+ * triggering the callback whenever a change is requested.
  * 
- * This is done by creating a document as follow in the collection `device-state`:
+ * State changes are submitted by creating new documents in the collection `device-state`:
  *
- * ``` JSON
+ * ```JSON
  * {
  *   "device_id": "my-device-id",
  *   "partial_state": true,
@@ -27,13 +27,15 @@
  *   }
  * }
  * ```
- * The `partial_state` property set to `true` indicates the document doesn't contain the 
- * whole state of the device, but rather represent a directive.
+ *
+ * If the `partial_state` property is set to `false`, then a full state replacement
+ * is requested.
  * 
- * The target device is reponsible for applying the requested change to its state, and shall
- * then publish a new full state.
+ * The device is responsible for accepting and applying the requested change to its state.
+ * If it is accepted, the device must then publish its full state.
  * 
- * Using previous exemple, an RGB light whose state would be
+ * For example, considering a RGB light with the following full state:
+ *
  * ``` JSON
  * {
  *   "device_id": "my-device-id",
@@ -48,7 +50,8 @@
  * }
  * ```
  * 
- * After applying the requested changes to its state, would publish a new full state as follow:
+ * After applying the requested partial change above, the device publishes the
+ * following full state:
  * 
  * ``` JSON
  * {
@@ -64,10 +67,11 @@
  * }
  * ```
  * 
- * In you application, when the device will receive a state change request, the provided \ref on_connected 
- * callback will be called with the partial state as parameter.
+ * In your application, whenever the device receives a state change request, 
+ * the provided \ref on_connected callback is called with the partial state 
+ * as parameters.
  * 
- * Here is an example of implementing such a function:
+ * Implementation example:
  * 
  * ``` C
  * void kuzzle_on_light_state_update(cJSON *jpartial_state)
@@ -139,11 +143,11 @@
  * @{
  */
 
-#define K_DOCUMENT_MAX_SIZE 512  /**< The maximum size a Kuzzle document can have*/
-#define K_REQUEST_MAX_SIZE 1024 /**< The maximum size a Kuzzle request can have*/
-#define K_DEVICE_ID_MAX_SIZE 32 /**< The maximum length if the device UID*/
+#define K_DOCUMENT_MAX_SIZE 512  /**< Maximum Kuzzle document size */
+#define K_REQUEST_MAX_SIZE 1024 /**< Maximum Kuzzle request size */
+#define K_DEVICE_ID_MAX_SIZE 32 /**< Maximum device unique ID length */
 
-#define K_STATUS_NO_ERROR 200  /**< Kuzzle no error status code*/
+#define K_STATUS_NO_ERROR 200  /**< Successful request status code */
 
 /**
  * @brief Kuzzle ESP32 error codes
@@ -151,7 +155,7 @@
 enum k_err {
     K_ERR_NONE = 0,        /**< No error */
     K_ERR_MQTT_ERROR,      /**< Failed to init MQTT */
-    K_ERR_ALREADY_INIT     /**< Kuzzle component has already been initilized*/
+    K_ERR_ALREADY_INIT     /**< Kuzzle component has already been initialized*/
 };
 
 typedef enum k_err k_err_t;
@@ -165,11 +169,11 @@ typedef char* k_device_type_t;
 /**
  * @brief Kuzzle settings
  * 
- * This structure is used to initialise Kuzzle ESP32 component via \ref kuzzle_init.
+ * This structure is used to initialize Kuzzle ESP32 component via \ref kuzzle_init.
  */
 typedef struct kuzzle_settings {
-    k_device_id_t   device_id;  ///< A string that uniquely identifies the device
-    k_device_type_t device_type; ///< A string that identifies the type of device
+    k_device_id_t   device_id;  ///< device unique ID
+    k_device_type_t device_type; ///< device type
 
     char*    host;  ///< Kuzzle hostname
     uint32_t port;  ///< Kuzzle MQTT port (MQTT protocol needs to be installed: <https://github.com/kuzzleio/protocol-mqtt>)
@@ -187,22 +191,22 @@ typedef struct kuzzle_settings {
 #define K_DEVICE_ID_ARGS(device_id) (device_id)
 
 /**
- * @brief Initialise Kuzzle ESP32 component.
+ * @brief Initializes the Kuzzle ESP32 component.
  * 
  * **Usage**:
  * ~~~~~~~~~~~~~~~{.c}
  *  static kuzzle_settings_t _k_settings = {
- *    .host = "the ip or hostname of kuzzle",
+ *    .host = "Kuzzle ip address or hostname",
  *    .port = 1883,
  *    .device_type = "DEVICE_TYPE",
- *    .device_id = "my-device-id", // This has to be unique for each device
+ *    .device_id = "my-device-id", // device unique ID
  *    .on_fw_update_notification = NULL,
  *    .on_device_state_changed_notification = kuzzle_on_light_state_update,
  *    .on_connected = on_kuzzle_connected
  *  };
  * 
  *  if(kuzzle_init(&_k_settings) != K_ERR_NONE) {
- *    ESP_LOGE(TAG, "Failed to initialise Kuzzle ESP32 module");
+ *    ESP_LOGE(TAG, "Failed to initialize Kuzzle ESP32 module");
  *  }
  * ~~~~~~~~~~~~~~~
  * 
@@ -213,16 +217,17 @@ typedef struct kuzzle_settings {
 k_err_t kuzzle_init(kuzzle_settings_t* settings);
 
 /**
- * @brief Store the device state in Kuzzle.
+ * @brief Stores the device state in Kuzzle.
  * 
  * @param device_state: the state of the device as a JSON object string (e.g. "{ "myprop1": "value", "myprop2": false ...}")
  * 
- * Publish the complete state of the device on Kuzzle.
+ * Publishes the complete state of the device on Kuzzle.
  * 
- * Typicaly, when the state of your device has changed, you need to publish/store it in Kuzzle so that any application
+ * Typically, when the state of your device has changed, you need to publish/store it to Kuzzle so that any application
  * wanting to do something with it is aware of the new state of the device.
  * 
- * Here is an exemple on how you would do it for a RGB light:
+ * Here is an example on how you would do it for a RGB light:
+ *
  * ~~~~~~~~~~~~~~~{.c}
  * 
  * // This is the definition of how the device keeps track of its state internally
