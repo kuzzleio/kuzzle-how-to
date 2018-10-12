@@ -3,7 +3,8 @@
 
 At Kuzzle we love testing everything: our code as well as our UI, both with unit and end-to-end tests. And of course, everything must be automated. The only thing that remained untested was our code snippets in our documentation!
 
-I've spent the last month developing a new test framework and I really want to share my experience with the community. In fact, I decided to write this article because when I searched the web for information about how to test code snippets... I found nothing!  
+I've spent the last month developing a new test framework and I really want to share my experience with the community. In fact, I decided to write this article because when I searched the web for information about how to test code snippets... I found nothing!
+
 
 
 ## How it all started ?
@@ -14,16 +15,16 @@ With the team we do meetings and workshops to prioritize points in our roadmap. 
 
 ![great](./images/great.jpeg)
 
-All the team agreed on one point.We needed to rewrite our documentation! We also decided to perform integration tests on our snippets to make our documentation more reliable. And also preventing breaking changes with the releases of the next versions of our SDKs.
+All the team agreed on one point. We needed to rewrite our documentation! We also decided to perform integration tests on our snippets to make our documentation more reliable. And also preventing breaking changes with the releases of the next versions of our SDKs.
 
-This task seemed to be my job. Because all eyes turned to me when the decision was taken. And above all I'm in charge to maintain and improve the documentation. At this point I had no idea of how I could make this miracle happen. My first reflex was to search on the web: nothing. I finally found one article speaking about testing documentation, but very briefly and it concludes that is a very good idea but also a very complicate one.
+This task seemed to be my job. Because all eyes turned to me when the decision was taken. And above all I'm in charge of maintaining and improving the documentation. At this point I had no idea of how I could make this miracle happen. My first reflex was to search on the web: nothing. I finally found one article speaking about testing documentation, but very briefly and it concludes that is a very good idea but also a very complicated one.
 
 So here I am, I have to develop an end to end testing framework plugged on our documentation. It has to be easy for copywriters to write snippets and also easy to tests them in each language our SDKs was released. With the help of our favorite scrum master (special thanks to Eric), we sliced this labor in atomic tasks: things are about to get real!
 
 
 ## Writting documentation and snippets has to be easy
 
-My first task was to create a system that made snippet writing easy. We use Metalsmith to generate our documentation website. It's a great tool and it uses Markdown to generate static HTML pages. Our current documentation use snippets written directly in Markdown. The First step was to take out the snippets and put them in a separate file with the corresponding extension for each language (mySnippet.js, mySnippet.go …). And after that, I just had to develop a tiny Metalsmith plugin to insert the code snippet in markdown. The plugin seeks the `[snippet=feature_name]` tag within the markdown files and replaces it with the snippets it finds in the `snippet` folder.
+My first task was to create a system that made snippet writing easy. We use Metalsmith to generate our documentation website. It's a great tool and it uses Markdown to generate static HTML pages. Our current documentation use snippets written directly in Markdown. The First step was to take out the snippets and put them in a separate file with the corresponding extension for each language (mySnippet.js, mySnippet.go …). And after that, I just had to develop a tiny Metalsmith plugin to insert the code snippet in markdown. The plugin seeks the [snippet=feature_name] tag within the markdown files and replaces it with the snippets it finds in the snippet folder.
 
 We are now able to generate a static HTML website from a markdown templating system using real source code files as example snippets.
 
@@ -64,7 +65,7 @@ const kuzzle = new Kuzzle('websocket', {
 
 ```
 
-The tag `[snippet-code]` in the template will be replaced by the snippet and will form a fully executable source code file.
+The tag [snippet-code] in the template will be replaced by the snippet and will form a fully executable source code file.
 
 ![schema2](./images/schema2.png)
 
@@ -82,7 +83,7 @@ At this point, we could run each snippet in its dedicated container and things s
 
 ## Implementing test system
 
-![doge](./images/doge.png)
+![doge](./images/doge.jpg)
 
 Next task was to implement the test system properly speaking. How to test all of these languages with one test definition? Finally that's simple: all languages can write in the standard output. Javascript has `console.log`, C++ `std::cout`, Go `fmt.Println` etc, etc ... With the help of my teammates we decided to use **Expect** to check if the tests are passed or not.
 
@@ -94,6 +95,7 @@ Running tests is simple, tell Expect the command to execute and our assertions o
 
 
 For writing these tests, we opted for a YAML file in front of the snippets files. It simple to write, simple to read and simple to parse. They have to describe the test, give an expected string and the template we want to use. We also imagined a system of hooks (before and after) like in every test framework to execute some script for cleaning or other operations.
+
 
 ```yaml
 name: kuzzle-connect
@@ -153,7 +155,7 @@ And finally the last schema with the full process
 
 ## Continuous integration and validation
 
-The last step and not the least was to put all of this process in a CI/CD workflow. At Kuzzle we use a Git-flow process. Each change in our documentation leads to a pull-request. And for each pull-request, we run all the tests for each language in Travis CI. I also added a report system to easily see which test was failed.
+The last but not least step was to put all of this process in a CI/CD workflow. At Kuzzle we use a Git-flow process. Each change in our documentation leads to a pull-request. And for each pull-request, we run all the tests for each language in Travis CI. I also added a report system to easily see which test was failed.
 
 ![reports](./images/reports.png)
 
@@ -166,8 +168,9 @@ Additionally, Alex our team's devOps guy (aka "AWS lambda gardener") developed a
 
 ## Conclusion
 
-In conclusion, it was a great experience! And of course, not only mine. All the Kuzzle team got involved in the development of our new documentation system. We made a lot of meetings to decide what was the beat way to implement all of this process.
+In conclusion, it was a great experience! And of course, not only mine. All the Kuzzle team got involved in the development of our new documentation system. We had a lot of meetings to decide what was the best way to implement all of this process.
 
-At first it was just a P.O.C and, as we worked more and more on it, the system became more and more reliable! At the point that we are planning to support more languages. We are currently dealing with problems in the workflow, like how to take into account different versions of the SDKs. We were forced to change things along the way to answer as well as possible to our needs. On top of that, we try to reduce the difficulty of writing the documentation. For example, Adrien developed an awesome scaffolding tools that greatly improves drafting.
+At first it was just a P.O.C and, as we worked more and more on it, the system became more and more reliable! To the point that we are planning to support more languages. We are currently dealing with problems in the workflow, like how to take into account the different versions of the SDKs. We were forced to change a lot of points throughout the development to best meet our needs. On top of that, we try to reduce the difficulty of writing the documentation. For example, Adrien developed an awesome scaffolding tools that greatly improves drafting.
+
 
 Now, our new documentation is under progress! And you can see the results [here](docs-v2.kuzzle.io)
