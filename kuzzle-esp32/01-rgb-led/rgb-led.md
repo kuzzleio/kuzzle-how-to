@@ -124,8 +124,8 @@ The RGB LED will be driven by GPIO 25, 26 and 27.
 
 ## Application Code
 
-The following code snippets are excerpts. The whole source code is availlable [here](./src).
- 
+The following code snippets are excerpts. The whole source code is available [here](./src).
+
 ### Setup WIFI
 
 The first step is to provide the Wifi credentials so that the device is able to connect to your local network. In `app_main()` update the following code with the credentials for your WIFI access point:
