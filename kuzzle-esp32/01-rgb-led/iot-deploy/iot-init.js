@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 
-const
-  { Kuzzle } = require('kuzzle-sdk'),
-  Promise = require('bluebird'),
-  fs = Promise.promisifyAll(require('fs')),
-  Enquirer = require('enquirer');
+const 
+  Kuzzle = require('kuzzle-sdk').Kuzzle,
+  Bluebird = require('bluebird'),
+  fs = Bluebird.promisifyAll(require('fs')),
+  Enquirer = require('enquirer'),
+  enquirer = new Enquirer();
 
-var enquirer = new Enquirer();
 enquirer.register('list', require('prompt-list'));
 enquirer.register('password', require('prompt-password'));
 
@@ -15,12 +15,18 @@ const IOT_COLLECTIONS = ['fw-updates', 'device-state', 'device-info'];
 let kuzzle;
 
 async function get_configs() {
-  return fs.readdirAsync('config');
+  return fs.readdirAsync('config')
+    .then(r => {
+      if (!r.lenght) {
+        throw new Error('You first need to create a configuration in ./config. See config.default.json for config example');
+      }
+      return r;
+    });
 }
 
-async function create_collections (index) {
+async function create_collections(index) {
   const promises = [];
-  let res = await kuzzle.collection.list(index);
+  const res = await kuzzle.collection.list(index);
 
   IOT_COLLECTIONS.forEach(col_name => {
     if (!res.collections.find(elem => elem.name === col_name)) {
@@ -29,9 +35,10 @@ async function create_collections (index) {
         kuzzle.collection.create(index, col_name, mapping)
           .then(() => {
             console.log(`[${col_name}] Collection created`);
-          })    
+          })
           .catch((err) => {
             console.log('Failed to create collection: \n', err);
+            throw (err);
           })
       );
     } else {
@@ -44,13 +51,13 @@ async function create_collections (index) {
 async function create_index(index) {
   return kuzzle.index.create(index)
     .then(() => console.log(`Index '${index}' created...`))
-    .catch(() => console.log(`Index '${index}' already exists`));
+    .catch(() => console.log(`Index '${index}' already exists`)); // Not rethrowing on purpose as we want to continue if the index already exists
 }
 
-async function choose_config () {
+async function choose_config() {
   return get_configs()
-    .then((configs) => {
-      var config_question = [{
+    .then(configs => {
+      const config_question = [{
         name: 'config',
         message: 'Which configuration: ',
         type: 'list',
@@ -58,35 +65,38 @@ async function choose_config () {
       }];
       return enquirer.ask(config_question);
     })
-    .then((resp) => {
-      var config = require('./config/' + resp.config);
+    .then(resp => {
+      const config = require('./config/' + resp.config);
       return config.kuzzle;
     });
 }
 
-async function run () {
+async function run() {
   const kuzzle_cfg = await choose_config();
-  kuzzle = new Kuzzle('websocket', { host: kuzzle_cfg.host, port: kuzzle_cfg.port});
+  kuzzle = new Kuzzle('websocket', {
+    host: kuzzle_cfg.host,
+    port: kuzzle_cfg.port
+  });
   await kuzzle.connect()
     .catch(e => {
       console.log('Connection error: ', e.message);
       process.exit(-1);
     });
 
-  if (kuzzle.user && kuzzle.username) {
+  if (kuzzle.user) {
     await kuzzle.auth.login('local', kuzzle_cfg.user, '1d')
-      .catch((e) => {
+      .catch(e => {
         console.log('Login with config password error: ', e.message);
         const config_question = [{
           name: 'password',
-          message: 'Admin password: ',
+          message: 'Password: ',
           type: 'password',
         }];
 
         return enquirer.ask(config_question)
           .then(r => {
             return kuzzle.auth.login('local', {
-              username: kuzzle_cfg.user.username,
+              username: kuzzle_cfg.user,
               password: r.password
             },
             '1d');

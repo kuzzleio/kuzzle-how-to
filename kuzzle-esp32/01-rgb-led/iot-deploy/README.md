@@ -4,11 +4,28 @@ A tool creating the data structures necessary to this how-to in a Kuzzle instanc
 
 ## Configuration
 
-Edit info in `config/default.json` to specify where to find your Kuzzle. You can create several configuration file and the script will ask for the configuration to use. This can be handy if you have several environments.
+Copy `config.default.json` to folder `config`, and edit to configure connection to your Kuzzle Backend instance.
+
+``` bash
+$ cp config.default.json config/my-local-instance.json
+```
+
+Edit info in the newly created configuration file to specify where to find your Kuzzle. You can create several configuration file and the script will ask for the configuration to use. This can be handy if you have several environments.
+
+Configuration file:
+
+``` JSON
+{
+  "kuzzle" : {
+    "host" : "localhost", // Hostname or ip addr of your Kuzzle instance
+    "port": "7512", // Port of your Kuzzle isntance
+    "index": "iot", // The index to use for your iot index
+    "user": ""      // a user name if anonymous has been disabled
+  }
+}
+```
 
 Launch `node iot-init.js` to create an **iot** index with base collections to handle your devices.
-
-This work is an early stage WIP
 
 ## Collections
 
