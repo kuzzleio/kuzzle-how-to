@@ -7,9 +7,7 @@ const
   Enquirer = require('enquirer');
 
 var enquirer = new Enquirer();
-enquirer.register('radio', require('prompt-radio'));
 enquirer.register('list', require('prompt-list'));
-enquirer.register('confirm', require('prompt-confirm'));
 enquirer.register('password', require('prompt-password'));
 
 const IOT_COLLECTIONS = ['fw-updates', 'device-state', 'device-info'];
