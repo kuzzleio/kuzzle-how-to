@@ -6,7 +6,6 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "enquirer": "^1.0.3",
-    "eslint": "^4.7.2",
     "kuzzle-sdk": "git@github.com:kuzzleio/sdk-javascript#6.0.0-beta-2",
     "prompt-confirm": "^1.2.0",
     "prompt-list": "^2.2.0",
@@ -14,14 +13,17 @@
     "prompt-radio": "^1.2.1",
     "readline": "^1.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.7.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run --silent lint ",
+    "lint": "eslint --max-warnings=0 ."
   },
   "keywords": [
     "Kuzzle",
     "IoT"
   ],
   "author": "Eric Trousset",
-  "license": "ISC"
+  "license": "Apache 2"
 }
