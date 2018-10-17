@@ -1,0 +1,26 @@
+{
+  "name": "iot_demo",
+  "version": "1.0.0",
+  "description": "Deploy an IoT env to a Kuzzle",
+  "main": "k_iot_init.js",
+  "dependencies": {
+    "bluebird": "^3.5.2",
+    "enquirer": "^1.0.3",
+    "kuzzle-sdk": "git@github.com:kuzzleio/sdk-javascript#6.0.0-beta-2",
+    "prompt-list": "^2.2.0",
+    "prompt-password": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.7.2"
+  },
+  "scripts": {
+    "test": "npm run --silent lint ",
+    "lint": "eslint --max-warnings=0 ."
+  },
+  "keywords": [
+    "Kuzzle",
+    "IoT"
+  ],
+  "author": "Eric Trousset",
+  "license": "Apache 2"
+}

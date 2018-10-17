@@ -1,0 +1,32 @@
+{
+  "dl": {
+    "properties": {
+
+      "ip": {
+        "type": "keyword"
+      },
+      "path": {
+        "type": "keyword"
+      },
+      "port": {
+        "type": "keyword"
+      }
+    }
+  },
+  "target": {
+    "type": "keyword"
+  },
+  "version": {
+    "properties": {
+      "major": {
+        "type": "long"
+      },
+      "minor": {
+        "type": "long"
+      },
+      "patch": {
+        "type": "long"
+      }
+    }
+  }
+}
