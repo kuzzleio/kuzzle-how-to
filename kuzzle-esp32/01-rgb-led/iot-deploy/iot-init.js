@@ -17,12 +17,12 @@ let kuzzle;
 async function get_configs() {
   return fs.readdirAsync('config')
     .then(r => {
-      if (!r.lenght) {
+      if (r.lenght === 0) {
         throw new Error('You first need to create a configuration in ./config. See config.default.json for config example');
       }
       return r;
     });
-}
+
 
 async function create_collections(index) {
   const promises = [];
