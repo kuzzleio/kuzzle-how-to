@@ -6,7 +6,7 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "enquirer": "^1.0.3",
-    "kuzzle-sdk": "git@github.com:kuzzleio/sdk-javascript#6.0.0-beta-2",
+    "kuzzle-sdk": "^6.0.0-beta-6",
     "prompt-list": "^2.2.0",
     "prompt-password": "^1.2.0"
   },
