@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 
-const 
-  Kuzzle = require('kuzzle-sdk').Kuzzle,
+const {
+    Kuzzle,
+    WebSocket
+  } = require('kuzzle-sdk'),
   Bluebird = require('bluebird'),
   fs = Bluebird.promisifyAll(require('fs')),
   Enquirer = require('enquirer'),
@@ -22,7 +24,7 @@ async function get_configs() {
       }
       return r;
     });
-
+}
 
 async function create_collections(index) {
   const promises = [];
@@ -73,10 +75,9 @@ async function choose_config() {
 
 async function run() {
   const kuzzle_cfg = await choose_config();
-  kuzzle = new Kuzzle('websocket', {
-    host: kuzzle_cfg.host,
+  kuzzle = new Kuzzle(new WebSocket(kuzzle_cfg.host, {
     port: kuzzle_cfg.port
-  });
+  }));
   await kuzzle.connect()
     .catch(e => {
       console.log('Connection error: ', e.message);
