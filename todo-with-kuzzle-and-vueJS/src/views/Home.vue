@@ -27,10 +27,10 @@
 </template>
 
 <script>
-import MenuCollection from '../components/menucollection.vue';
-import Add from '../components/add.vue';
-import kuzzle from '../../service/kuzzle';
-import Task from '../components/task';
+import MenuCollection from '../components/Menu';
+import Add from '../components/Add';
+import kuzzle from '../../service/Kuzzle';
+import Task from '../components/Task';
 export default {
   name: 'Home',
   components: {
