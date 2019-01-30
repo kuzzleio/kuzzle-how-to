@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "izitoast": "^1.4.0",
+    "kuzzle-sdk": "^6.0.0-beta-6",
     "vue": "^2.5.21",
     "vue-autofocus-directive": "0.0.5",
     "vue-izitoast": "^1.1.2",
