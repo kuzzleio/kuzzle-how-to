@@ -27,13 +27,12 @@
 </template>
 
 <script>
-/* eslint-disable */
-import MenuCollection from "../components/menucollection.vue";
-import Add from "../components/add.vue";
-import kuzzle from "../../service/kuzzle";
-import Task from "../components/task";
+import MenuCollection from '../components/menucollection.vue';
+import Add from '../components/add.vue';
+import kuzzle from '../../service/kuzzle';
+import Task from '../components/task';
 export default {
-  name: "Home",
+  name: 'Home',
   components: {
     Add,
     MenuCollection,
@@ -41,25 +40,15 @@ export default {
   },
   data() {
     return {
-      tasks: [{ message: "build", index: 0, complete: false }],
+      tasks: [{ message: 'build', index: 0, complete: false }],
       completedAll: false,
       seeActive: true,
       seeCompleted: true,
-      notificationSystem: {
-        options: {
-          show: {
-            theme: "dark",
-            icon: "icon-person",
-            position: "topCenter",
-            progressBarColor: "rgb(0, 255, 184)",
-          },
-          success: {
-            position: "bottomRight"
-          },
-          error: {
-            position: "topRight"
-          },
-        }
+      success: {
+        position: 'bottomRight'
+      },
+      error: {
+        position: 'topRight'
       }
     };
   },
@@ -70,15 +59,15 @@ export default {
       try {
         if (this.seeCompleted && this.seeActive) {
           results = await kuzzle.document.search(
-            "todo",
-            "tasks",
-            { sort: ["_kuzzle_info.createdAt"] },
+            'todo',
+            'tasks',
+            { sort: ['_kuzzle_info.createdAt'] },
             { size: 100 }
           );
         } else if (this.seeCompleted) {
           results = await kuzzle.document.search(
-            "todo",
-            "tasks",
+            'todo',
+            'tasks',
             {
               query: {
                 match: {
@@ -86,13 +75,13 @@ export default {
                 }
               }
             },
-            { sort: ["_kuzzle_info.createdAt"] },
+            { sort: ['_kuzzle_info.createdAt'] },
             { size: 100 }
           );
         } else if (this.seeActive) {
           results = await kuzzle.document.search(
-            "todo",
-            "tasks",
+            'todo',
+            'tasks',
             {
               query: {
                 match: {
@@ -100,7 +89,7 @@ export default {
                 }
               }
             },
-            { sort: ["_kuzzle_info.createdAt"] },
+            { sort: ['_kuzzle_info.createdAt'] },
             { size: 100 }
           );
         } else {
@@ -115,10 +104,10 @@ export default {
           };
         });
       } catch (error) {
-        this.$toast.error(`${error.message}`, "ERROR", this.notificationSystem.options.error);
-        console.error(error.message);
+        this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
       this.updateCompleteAll();
+      console.log('lol');
     },
 
     updateActive() {
@@ -133,44 +122,44 @@ export default {
 
     async addTask(message) {
       if (message === '') {
-        this.$toast.error('Cannot add empty todo!', "ERROR", this.notificationSystem.options.error);
+        this.$toast.error('Cannot add empty todo!', 'ERROR', this.error);
         return;
       }
       try {
-        const doc = await kuzzle.document.create("todo", "tasks", {
+        const doc = await kuzzle.document.create('todo', 'tasks', {
           task: message,
           complete: false
         });
         this.tasks.push({ message: message, index: doc._id, complete: false });
       } catch (error) {
-        this.$toast.error(`${error.message}`, "ERROR", this.notificationSystem.options.error);
+        this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
       this.updateCompleteAll();
-      this.$toast.success(`Task successfully created!`, "SUCCESS", this.notificationSystem.options.success);
+      this.$toast.success('Task successfully created!', 'SUCCESS', this.success);
     },
 
     async deleteTask(index) {
       try {
-        await kuzzle.document.delete("todo", "tasks", index);
+        await kuzzle.document.delete('todo', 'tasks', index);
         this.tasks = this.tasks.filter(task => {
           return task.index !== index;
         });
       } catch (error) {
-        this.$toast.error(`${error.message}`, "ERROR", this.notificationSystem.options.error);
+        this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
       this.updateCompleteAll();
-      this.$toast.success(`Task successfully deleted!`, "SUCCESS", this.notificationSystem.options.success);
+      this.$toast.success('Task successfully deleted!', 'SUCCESS', this.success);
     },
 
     async updateTask(index) {
       try {
         let complete = !this.tasks.find(task => task.index === index).complete;
-        await kuzzle.document.update("todo", "tasks", index, {
+        await kuzzle.document.update('todo', 'tasks', index, {
           complete: complete
         });
         this.tasks.find(task => task.index === index).complete = complete;
       } catch (error) {
-        this.$toast.error(`${error.message}`, "ERROR", this.notificationSystem.options.error);
+        this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
       this.updateCompleteAll();
     },
@@ -186,17 +175,17 @@ export default {
       });
 
       if (deleted === false) {
-        this.$toast.error(`No task completed!`, "ERROR", this.notificationSystem.options.error);
+        this.$toast.error('No task completed!', 'ERROR', this.error);
         return;
       }
-              this.$toast.success(`Tasks successfully cleared!`, "SUCCESS", this.notificationSystem.options.success);
+      this.$toast.success('Tasks successfully cleared!', 'SUCCESS', this.success);
       this.items = this.items.filter(item => item.complete === false);
       this.updateCompleteAll();
     },
 
     async updateSelected() {
       if (this.tasks.length === 0) {
-        this.$toast.error(`Nothing to complete`, "ERROR", this.notificationSystem.options.error);
+        this.$toast.error('Nothing to complete', 'ERROR', this.error);
         this.completedAll = false;
         return;
       }
