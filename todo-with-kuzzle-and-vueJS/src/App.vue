@@ -1,43 +1,35 @@
 <template>
   <div id="app">
-   <NavBar v-on:logout="logout" v-if="authenticated" :username="this.username"></NavBar>
-    <div id="nav">
+    <router-view v-if="this.isConnected === true"/>
+    <div v-else>
+
     </div>
-    <router-view @authenticated="setAuthenticated" @username="setUsername" />
   </div>
 </template>
 
 <script>
-  /* eslint-disable */
+import kuzzle from '../service/kuzzle';
 
-  import NavBar from "./components/navbar.vue"
-
-  export default {
-    name: 'App',
-    components: {NavBar},
-    data() {
-      return {
-        authenticated: false,
-        username: ""
-      }
-    },
-    mounted() {
-      if(!this.authenticated) {
-        this.$router.replace({ name: "login" });
-      }
-    },
-    methods: {
-      setUsername(username) {
-        this.username = username;
-      },
-      setAuthenticated(status) {
-        this.authenticated = status;
-      },
-      logout() {
-        this.authenticated = false;
+export default {
+  data() {
+    return {
+      isConnected: false
+    };
+  },
+  methods: {
+    async connect() {
+      try {
+        await kuzzle.connect();
+        this.isConnected = true;
+      } catch (error) {
+        console.error(error.message);
       }
     }
+  },
+  mounted() {
+    this.connect();
   }
+};
 </script>
 
 <style scoped>
