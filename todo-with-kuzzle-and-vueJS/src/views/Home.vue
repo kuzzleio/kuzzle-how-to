@@ -107,7 +107,6 @@ export default {
         this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
       this.updateCompleteAll();
-      console.log('lol');
     },
 
     updateActive() {
@@ -121,6 +120,9 @@ export default {
     },
 
     async addTask(message) {
+      if (!this.seeActive) {
+        this.updateActive();
+      }
       if (message === '') {
         this.$toast.error('Cannot add empty todo!', 'ERROR', this.error);
         return;
