@@ -10,9 +10,6 @@
 
 <script>
 export default {
-  mounted() {
-    this.$router.replace({ name: 'kuzzleConnect' });
-  }
 };
 </script>
 

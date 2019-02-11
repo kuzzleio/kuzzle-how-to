@@ -38,9 +38,6 @@ export default new Router({
   routes: [
     {
       path: '/',
-    },
-    {
-      path: '/kuzzleConnect',
       name: 'kuzzleConnect',
       component: KuzzleConnect
     },

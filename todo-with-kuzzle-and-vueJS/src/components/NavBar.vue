@@ -1,7 +1,7 @@
 <template>
   <div id="Navbar">
     <v-toolbar dark fixed app :clipped-left="Clipped">
-      <v-toolbar-side-icon @click.stop="Drawer = !this" class="hidden-md-and-up"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.stop="Drawer = !this"></v-toolbar-side-icon>
       <v-toolbar-title> TodoMVC </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
