@@ -4,7 +4,7 @@ const {
 } = require('kuzzle-sdk');
 
 const kuzzle = new Kuzzle(
-  new WebSocket('10.35.250.194')
+  new WebSocket('localhost')
 );
 
 kuzzle.on('networkError', error => {
