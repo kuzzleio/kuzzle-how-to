@@ -101,10 +101,7 @@ export default {
 
     updateDisplay() {
       this.tasks.forEach(elem => {
-        elem.displayed = false;
-        if ((elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks)) {
-          elem.displayed = true;
-        }
+        elem.displayed = (elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks);
       });
       this.updateCompleteAll();
     },
@@ -148,9 +145,7 @@ export default {
     async deleteTask(index) {
       try {
         await kuzzle.document.delete(this.indexName, this.currentList.value, index);
-        this.tasks = this.tasks.filter(task => {
-          return task.index !== index;
-        });
+        this.tasks = this.tasks.filter(task => task.index !== index);
         this.toasted('info',`Task ${index} deleted`);
       } catch (error) {
         this.toasted('error',`${error.message}`);
@@ -175,10 +170,10 @@ export default {
     async deleteSelectedTasks() {
       let deleted = false;
 
-      this.tasks.forEach(elem => {
+      this.tasks.forEach(async elem => {
         if (elem.complete === true) {
           deleted = true;
-          this.deleteTask(elem.index);
+          await this.deleteTask(elem.index);
         }
       });
 
@@ -199,7 +194,7 @@ export default {
       this.tasks.forEach(async elem => {
         if (elem.displayed) {
           if (elem.complete !== this.completeAllTasks) {
-            this.setTaskComplete(elem.index, newValue);
+            await this.setTaskComplete(elem.index, newValue);
           }
         }
       });
@@ -231,7 +226,7 @@ export default {
         );
         this.tasks = results.hits.map(hit => {
           return {
-            message: hit._source.Task,
+            message: hit._source.task,
             index: hit._id,
             complete: hit._source.complete
           };
@@ -261,9 +256,7 @@ export default {
       this.lists = [];
       try {
         const collectionList = await kuzzle.collection.list(this.indexName);
-        collectionList.collections.forEach(elem => {
-          this.lists.push({ text: elem.name, value: elem.name });
-        });
+        this.lists = collectionList.collections.map(elem => ({text: elem.name, value: elem.name}));
       } catch (error) {
         this.toasted('error',`${error.message}`);
       }
