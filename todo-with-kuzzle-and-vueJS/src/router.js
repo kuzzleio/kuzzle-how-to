@@ -6,7 +6,7 @@ import KuzzleConnect from './views/KuzzleConnect.vue';
 Vue.use(Router);
 
 const checkConnected = async (to, from, next) => {
-  if (!localStorage.getItem('connected2kuzzle') || localStorage.getItem('connected2kuzzle') === 'false') {
+  if (!localStorage.getItem('connectedToKuzzle') || localStorage.getItem('connectedToKuzzle') === 'false') {
     next('/');
     return false;
   }
