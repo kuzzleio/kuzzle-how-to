@@ -1,7 +1,7 @@
 <template>
   <div id="Navbar">
-    <v-toolbar dark fixed app :clipped-left="Clipped">
-      <v-toolbar-side-icon @click.stop="Drawer = !this" ></v-toolbar-side-icon>
+    <v-toolbar dark fixed app :clipped-left="clipped">
+      <v-toolbar-side-icon @click.stop="drawer = !this"></v-toolbar-side-icon>
       <v-toolbar-title> TodoMVC </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
@@ -11,11 +11,11 @@
     <v-navigation-drawer
       id="NavMobile"
       app
-      v-model="Drawer"
+      v-model="drawer"
       absolute
       dark
       temporary
-      :clipped="Clipped"
+      :clipped="clipped"
       enable-resize-watcher
     >
       <v-list>
@@ -25,10 +25,10 @@
         <v-divider light></v-divider>
         <v-list-tile>
           <v-checkbox
-          :label="`Toasts: ${this.Toasts}`"
+          :label="`Toasts: ${this.toasts}`"
           color="dark"
-          v-model="ToastsEnabled"
-          @change="SetToastEnabled"
+          v-model="toastsEnabled"
+          @change="setToastEnabled"
         ></v-checkbox>
         </v-list-tile>
         <v-divider light></v-divider>
@@ -42,24 +42,24 @@ export default {
   name: 'NavBar',
   data() {
     return {
-      Drawer: false,
-      Clipped: false,
-      Success: {
+      drawer: false,
+      clipped: false,
+      success: {
         position: 'bottomRight'
       },
-      Toasts: 'Enable',
-      ToastsEnabled: (localStorage.getItem('ToastsEnabled') === 'true')
+      toasts: 'Enable',
+      toastsEnabled: (localStorage.getItem('toastsEnabled') === 'true')
     };
   },
   methods: {
-    SetToastEnabled() {
-      localStorage.setItem('ToastsEnabled', this.ToastsEnabled);
-      this.Toasts = (this.ToastsEnabled)? 'Enable': 'Disable';
+    setToastEnabled() {
+      localStorage.setItem('toastsEnabled', this.toastsEnabled);
+      this.toasts = (this.ToastsEnabled)? 'Enable': 'Disable';
     },
   },
   mounted() {
-    if (localStorage.getItem('ToastsEnabled') === null) {
-      localStorage.setItem('ToastsEnabled', true);
+    if (localStorage.getItem('toastsEnabled') === null) {
+      localStorage.setItem('toastsEnabled', true);
     }
   }
 };

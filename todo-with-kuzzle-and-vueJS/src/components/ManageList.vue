@@ -1,20 +1,20 @@
 <template>
   <div id="ManageList">
     <v-layout wrap align-center row>
-      <ModalList :Modal="Modal" @Cancel="Cancel" @Create="Create" v-if="Modal"/>
+      <ModalList :modal="modal" @cancel="cancel" @create="create" v-if="modal"/>
       <v-flex xs12 sm12 md6 class="text-xs-center">
         <v-select
           item-text="text"
           item-value="value"
-          @input="Changed"
-          :items="Lists"
+          @input="changed"
+          :items="lists"
           label="Please choose a list"
           outline
-          v-model="CurrentListCopy.value"
+          v-model="currentListCopy.value"
         ></v-select>
       </v-flex>
       <v-flex xs12 sm12 md6 class="text-xs-center">
-        <v-btn color="blue" @click="NewList()" class="white--text">New List</v-btn>
+        <v-btn color="blue" @click="newList()" class="white--text">New List</v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -28,35 +28,35 @@ export default {
   components: {
     ModalList
   },
-  props: ['Lists', 'CurrentList'],
+  props: ['lists', 'currentList'],
   watch: {
-    CurrentList: function CurrentListChanged(NewVal, OldVal) {
-      this.CurrentListCopy = NewVal;
+    currentList: function currentListChanged(newVal, oldVal) {
+      this.currentListCopy = newVal;
     }
   },
   data() {
     return {
-      CurrentListCopy: { text: this.CurrentList.text, value: this.CurrentList.value },
-      Modal: false
+      currentListCopy: { text: this.currentList.text, value: this.currentList.value },
+      modal: false
     };
   },
   methods: {
-    Changed() {
-      this.$emit('SetCurrentList', this.CurrentListCopy);
+    changed() {
+      this.$emit('setCurrentList', this.currentListCopy);
     },
-    NewList() {
-      this.Modal = true;
+    newList() {
+      this.modal = true;
     },
-    Cancel() {
-      this.Modal = false;
+    cancel() {
+      this.modal = false;
     },
-    Create(input) {
-      this.Modal = false;
-      this.$emit('CreateList', input);
+    create(input) {
+      this.modal = false;
+      this.$emit('createList', input);
     }
   },
   mounted() {
-    this.CurrentListCopy = this.CurrentList;
+    this.currentListCopy = this.currentList;
   }
 };
 </script>

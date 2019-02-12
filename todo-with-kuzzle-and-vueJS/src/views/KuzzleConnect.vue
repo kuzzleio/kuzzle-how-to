@@ -15,7 +15,7 @@ export default {
   name: 'KuzzleConnect',
   data() {
     return {
-      IndexName: 'todolists'
+      indexName: 'todolists'
     };
   },
   methods: {
@@ -23,29 +23,29 @@ export default {
       try {
         await kuzzle.connect();
         clearInterval(this.interval);
-        const exists = await kuzzle.index.exists(this.IndexName);
+        const exists = await kuzzle.index.exists(this.indexName);
         if (!exists) {
-          await kuzzle.index.create(this.IndexName);
-          const Mapping = {
+          await kuzzle.index.create(this.indexName);
+          const mapping = {
             properties: {
-              Complete: { type: 'boolean' },
-              Task: { type: 'text' }
+              complete: { type: 'boolean' },
+              task: { type: 'text' }
             }
           };
-          await kuzzle.collection.create(this.IndexName, 'FirstList', Mapping);
+          await kuzzle.collection.create(this.indexName, 'FirstList', mapping);
         }
-        localStorage.setItem('IndexName', this.IndexName);
-        localStorage.setItem('connected2kuzzle', true);
+        localStorage.setItem('indexName', this.indexName);
+        localStorage.setItem('connectedToKuzzle', true);
         this.$router.push({ name: 'home' });
       } catch (error) {
         this.$toast.info(`${error.message}`, 'INFO', {position: 'bottomLeft'});
-        window.localStorage.setItem('connected2kuzzle', false);
+        window.localStorage.setItem('connectedToKuzzle', false);
       }
     }
   },
   mounted() {
-    if (!localStorage.getItem('connected2kuzzle')) {
-      localStorage.setItem('connected2kuzzle', false);
+    if (!localStorage.getItem('connectedToKuzzle')) {
+      localStorage.setItem('connectedToKuzzle', false);
     }
     this.interval = setInterval(this.connect, 200);
   }

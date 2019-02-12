@@ -6,28 +6,28 @@
         class="text-xs-center"
           label="Complete All"
           color="blue"
-          @change="SetSelectedTasksComplete"
-          v-model="CompleteAllCopy"
+          @change="setSelectedTasksComplete"
+          v-model="completeAllCopy"
           @disabled="this.taskLength <= 0"
         ></v-checkbox>
       </v-flex>
       <v-flex  xs12 sm6 md3 class="text-xs-center" >
-        <v-btn color="blue" @click="DeleteSelectedTasks" class="white--text">Clear Completed</v-btn>
+        <v-btn color="blue" @click="deleteSelectedTasks" class="white--text">Clear Completed</v-btn>
       </v-flex>
       <v-flex  xs12 sm6 md3 class="text-xs-center" >
         <v-switch
           label="See Active"
           color="blue"
-          v-model="See.Active"
-          @change="SetSeeActiveTasks"
+          v-model="see.active"
+          @change="setSeeActiveTasks"
         ></v-switch>
       </v-flex>
       <v-flex xs12 sm6 md3 class="text-xs-center">
         <v-switch
           label="See Completed"
           color="blue"
-          v-model="See.Completed"
-          @change="SetSeeCompletedTasks"
+          v-model="see.completed"
+          @change="setSeeCompletedTasks"
         ></v-switch>
       </v-flex>
     </v-layout>
@@ -38,39 +38,39 @@
 export default {
   name: 'Menucollection',
   props: [
-    'CompleteAllTasks',
-    'TaskLength',
+    'completeAllTasks',
+    'taskLength',
   ],
   watch: {
-    CompleteAllTasks: function CompleteAllchange(NewVal, OldVal) {
-      this.CompleteAllCopy = NewVal;
+    completeAllTasks: function completeAllchange(newVal, oldVal) {
+      this.completeAllCopy = newVal;
     }
   },
   data() {
     return {
-      CompleteAllCopy: this.CompleteAllTasks,
-      See: {
-        Active: true,
-        Completed :true
+      completeAllCopy: this.completeAllTasks,
+      see: {
+        active: true,
+        completed :true
       }
     };
   },
   methods: {
-    SetSelectedTasksComplete() {
-      this.$emit('SetSelectedTasksComplete', this.CompleteAllCopy);
+    setSelectedTasksComplete() {
+      this.$emit('setSelectedTasksComplete', this.completeAllCopy);
     },
-    DeleteSelectedTasks() {
-      this.$emit('DeleteSelectedTasks');
+    deleteSelectedTasks() {
+      this.$emit('deleteSelectedTasks');
     },
-    SetSeeCompletedTasks() {
-      this.$emit('SetSeeCompletedTasks', this.See.Completed);
+    setSeeCompletedTasks() {
+      this.$emit('setSeeCompletedTasks', this.see.completed);
     },
-    SetSeeActiveTasks() {
-      this.$emit('SetSeeActiveTasks', this.See.Active);
+    setSeeActiveTasks() {
+      this.$emit('setSeeActiveTasks', this.see.active);
     }
   },
   mounted() {
-    this.CompleteAllCopy= this.CompleteAllTasks;
+    this.completeAllCopy= this.completeAllTasks;
   }
 };
 </script>

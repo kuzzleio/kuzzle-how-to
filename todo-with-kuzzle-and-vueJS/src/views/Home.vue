@@ -3,31 +3,31 @@
     <NavBar></NavBar>
     <v-container fluid grid-list-xl text-xs-center>
       <ManageList
-        :Lists="Lists"
-        :CurrentList="CurrentList"
-        @SetCurrentList="SetCurrentList"
-        @CreateList="CreateList"
+        :lists="lists"
+        :currentList="currentList"
+        @setCurrentList="setCurrentList"
+        @createList="createList"
       />
-      <Add class="row col s8" @AddTask="AddTask"/>
+      <Add class="row col s8" @addTask="addTask"/>
       <MenuCollection
         class="row"
-        @DeleteSelectedTasks="DeleteSelectedTasks"
-        @SetSelectedTasksComplete="SetSelectedTasksComplete"
-        :CompleteAllTasks="this.CompleteAllTasks"
-        :TaskLength="this.Tasks.length"
-        @SetSeeActiveTasks="SetSeeActiveTasks"
-        @SetSeeCompletedTasks="SetSeeCompletedTasks"
+        @deleteSelectedTasks="deleteSelectedTasks"
+        @setSelectedTasksComplete="setSelectedTasksComplete"
+        :completeAllTasks="this.completeAllTasks"
+        :taskLength="this.tasks.length"
+        @setSeeActiveTasks="setSeeActiveTasks"
+        @setSeeCompletedTasks="setSeeCompletedTasks"
       />
       <v-list one-line>
-        <template v-for="Task in this.Tasks">
+        <template v-for="task in this.tasks">
           <Task
-            :key="Task.Index"
-            v-if="Task.Displayed === true"
-            :Complete="Task.Complete"
-            :Index="Task.Index"
-            :Message="Task.Message"
-            @DeleteTask="DeleteTask"
-            @SetTaskComplete="SetTaskComplete"
+            :key="task.index"
+            v-if="task.displayed === true"
+            :complete="task.complete"
+            :index="task.index"
+            :message="task.message"
+            @deleteTask="deleteTask"
+            @setTaskComplete="setTaskComplete"
           />
         </template>
       </v-list>
@@ -56,21 +56,20 @@ export default {
   },
   data() {
     return {
-      Lists: [{ text: 'NameOfTheList', value: 'NameOfTheList' }],
-      Tasks: [
+      lists: [{ text: 'NameOfTheList', value: 'NameOfTheList' }],
+      tasks: [
         {
-          Message: 'MessageOfTheTask',
-          Index: 0,
-          Complete: false,
-          Displayed: true
+          message: 'messageOfTheTask',
+          index: 0,
+          complete: false,
+          displayed: true
         }
       ],
-      CompleteAllTasks: false,
-      SeeActiveTasks: true,
-      SeeCompletedTasks: true,
-      CurrentList: { text: 'build', value: 'build' },
-      CurrentRoomId: '',
-      IndexName: localStorage.getItem('IndexName'),
+      completeAllTasks: false,
+      seeActiveTasks: true,
+      seeCompletedTasks: true,
+      currentList: { text: 'build', value: 'build' },
+      indexName: localStorage.getItem('indexName'),
       success: {
         position: 'bottomRight'
       },
@@ -83,223 +82,223 @@ export default {
     };
   },
   methods: {
-    Toasted(Type, Message) {
-      if (localStorage.getItem('ToastsEnabled') === 'false') {
+    toasted(type, message) {
+      if (localStorage.getItem('toastsEnabled') === 'false') {
         return;
       }
-      switch (Type) {
+      switch (type) {
         case 'info':
-          this.$toast.info(Message, 'INFO', this.info);
+          this.$toast.info(message, 'INFO', this.info);
           break;
         case 'error':
-          this.$toast.error(Message, 'ERROR', this.error);
+          this.$toast.error(message, 'ERROR', this.error);
           break;
         case 'success':
-          this.$toast.success(Message, 'SUCCESS', this.success);
+          this.$toast.success(message, 'SUCCESS', this.success);
           break;
       }
     },
 
-    UpdateDisplay() {
-      this.Tasks.forEach(elem => {
-        elem.Displayed = false;
-        if ((elem.Complete && this.SeeCompletedTasks) || (!elem.Complete && this.SeeActiveTasks)) {
-          elem.Displayed = true;
+    updateDisplay() {
+      this.tasks.forEach(elem => {
+        elem.displayed = false;
+        if ((elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks)) {
+          elem.displayed = true;
         }
       });
-      this.UpdateCompleteAll();
+      this.updateCompleteAll();
     },
 
-    SetSeeActiveTasks(SeeActiveValue) {
-      this.SeeActiveTasks = SeeActiveValue;
-      this.UpdateDisplay();
+    setSeeActiveTasks(seeActiveValue) {
+      this.seeActiveTasks = seeActiveValue;
+      this.updateDisplay();
     },
 
-    SetSeeCompletedTasks(SeeCompletedValue) {
-      this.SeeCompletedTasks = SeeCompletedValue;
-      this.UpdateDisplay();
+    setSeeCompletedTasks(seeCompletedValue) {
+      this.seeCompletedTasks = seeCompletedValue;
+      this.updateDisplay();
     },
 
-    async AddTask(Message) {
-      if (!this.SeeActiveTasks) {
-        this.SetSeeActiveTasks();
+    async addTask(message) {
+      if (!this.seeActiveTasks) {
+        this.setSeeActiveTasks();
       }
-      if (Message === '') {
-        this.Toasted('error','Cannot add empty todo!');
+      if (message === '') {
+        this.toasted('error','Cannot add empty todo!');
         return;
       }
       try {
-        const Result = await kuzzle.document.create(this.IndexName, this.CurrentList.value, {
-          Task: Message,
-          Complete: false
+        const Result = await kuzzle.document.create(this.indexName, this.currentList.value, {
+          task: message,
+          complete: false
         });
-        this.Tasks.push({
-          Message: Message,
-          Index: Result._id,
-          Complete: false,
-          Displayed: true
+        this.tasks.push({
+          message: message,
+          index: Result._id,
+          complete: false,
+          displayed: true
         });
-        this.Toasted('info',`New task ${Message}`);
+        this.toasted('info',`New task ${message}`);
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    async DeleteTask(Index) {
+    async deleteTask(index) {
       try {
-        await kuzzle.document.delete(this.IndexName, this.CurrentList.value, Index);
-        this.Tasks = this.Tasks.filter(task => {
-          return task.Index !== Index;
+        await kuzzle.document.delete(this.indexName, this.currentList.value, index);
+        this.tasks = this.tasks.filter(task => {
+          return task.index !== index;
         });
-        this.Toasted('info',`Task ${Index} deleted`);
+        this.toasted('info',`Task ${index} deleted`);
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    async SetTaskComplete(Index, NewValue) {
+    async setTaskComplete(index, newValue) {
       try {
-        await kuzzle.document.update(this.IndexName, this.CurrentList.value, Index, {
-          Complete: NewValue
+        await kuzzle.document.update(this.indexName, this.currentList.value, index, {
+          complete: newValue
         });
-        const UpdatedTask = this.Tasks.find(task => task.Index === Index);
-        UpdatedTask.Complete = NewValue;
-        this.Toasted('info',`Task ${UpdatedTask.Task} updated`);
+        const updatedTask = this.tasks.find(task => task.index === index);
+        updatedTask.complete = newValue;
+        this.toasted('info',`Task ${updatedTask.Task} updated`);
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    async DeleteSelectedTasks() {
-      let Deleted = false;
+    async deleteSelectedTasks() {
+      let deleted = false;
 
-      this.Tasks.forEach(elem => {
-        if (elem.Complete === true) {
-          Deleted = true;
-          this.DeleteTask(elem.Index);
+      this.tasks.forEach(elem => {
+        if (elem.complete === true) {
+          deleted = true;
+          this.deleteTask(elem.index);
         }
       });
 
-      if (Deleted === false) {
-        this.Toasted('error','No task completed!');
+      if (deleted === false) {
+        this.toasted('error','No task completed!');
         return;
       }
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    async SetSelectedTasksComplete(NewValue) {
-      if (this.Tasks.length === 0) {
-        this.Toasted('error','Nothing to complete');
-        this.CompleteAllTasks = false;
+    async setSelectedTasksComplete(newValue) {
+      if (this.tasks.length === 0) {
+        this.toasted('error','Nothing to complete');
+        this.completeAllTasks = false;
         return;
       }
-      this.CompleteAllTasks = NewValue;
-      this.Tasks.forEach(async elem => {
-        if (elem.Displayed) {
-          if (elem.Complete !== this.CompleteAllTasks) {
-            this.SetTaskComplete(elem.Index, NewValue);
+      this.completeAllTasks = newValue;
+      this.tasks.forEach(async elem => {
+        if (elem.displayed) {
+          if (elem.complete !== this.completeAllTasks) {
+            this.setTaskComplete(elem.index, newValue);
           }
         }
       });
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    UpdateCompleteAll() {
-      let CompleteValue = true;
-      this.Tasks.some(elem => {
-        if (elem.Displayed && !elem.Complete) {
-          CompleteValue = false;
+    updateCompleteAll() {
+      let completeValue = true;
+      this.tasks.some(elem => {
+        if (elem.displayed && !elem.complete) {
+          completeValue = false;
           return false;
         }
       });
-      if (CompleteValue !== this.CompleteAllTasks) {
-        this.CompleteAllTasks = CompleteValue;
+      if (completeValue !== this.completeAllTasks) {
+        this.completeAllTasks = completeValue;
       }
     },
 
-    async FetchCollection() {
-      this.Tasks = [];
-      let Results = {};
+    async fetchCollection() {
+      this.tasks = [];
+      let results = {};
       try {
-        Results = await kuzzle.document.search(
-          this.IndexName,
-          this.CurrentList.value,
+        results = await kuzzle.document.search(
+          this.indexName,
+          this.currentList.value,
           { sort: ['_kuzzle_info.createdAt'] },
           { size: 100 }
         );
-        this.Tasks = Results.hits.map(hit => {
+        this.tasks = results.hits.map(hit => {
           return {
-            Message: hit._source.Task,
-            Index: hit._id,
-            Complete: hit._source.Complete
+            message: hit._source.Task,
+            index: hit._id,
+            complete: hit._source.complete
           };
         });
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
     },
 
-    async SetCurrentList(Collection) {
-      if (Collection.value === '') {
-        this.Tasks = [];
-        this.UpdateDisplay();
+    async setCurrentList(collection) {
+      if (collection.value === '') {
+        this.tasks = [];
+        this.updateDisplay();
         return;
       }
       try {
-        this.CurrentList = { text: Collection.text, value: Collection.value };
-        await this.FetchIndex();
-        await this.FetchCollection();
+        this.currentList = { text: collection.text, value: collection.value };
+        await this.fetchIndex();
+        await this.fetchCollection();
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
-      this.UpdateDisplay();
+      this.updateDisplay();
     },
 
-    async FetchIndex() {
-      this.Lists = [];
+    async fetchIndex() {
+      this.lists = [];
       try {
-        const collectionList = await kuzzle.collection.list(this.IndexName);
+        const collectionList = await kuzzle.collection.list(this.indexName);
         collectionList.collections.forEach(elem => {
-          this.Lists.push({ text: elem.name, value: elem.name });
+          this.lists.push({ text: elem.name, value: elem.name });
         });
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
     },
 
-    async CreateList(Input) {
-      const Mapping = {
+    async createList(input) {
+      const mapping = {
         properties: {
-          Complete: { type: 'boolean' },
-          Task: { type: 'text' }
+          complete: { type: 'boolean' },
+          task: { type: 'text' }
         }
       };
       try {
-        await kuzzle.collection.create(this.IndexName, Input, Mapping);
-        this.SetCurrentList({ text: Input, value: Input });
-        this.FetchIndex();
+        await kuzzle.collection.create(this.indexName, input, mapping);
+        this.setCurrentList({ text: input, value: input });
+        this.fetchIndex();
       } catch (error) {
-        this.Toasted('error',`${error.message}`);
+        this.toasted('error',`${error.message}`);
       }
     },
 
-    ClearStore() {
-      localStorage.removeItem('connected2kuzzle');
+    clearStore() {
+      localStorage.removeItem('connectedToKuzzle');
     }
   },
   async mounted() {
-    window.addEventListener('beforeunload', this.ClearStore);
+    window.addEventListener('beforeunload', this.clearStore);
     try {
-      await this.FetchIndex();
-      this.CurrentList.text = this.Lists[0].text;
-      this.CurrentList.value = this.Lists[0].value;
-      await this.FetchCollection();
-      this.UpdateDisplay();
+      await this.fetchIndex();
+      this.currentList.text = this.lists[0].text;
+      this.currentList.value = this.lists[0].value;
+      await this.fetchCollection();
+      this.updateDisplay();
     } catch (error) {
-      this.Toasted('error',`${error.message}`);
+      this.toasted('error',`${error.message}`);
     }
   }
 };
