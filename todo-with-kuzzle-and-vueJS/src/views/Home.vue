@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     toasted(type, message) {
-      if (localStorage.getItem('ToastsEnabled') === 'false') {
+      if (localStorage.getItem('toastsEnabled') === 'false') {
         return;
       }
       switch (type) {
