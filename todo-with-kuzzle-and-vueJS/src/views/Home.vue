@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     toasted(type, message) {
-      if (localStorage.getItem('ToastsEnabled') === 'false') {
+      if (localStorage.getItem('toastsEnabled') === 'false') {
         return;
       }
       switch (type) {
@@ -116,9 +116,7 @@ export default {
                 break;
               case 'delete':
                 this.toasted('info',`Task ${taskId} deleted`);
-                this.tasks = this.tasks.filter(task => {
-                  return task.index !== taskId;
-                });
+                this.tasks = this.tasks.filter(task => task.index !== taskId);
                 break;
               case 'update':
                 this.toasted('info',`Task ${newTask.task} updated`);
@@ -149,6 +147,7 @@ export default {
 
     updateDisplay() {
       this.tasks.forEach(elem => {
+        elem.displayed = (elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks);
         elem.displayed = false;
         if ((elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks)) {
           elem.displayed = true;
@@ -208,10 +207,10 @@ export default {
     async deleteSelectedTasks() {
       let deleted = false;
 
-      this.tasks.forEach(elem => {
+      this.tasks.forEach(async elem => {
         if (elem.complete === true) {
           deleted = true;
-          this.deleteTask(elem.index);
+          await this.deleteTask(elem.index);
         }
       });
 
@@ -232,7 +231,7 @@ export default {
       this.tasks.forEach(async elem => {
         if (elem.displayed) {
           if (elem.complete !== this.completeAllTasks) {
-            this.setTaskComplete(elem.index, newValue);
+            await this.setTaskComplete(elem.index, newValue);
           }
         }
       });
@@ -298,9 +297,7 @@ export default {
       this.lists = [];
       try {
         const collectionList = await kuzzle.collection.list(this.indexName);
-        collectionList.collections.forEach(elem => {
-          this.lists.push({ text: elem.name, value: elem.name });
-        });
+        this.lists = collectionList.collections.map(elem => ({text: elem.name, value: elem.name}));
       } catch (error) {
         this.toasted('error',`${error.message}`);
       }

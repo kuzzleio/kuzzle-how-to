@@ -1,7 +1,7 @@
 <template>
   <div id="ManageList">
     <v-layout wrap align-center row>
-      <ModalList :Modal="modal" @cancel="cancel" @create="create" v-if="modal"/>
+      <ModalList :modal="modal" @cancel="cancel" @create="create" v-if="modal"/>
       <v-flex xs12 sm12 md6 class="text-xs-center">
         <v-select
           item-text="text"
