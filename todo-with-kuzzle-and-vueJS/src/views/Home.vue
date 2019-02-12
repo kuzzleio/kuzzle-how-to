@@ -280,8 +280,6 @@ export default {
       try {
         await kuzzle.collection.create(this.IndexName, Input, Mapping);
         this.SetCurrentList({ text: Input, value: Input });
-        const Message = { title: 'New Collection', name: Input };
-        await kuzzle.realtime.publish('NewCollectionRoom', 'NCR', Message);
         this.FetchIndex();
       } catch (error) {
         this.Toasted('error',`${error.message}`);
