@@ -3,14 +3,14 @@
     <v-layout wrap align-center>
       <v-flex xs12 sm12 md9 class="text-xs-center" >
         <v-checkbox
-          :label="`${this.Message}`"
+          :label="`${this.message}`"
           color="blue"
-          v-model="CompleteCopy"
-          @change="SetTaskComplete"
+          v-model="completeCopy"
+          @change="setTaskComplete"
         ></v-checkbox>
       </v-flex>
       <v-flex xs12 sm12 md3 class="text-xs-center">
-        <v-btn color="blue" @click="DeleteTask" class="white--text">Clear</v-btn>
+        <v-btn color="blue" @click="deleteTask" class="white--text">Clear</v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -19,23 +19,23 @@
 <script>
 export default {
   name: 'task',
-  props: ['Complete', 'Index', 'Message'],
+  props: ['complete', 'index', 'message'],
   watch: {
-    Complete: function completeAll(NewVal, OldVal) {
-      this.CompleteCopy = NewVal;
+    complete: function completeAll(newVal, oldVal) {
+      this.completeCopy = newVal;
     }
   },
   data () {
     return {
-      CompleteCopy: this.Complete
+      completeCopy: this.complete
     };
   },
   methods: {
-    DeleteTask() {
-      this.$emit('DeleteTask', this.Index);
+    deleteTask() {
+      this.$emit('deleteTask', this.index);
     },
-    SetTaskComplete() {
-      this.$emit('SetTaskComplete', this.Index, this.CompleteCopy);
+    setTaskComplete() {
+      this.$emit('setTaskComplete', this.index, this.completeCopy);
     }
   }
 };

@@ -1,43 +1,43 @@
 <template>
   <div id="Navbar">
-    <v-toolbar dark fixed app :clipped-left="Clipped">
-      <v-toolbar-side-icon @click.stop="Drawer = !this"></v-toolbar-side-icon>
+    <v-toolbar dark fixed app :clipped-left="clipped">
+      <v-toolbar-side-icon @click.stop="drawer = !this"></v-toolbar-side-icon>
       <v-toolbar-title> TodoMVC </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <v-btn color="dark" class="white--text">Welcome {{this.username}} !</v-btn>
         <v-btn color="dark" class="white--text">
-          <router-link to="/login" @click.native="Logout" replace class="white--text">Logout</router-link>
+          <router-link to="/login" @click.native="logout" replace class="white--text">Logout</router-link>
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-navigation-drawer
       id="NavMobile"
       app
-      v-model="Drawer"
+      v-model="drawer"
       absolute
       dark
       temporary
-      :clipped="Clipped"
+      :clipped="clipped"
       enable-resize-watcher
     >
       <v-list>
         <v-list-tile>
-          <v-list-tile-title color="dark" class="white--text">Welcome {{this.Username}} !</v-list-tile-title>
+          <v-list-tile-title color="dark" class="white--text">Welcome {{this.username}} !</v-list-tile-title>
         </v-list-tile>
         <v-divider light></v-divider>
         <v-list-tile>
           <v-checkbox
-          :label="`Toasts: ${this.Toasts}`"
+          :label="`Toasts: ${this.toasts}`"
           color="dark"
-          v-model="ToastsEnabled"
-          @change="SetToastEnabled"
+          v-model="toastsEnabled"
+          @change="setToastEnabled"
         ></v-checkbox>
         </v-list-tile>
         <v-divider light></v-divider>
         <v-list-tile>
           <v-list-tile-title color="dark" class="white--text">
-            <router-link to="/login" @click.native="Logout" replace class="white--text">Logout</router-link>
+            <router-link to="/login" @click.native="logout" replace class="white--text">Logout</router-link>
           </v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -50,29 +50,29 @@ export default {
   name: 'NavBar',
   data() {
     return {
-      Drawer: false,
-      Clipped: false,
-      Success: {
+      drawer: false,
+      clipped: false,
+      success: {
         position: 'bottomRight'
       },
-      Username: localStorage.getItem('username'),
-      Toasts: 'Enable',
-      ToastsEnabled: (localStorage.getItem('ToastsEnabled') === 'true')
+      username: localStorage.getItem('username'),
+      toasts: 'Enable',
+      toastsEnabled: (localStorage.getItem('toastsEnabled') === 'true')
     };
   },
   methods: {
     Logout() {
-      this.$emit('Logout');
-      this.$toast.success('Disconnected !', 'SUCCESS', this.Success);
+      this.$emit('logout');
+      this.$toast.success('Disconnected !', 'SUCCESS', this.success);
     },
     SetToastEnabled() {
-      localStorage.setItem('ToastsEnabled', this.ToastsEnabled);
-      this.Toasts = (this.ToastsEnabled)? 'Enable': 'Disable';
+      localStorage.setItem('toastsEnabled', this.toastsEnabled);
+      this.toasts = (this.toastsEnabled)? 'Enable': 'Disable';
     },
   },
   mounted() {
-    if (localStorage.getItem('ToastsEnabled') === null) {
-      localStorage.setItem('ToastsEnabled', true);
+    if (localStorage.getItem('toastsEnabled') === null) {
+      localStorage.setItem('toastsEnabled', true);
     }
   }
 };

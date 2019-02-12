@@ -9,7 +9,7 @@ import kuzzle from './service/Kuzzle.js';
 Vue.use(Router);
 
 const checkAuth = async (to, from, next) => {
-  if (!localStorage.getItem('connected2kuzzle') || localStorage.getItem('connected2kuzzle') === false) {
+  if (!localStorage.getItem('connectedToKuzzle') || localStorage.getItem('connectedToKuzzle') === false) {
     next('/kuzzleConnect');
     return false;
   }

@@ -1,12 +1,12 @@
 <template>
   <div id="Add">
-    <form v-on:submit.prevent="AddTask">
+    <form v-on:submit.prevent="addTask">
       <v-layout wrap align-center>
         <v-flex xs12 sm12 md6 class="text-xs-center">
-          <v-text-field autofocus label="New todo" outline v-model="Todo"></v-text-field>
+          <v-text-field autofocus label="New todo" outline v-model="todo"></v-text-field>
         </v-flex>
         <v-flex xs12 sm12 md6 class="text-xs-center">
-          <v-btn color="blue" v-on:click="AddTask" class="white--text">ADD</v-btn>
+          <v-btn color="blue" v-on:click="addTask" class="white--text">ADD</v-btn>
         </v-flex>
       </v-layout>
     </form>
@@ -18,12 +18,12 @@ export default {
   name: 'Add',
   data() {
     return {
-      Todo: ''
+      todo: ''
     };
   },
   methods: {
-    async AddTask(event) {
-      this.$emit('AddTask', this.Todo);
+    async addTask(event) {
+      this.$emit('addTask', this.todo);
     }
   }
 };

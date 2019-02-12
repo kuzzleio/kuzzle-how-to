@@ -7,13 +7,13 @@
             <h1>Login</h1>
           </v-flex>
           <v-flex xs12 sm12 class="text-xs-center">
-            <v-text-field autofocus label="Username" outline v-model="Input.username"></v-text-field>
+            <v-text-field autofocus label="Username" outline v-model="input.username"></v-text-field>
           </v-flex>
           <v-flex xs12 sm12 class="text-xs-center">
             <v-text-field
               label="Password"
               outline
-              v-model="Input.password"
+              v-model="input.password"
               :type="show ? 'text' : 'password'"
               :append-icon="show ? 'visibility_off' : 'visibility'"
               @click:append="show = !show"
@@ -37,7 +37,7 @@ export default {
     return {
       inverval: null,
       show: false,
-      Input: {
+      input: {
         sername: '',
         password: ''
       },
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     async login(event) {
-      if (this.Input.username === '' || this.Input.password === '') {
+      if (this.input.username === '' || this.input.password === '') {
         this.$toast.error(
           'A username and password must be present!',
           'ERROR',
@@ -63,21 +63,21 @@ export default {
         return;
       }
       const credentials = {
-        username: this.Input.username,
-        password: this.Input.password
+        username: this.input.username,
+        password: this.input.password
       };
       try {
         const jwt = await kuzzle.auth.login('local', credentials);
         this.$toast.success(
-          `Connected as ${this.Input.username} on Kuzzle!`,
+          `Connected as ${this.input.username} on Kuzzle!`,
           'SUCCESS',
           this.success
         );
         localStorage.setItem('jwt', jwt);
-        localStorage.setItem('username', this.Input.username);
+        localStorage.setItem('username', this.input.username);
         this.$router.push({ name: 'home' });
       } catch (error) {
-        this.Input.username = this.Input.password = '';
+        this.input.username = this.input.password = '';
         this.$toast.error(`${error.message}`, 'ERROR', this.error);
       }
     }
