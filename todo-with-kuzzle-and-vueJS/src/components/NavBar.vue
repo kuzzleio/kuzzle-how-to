@@ -61,11 +61,11 @@ export default {
     };
   },
   methods: {
-    Logout() {
+    logout() {
       this.$emit('logout');
       this.$toast.success('Disconnected !', 'SUCCESS', this.success);
     },
-    SetToastEnabled() {
+    setToastEnabled() {
       localStorage.setItem('toastsEnabled', this.toastsEnabled);
       this.toasts = (this.toastsEnabled)? 'Enable': 'Disable';
     },

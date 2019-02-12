@@ -10,7 +10,7 @@ Vue.use(Router);
 
 const checkAuth = async (to, from, next) => {
   if (!localStorage.getItem('connectedToKuzzle') || localStorage.getItem('connectedToKuzzle') === false) {
-    next('/kuzzleConnect');
+    next('/');
     return false;
   }
   const jwt = localStorage.getItem('jwt');
@@ -25,7 +25,7 @@ const checkAuth = async (to, from, next) => {
       return false;
     }
   } catch (error) {
-    next('/kuzzleConnect');
+    next('/');
     return false;
   }
   next();

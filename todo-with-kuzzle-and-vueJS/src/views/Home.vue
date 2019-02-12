@@ -321,9 +321,13 @@ export default {
       } catch (error) {
         this.toasted('error',`${error.message}`);
       }
+    },
+    ClearStore() {
+      localStorage.removeItem('connected2kuzzle');
     }
   },
-  async beforeMount() {
+  async mounted() {
+    window.addEventListener('beforeunload', this.ClearStore);
     const callback = notification => {
       if (
         notification.action === 'publish' &&
