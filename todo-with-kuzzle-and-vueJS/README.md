@@ -33,13 +33,30 @@ Creation d'un projet avec Vue Cli:
 ```
 vue create todomvc
 ```
-Sélectionnez manuellement les features pour ajouter le '`router`'.
+Sélectionnez manuellement les features pour ajouter le '`router`' ainsi que le '`vuex`'.
 Sélectionnez '`Eslint + Standart config`', puis '`Lint on save`', puis '`In dedicated config files`'.
 Vous pouvez maintenant lancer votre projet via la commande:
 ```
 npm run serve
 ```
 puis vous rendre a l'adresse http://localhost:8080/
+
+Nous allons maintenant mettre en place le store, qui nous permettra de stocker et d'utiliser certaines données devant être globales à notre application.
+
+Vous pouvez modifier l'export du fichier `/src/store.js` de la façon suivante:
+```js
+export default new Vuex.Store({
+  state: {
+    connectedToKuzzle: false,
+    indexName: 'todolists'
+  },
+  mutations: {
+    setConnection(state, value) {
+      state.connectedToKuzzle = value;
+    }
+  }
+});
+```
 
 #### Optionnal
 Si vous voulez utiliser vuetify et izitoast, vous pouvez lancer les commandes suivantes et choisir la configuration par défaut:
@@ -80,79 +97,90 @@ kuzzle.on('networkError', error => {
 export default kuzzle;
 ```
 Nous venons d'instancier un Kuzzle et nous allons maintenant pouvoir nous y connecter.
+
 ### Connection
-Créez une nouvelle la vue '`/src/views/KuzzleConnect.vue`' puis ajoutez si vous le souhaitez un `<template></template>` et un `<style></style>` pour afficher le chargement.
+Créez la vue '`/src/views/KuzzleConnect.vue`' puis ajoutez si vous le souhaitez un `<template></template>` et un `<style></style>` pour afficher le chargement.
 
 Ajoutez ensuite la balise `<script></script>` dans laquelle nous allons mettre en place la connection au serveur Kuzzle.
 
-Vous devez commencer par importer le service que nous avons crée précédemment:
+Vous devez commencer par importer le service que nous avons crée précédemment ainsi que le store:
 ```js
 import kuzzle from '../service/Kuzzle.js';
+import store from '../store.js';
 ```
 
-Afin de pouvoir le modifier simplement, nous allons ensuite stocker le nom de l'Index qui contiendra nos listes dans une variable:
-```js
-export default {
-  name: 'KuzzleConnect',
-  data() {
-    return {
-      indexName: 'todolists'
-    };
-  },
-```
-Nous allons maintenant créer un cookie `connectedToKuzzle`, puis mettre en place un appel à notre future fonction de connexion toutes les 200ms.
+Dans le store crée précédement, nous avons initialisé la variable `connectedToKuzzle` à `false`.
+
+Nous allons ajouter des Listener sur notre Kuzzle afin d'être informé lors des évènements de connection ou de déconnection, selon lesquels nous modifieront notre variable `connectedToKuzzle` dans notre store et placeront l'utilisateur sur la route de connection ou non.
+Nous allons également mettre en place un appel à notre future fonction de connexion toutes les 200ms, jusqu'à ce que celle-ci soit établie.
 ```js
   mounted() {
-    if (!localStorage.getItem('connectedToKuzzle')) {
-      localStorage.setItem('connectedToKuzzle', false);
-    }
+    kuzzle
+      .addListener('connected', () => {
+        store.commit('setConnection', true);
+        this.$router.push({ name: 'home' });
+      })
+      .addListener('disconnected', () => {
+        store.commit('setConnection', false);
+        this.$router.push({ name: 'kuzzleConnect' });
+      });
     this.interval = setInterval(this.connect, 200);
   },
 ```
-Une fois ceci fait, nous pouvons ajouter notre fonction de connexion:
+Une fois ceci fait, nous pouvons créer notre fonction de connexion:
 ```js
-  methods: {
-    async connect() {
-      try {
-        await kuzzle.connect();
-        clearInterval(this.interval);
-        const exists = await kuzzle.index.exists(this.indexName);
-        if (!exists) {
-          await kuzzle.index.create(this.indexName);
-          const mapping = {
-            properties: {
-              complete: { type: 'boolean' },
-              task: { type: 'text' }
-            }
-          };
-          await kuzzle.collection.create(this.indexName, 'FirstList', mapping);
-        }
-        localStorage.setItem('indexName', this.indexName);
-        localStorage.setItem('connectedToKuzzle', true);
-        this.$router.push({ name: 'home' });
-      } catch (error) {
-        this.$toast.info(`${error.message}`, 'INFO', {position: 'bottomLeft'});
-        window.localStorage.setItem('connectedToKuzzle', false);
+methods: {
+  async connect() {
+    // Récupération du nom de l'index dans le store
+    const indexName = this.$store.state.indexName;
+    try {
+      // Connection a Kuzzle
+      await kuzzle.connect();
+      // En cas de réussite, on stop l'appel automatique à la fonction connect()
+      clearInterval(this.interval);
+      // On vérifie si l'index dont on a besoin est déjà créée
+      const exists = await kuzzle.index.exists(indexName);
+      if (!exists) {
+        //Si ce n'est pas le cas on l'ajoute
+        await kuzzle.index.create(indexName);
+        const mapping = {
+          properties: {
+            complete: { type: 'boolean' },
+            task: { type: 'text' }
+          }
+        };
+        // On ajoute également la collection 'FirsList' selon le mapping décrit si dessus
+        // Notre collection aura donc deux champs: complete et task, respectivement de types boolean et text
+        await kuzzle.collection.create(indexName, 'FirstList', mapping);
       }
+    } catch (error) {
+      // En cas d'erreur on l'affiche via un toast
+      this.$toast.info(`${error.message}`, 'INFO', {
+        position: 'bottomLeft'
+      });
     }
   }
+},
 ```
-Celle-ci va donc tenter une connexion au serveur Kuzzle puis:
- - En cas d'échec : Afficher un message d'erreur et mettre notre cookie a `false`.
- - En cas de réussite : Stopper l'appel automatique à notre fonction, créer notre index et notre première liste s'ils n'existent pas, stocker dans les cookies le nom de l'index et la connexion puis rediriger vers la page principale.
 
 ## Set up your router
-Nous allons maintenant éditer le fichier `/src/router.js` pour y ajouter notre première page, la page principale `Home` qui est crée par défaut et que nous modifierons ensuite, ainsi qu'une fonction pour vérifier si nous sommes bien connecté au serveur Kuzzle.
-Vous pouvez donc commencer par ajouter les pages:
+Nous allons maintenant éditer le fichier `/src/router.js` pour y ajouter notre page `kuzzleConnect`. La page principale `Home` qui est crée par défaut et que nous modifierons ensuite,est déjà importée dans notre router.
+Nous allons également une fonction pour vérifier si nous sommes bien connecté au serveur Kuzzle.
+
+Vous pouvez donc commencer par ajouter les lignes suivantes:
 ```js
-import Home from './views/Home.vue';
 import KuzzleConnect from './views/KuzzleConnect.vue';
+import store from './store';
 ```
+
 Puis créer la fonction de vérification:
+
 ```js
 const checkConnected = async (to, from, next) => {
-  if (!localStorage.getItem('connectedToKuzzle') 
-      || localStorage.getItem('connectedToKuzzle') === 'false') {
+  // Récupération de la variable dans le store
+  const connection = store.state.connectedToKuzzle;
+  // Si l'on est pas connecté, on redirige vers notre page de connection qui correspond à la racine de notre site
+  if (!connection || connection === false) {
     next('/');
     return false;
   }
@@ -160,31 +188,36 @@ const checkConnected = async (to, from, next) => {
   return true;
 };
 ```
-Et enfin modifier la section `routes` de notre `Router` pour rediriger automatiquement vers notre page de connexion et créer la route vers notre page principale:
+
+Nous pouvons maintenant modifier la section `routes` de notre `Router` pour rediriger automatiquement vers notre page de connexion et créer la route vers notre page principale:
+
 ```js
+base: process.env.BASE_URL || '/',
 routes: [
-    {
-      path: '/',
-      name: 'kuzzleConnect',
-      component: KuzzleConnect
-    },
-    {
-      path: '/home',
-      beforeEnter: checkConnected,
-      name: 'home',
-      component: Home
-    }
-  ]
+  {
+    path: '/',
+    name: 'kuzzleConnect',
+    component: KuzzleConnect
+  },
+  {
+    path: '/home',
+    beforeEnter: checkConnected,
+    name: 'home',
+    component: Home
+  }
+]
 ```
 
 ## Components
-Nous allons maintenant les composants qui formeront notre page principale:
+Nous allons maintenant ajouter les composants qui formeront notre page principale:
  - `Add.vue` => barre d'ajout de tache.
  - `ManageList.vue` => barre de création/sélection de liste.
  - `Menu.vue` => boutons de gestion multiple des taches (tout completer, tout supprimer) et de visualisation.
  - `ModalList.vue` => modale de création de liste.
  - `NavBar.vue` => barre de navigation permettant l'activation ou non des notifications.
  - `Task.vue` => ligne correspondant à une tache avec boutons pour compléter/supprimer.
+
+La construction de ces composants ne sera pas détaillée étant donné qu'ils n'ont aucune intéraction directe avec Kuzzle. Vous pouvez vous référer aux fichiers correspondants pour avoir un exemple de code.
 
 ### Add
 Créez le composant `/src/components/Add.vue`
@@ -247,8 +280,7 @@ En premier lieu, nous allons ajouter les datas suivantes:
         {
           message: 'messageOfTheTask',
           index: 0,
-          complete: false,
-          displayed: true
+          complete: false
         }
       ],
       //L'état de la checkbox pour compléter toutes les taches visibles
@@ -260,7 +292,7 @@ En premier lieu, nous allons ajouter les datas suivantes:
       //La liste sélectionnée
       currentList: { text: 'build', value: 'build' },
       //le nom de l'index dans lequel les todoLists sont créees
-      indexName: localStorage.getItem('indexName'),
+      indexName: this.$store.state.indexName,
       //Les type de positionnements de nos toasts
       success: {
         position: 'bottomRight'
@@ -278,8 +310,7 @@ En premier lieu, nous allons ajouter les datas suivantes:
 ### Other Functions
 Nous allons ici créer quelques fonctions qui ne seront pas directement appelées selon les signaux de nos composants mais qui vont nous permettre de mieux structurer notre code et d'éviter les redondances.
 
-
-La fonction `Toasted`, elle va simplement nous permettre de centraliser la création de nos notifications et ainsi pouvoir gérer leur affichage ou non en fonction de notre cookie (cf: NavBar).
+La fonction `Toasted` va simplement nous permettre de centraliser la création de nos notifications et ainsi pouvoir gérer leur affichage ou non en fonction de notre cookie (cf: NavBar).
 ```js
 toasted(type, message) {
   if (localStorage.getItem('toastsEnabled') === 'false') {
@@ -304,7 +335,7 @@ La fonction `UpdateCompleteAll` va simplement mettre à jour l'état de notre va
 updateCompleteAll() {
   let completeValue = true;
   this.tasks.some(elem => {
-    if (elem.displayed && !elem.complete) {
+    if (!elem.complete) {
       completeValue = false;
       return false;
     }
@@ -315,17 +346,9 @@ updateCompleteAll() {
 },
 ```
 
-La fonction `UpdateDisplay` va mettre à jour l'attribut `Displayed` de chacune de nos taches en fonction des switchs de notre Menu.
-```js
-updateDisplay() {
-  this.tasks.forEach(elem => {
-    elem.displayed = (elem.complete && this.seeCompletedTasks) || (!elem.complete && this.seeActiveTasks);
-  });
-  this.updateCompleteAll();
-},
-```
 Les fonctions suivantes font une requête à notre serveur Kuzzle, elles seront donc plus détaillées.
-La fonction `fetchIndex` va nous permettre de récupérer toutes les todoLists actuellement créées. Elle fait appel à la fonction `list` du controller `collection` dont vous pouvez trouver la documentation [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/collection/list/)
+
+La fonction `fetchIndex` va nous permettre de récupérer toutes les todoLists actuellement créées. Elle fait appel à la fonction `list` du controller `collection` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/list/)
 ```js
 async fetchIndex() {
   this.lists = [];
@@ -349,7 +372,7 @@ async fetchIndex() {
 },
 ```
 
-La fonction `fetchCollection` nous permet de lister les taches contenues dans la todoList en cours d'édition. Elle utilise la fonction `search` du controller `document` donc vous pouvez trouver la documentation [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/document/search/)
+La fonction `fetchCollection` nous permet de lister les taches contenues dans la todoList en cours d'édition. Elle utilise la fonction `search` du controller `document` donc vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/search/)
 ```js
 async fetchCollection() {
   this.tasks = [];
@@ -387,7 +410,7 @@ La fonction `setCurrentList` va modifier la liste en cours d'édition puis appel
 async setCurrentList(collection) {
   if (collection.value === '') {
     this.tasks = [];
-    this.updateDisplay();
+    this.updateCompleteAll();
     return;
   }
   try {
@@ -397,11 +420,11 @@ async setCurrentList(collection) {
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
-La fonction `createList` va effectuer une requete Kuzzle via le controller `collection` et la fonction `create` (dont la documentation est disponible [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/collection/create/)) pour créer une nouvelle todoList.
+La fonction `createList` va effectuer une requete Kuzzle via le controller `collection` et la fonction `create` (dont la documentation est disponible [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/create/)) pour créer une nouvelle todoList.
 ```js
 async createList(input) {
   //Le mapping correspond a la structure de la collection qui va etre crée. Ici, les documents de la collection auront une propriété complete de type boolean et une propriété task de type text.
@@ -427,12 +450,12 @@ Dans un second temps, nous allons ajouter le composant Task. Il sera instancié 
 Nous avons deux foncions à ajouter pour réagir aux signaux suivants: 
 `deleteTask` et `setTaskComplete`.
 
-La fonction `deleteTask` va faire un appel à la fonction `delete` du controller `document` dont la documentation se trouve [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/document/delete/).
+La fonction `deleteTask` va faire un appel à la fonction `delete` du controller `document` dont la documentation se trouve [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/delete/).
 ```js
 async deleteTask(index) {
   try {
     //Requête Kuzzle pour supprimer le document dont l'index est index, dans la colelction this.currentList.value, dans l'index this.indexName
-    await kuzzle.document.delete(this.indexName, this.currentList.value,index);
+    await kuzzle.document.delete(this.indexName, this.currentList.value, index);
     //Mise à jour de notre tableau des taches
     this.tasks = this.tasks.filter(task => task.index !== index);
     //Notification
@@ -440,16 +463,16 @@ async deleteTask(index) {
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
-La fonction `setTaskComplete` va utiliser la fonction `update` du controller `document` afin de mettre a jour les données de notre tache. Vous trouverez la documentation de cette fonction [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/document/update/).
+La fonction `setTaskComplete` va utiliser la fonction `update` du controller `document` afin de mettre a jour les données de notre tache. Vous trouverez la documentation de cette fonction [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/update/).
 ```js
 async setTaskComplete(index, newValue) {
   try {
     //Requête Kuzzle pour mettre a jour le document dont l'index est index, dans la collection this.currentList.value, dans l'index this.indexName en modifiant la propriété complete avec la valeur newValue
-    await kuzzle.document.update(this.indexName, this.currentList.value,index, {
+    await kuzzle.document.update(this.indexName, this.currentList.value, index, {
       complete: newValue
     });
     //On met ensuite à jour la valeur dans notre tableau puis on affiche une notification
@@ -459,7 +482,7 @@ async setTaskComplete(index, newValue) {
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
@@ -482,7 +505,7 @@ async deleteSelectedTasks() {
     this.toasted('error','No task completed!');
     return;
   }
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
@@ -502,7 +525,7 @@ async setSelectedTasksComplete(newValue) {
       }
     }
   });
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
@@ -510,21 +533,21 @@ La fonction `setSeeActiveTasks` va simplement inverser la valeur de la variable 
 ```js
 setSeeActiveTasks(seeActiveValue) {
   this.seeActiveTasks = seeActiveValue;
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 La fonction `setSeeCompletedTasks` va simplement inverser la valeur de la variable qui affiche ou non les taches complete puis mettre à jour l'affichage.
 ```js
 setSeeCompletedTasks(seeCompletedValue) {
   this.seeCompletedTasks = seeCompletedValue;
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
 ### Functions for Add signals
 Dans un second temps, nous allons ajouter le composant Add. Nous devons juste ajouter une foncion pour réagir au signal `addTask`.
 
-La fonction `addTask` va faire appel a la fonction `create` du controller `document` dont vous pouvez trouver la documentation [ici](https://docs-v2.kuzzle.io/sdk-reference/js/6/document/create/).
+La fonction `addTask` va faire appel a la fonction `create` du controller `document` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/create/).
 ```js
 async addTask(message) {
   //Etant donné que les nouvelles taches sont initialement actives, on force l'affichage de ces dernieres.
@@ -547,13 +570,12 @@ async addTask(message) {
       message: message,
       index: Result._id,
       complete: false,
-      displayed: true
     });
     this.toasted('info',`New task ${message}`);
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
-  this.updateDisplay();
+  this.updateCompleteAll();
 },
 ```
 
@@ -562,15 +584,18 @@ Maintenant que tous est en place, il ne nous reste plus qu'à initialiser certai
 
 ```js
 async mounted() {
-  window.addEventListener('beforeunload', this.clearStore);
+  this.seeActiveTasks = true;
+  this.seeCompletedTasks = true;
   try {
     await this.fetchIndex();
     this.currentList.text = this.lists[0].text;
     this.currentList.value = this.lists[0].value;
     await this.fetchCollection();
-    this.updateDisplay();
+    this.updateCompleteAll();
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
 }
 ```
+
+Vous devez maintenant avoir une todo MVC fonctionnelle que vous pouvez lancer via la commande suivante : `npm run serve`, après avoir au préalable lancé votre kuzzle `docker-compose up` comme précisé au début de ce how-to.
