@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+import store from './store';
 import router from './router';
 import VueIziToast from 'vue-izitoast';
 import Vuetify from 'vuetify';
@@ -14,6 +15,7 @@ Vue.use(Vuetify, {
 Vue.config.prodctionTip = false;
 
 new Vue({
+  store,
   router,
   render: h => h(App)
 }).$mount('#app');

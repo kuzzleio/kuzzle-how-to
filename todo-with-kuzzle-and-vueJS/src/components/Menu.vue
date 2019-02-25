@@ -1,20 +1,22 @@
 <template>
   <div id="Menucollection">
     <v-layout wrap align-center>
-      <v-flex xs12 sm6 md3 >
+      <v-flex xs12 sm6 md3>
         <v-checkbox
-        class="text-xs-center"
+          class="text-xs-center"
           label="Complete All"
           color="blue"
-          @change="setSelectedTasksComplete"
           v-model="completeAllCopy"
+          @change="setSelectedTasksComplete"
           @disabled="this.taskLength <= 0"
         ></v-checkbox>
       </v-flex>
-      <v-flex  xs12 sm6 md3 class="text-xs-center" >
-        <v-btn color="blue" @click="deleteSelectedTasks" class="white--text">Clear Completed</v-btn>
+      <v-flex xs12 sm6 md3 class="text-xs-center">
+        <v-btn color="blue" class="white--text" @click="deleteSelectedTasks">
+          Clear Completed
+        </v-btn>
       </v-flex>
-      <v-flex  xs12 sm6 md3 class="text-xs-center" >
+      <v-flex xs12 sm6 md3 class="text-xs-center">
         <v-switch
           label="See Active"
           color="blue"
@@ -37,13 +39,13 @@
 <script>
 export default {
   name: 'Menucollection',
-  props: [
-    'completeAllTasks',
-    'taskLength',
-  ],
+  props: ['completeAllTasks', 'taskLength'],
   watch: {
-    completeAllTasks: function completeAllchange(newVal, oldVal) {
-      this.completeAllCopy = newVal;
+    completeAllTasks: {
+      immediate: true,
+      handler: function completeAllchange(newVal, oldVal) {
+        this.completeAllCopy = newVal;
+      }
     }
   },
   data() {
@@ -51,7 +53,7 @@ export default {
       completeAllCopy: this.completeAllTasks,
       see: {
         active: true,
-        completed :true
+        completed: true
       }
     };
   },
@@ -68,9 +70,6 @@ export default {
     setSeeActiveTasks() {
       this.$emit('setSeeActiveTasks', this.see.active);
     }
-  },
-  mounted() {
-    this.completeAllCopy= this.completeAllTasks;
   }
 };
 </script>

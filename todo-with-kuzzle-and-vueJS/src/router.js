@@ -2,11 +2,14 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
 import KuzzleConnect from './views/KuzzleConnect.vue';
+import store from './store';
 
 Vue.use(Router);
 
 const checkConnected = async (to, from, next) => {
-  if (!localStorage.getItem('connectedToKuzzle') || localStorage.getItem('connectedToKuzzle') === 'false') {
+  const connection = store.state.connectedToKuzzle;
+
+  if (!connection || connection === false) {
     next('/');
     return false;
   }

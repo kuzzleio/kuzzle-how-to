@@ -2,7 +2,12 @@
   <v-app light id="KuzzleConnect">
     <v-container grid-list-sm text-xs-center>
       <div class="center" id="circle">
-        <v-progress-circular :size="100" :width="10" color="blue" indeterminate></v-progress-circular>
+        <v-progress-circular
+          indeterminate
+          color="blue"
+          :size="100"
+          :width="10"
+        ></v-progress-circular>
       </div>
     </v-container>
   </v-app>
@@ -10,43 +15,44 @@
 
 <script>
 import kuzzle from '../service/Kuzzle.js';
+import store from '../store.js';
 
 export default {
   name: 'KuzzleConnect',
-  data() {
-    return {
-      indexName: 'todolists'
-    };
-  },
   methods: {
     async connect() {
+      const indexName = this.$store.state.indexName;
       try {
         await kuzzle.connect();
         clearInterval(this.interval);
-        const exists = await kuzzle.index.exists(this.indexName);
+        const exists = await kuzzle.index.exists(indexName);
         if (!exists) {
-          await kuzzle.index.create(this.indexName);
+          await kuzzle.index.create(indexName);
           const mapping = {
             properties: {
               complete: { type: 'boolean' },
               task: { type: 'text' }
             }
           };
-          await kuzzle.collection.create(this.indexName, 'FirstList', mapping);
+          await kuzzle.collection.create(indexName, 'FirstList', mapping);
         }
-        localStorage.setItem('indexName', this.indexName);
-        localStorage.setItem('connectedToKuzzle', true);
-        this.$router.push({ name: 'home' });
       } catch (error) {
-        this.$toast.info(`${error.message}`, 'INFO', {position: 'bottomLeft'});
-        window.localStorage.setItem('connectedToKuzzle', false);
+        this.$toast.info(`${error.message}`, 'INFO', {
+          position: 'bottomLeft'
+        });
       }
     }
   },
   mounted() {
-    if (!localStorage.getItem('connectedToKuzzle')) {
-      localStorage.setItem('connectedToKuzzle', false);
-    }
+    kuzzle
+      .addListener('connected', () => {
+        store.commit('setConnection', true);
+        this.$router.push({ name: 'home' });
+      })
+      .addListener('disconnected', () => {
+        store.commit('setConnection', false);
+        this.$router.push({ name: 'kuzzleConnect' });
+      });
     this.interval = setInterval(this.connect, 200);
   }
 };

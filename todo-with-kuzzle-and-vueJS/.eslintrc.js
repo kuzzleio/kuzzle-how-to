@@ -8,9 +8,11 @@ module.exports = {
   'extends': [
     'plugin:vue/essential',
     '@vue/standard',
+    "plugin:prettier/recommended",
     "eslint:recommended"
   ],
   rules: {
+    "prettier/prettier": ["error", { "singleQuote": true }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     "consistent-return": 0,

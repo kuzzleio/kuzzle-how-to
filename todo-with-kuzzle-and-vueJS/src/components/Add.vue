@@ -3,10 +3,12 @@
     <form v-on:submit.prevent="addTask">
       <v-layout wrap align-center>
         <v-flex xs12 sm12 md6 class="text-xs-center">
-          <v-text-field autofocus label="New todo" outline v-model="todo"></v-text-field>
+          <v-text-field autofocus outline label="New todo" v-model="todo" />
         </v-flex>
         <v-flex xs12 sm12 md6 class="text-xs-center">
-          <v-btn color="blue" v-on:click="addTask" class="white--text">ADD</v-btn>
+          <v-btn color="blue" class="white--text" @click="addTask">
+            ADD
+          </v-btn>
         </v-flex>
       </v-layout>
     </form>

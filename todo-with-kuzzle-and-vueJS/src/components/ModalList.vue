@@ -5,7 +5,12 @@
         <v-card>
           <v-card-title class="headline">Creating new List</v-card-title>
           <v-card-text>
-          <v-text-field autofocus label="New list name." outline v-model="input"></v-text-field>
+            <v-text-field
+              autofocus
+              outline
+              label="New list name."
+              v-model="input"
+            ></v-text-field>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -38,5 +43,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

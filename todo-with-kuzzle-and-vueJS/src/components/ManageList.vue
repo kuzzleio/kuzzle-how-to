@@ -1,20 +1,27 @@
 <template>
   <div id="ManageList">
     <v-layout wrap align-center row>
-      <ModalList :modal="modal" @cancel="cancel" @create="create" v-if="modal"/>
+      <ModalList
+        :modal="modal"
+        @cancel="cancel"
+        @create="create"
+        v-if="modal"
+      />
       <v-flex xs12 sm12 md6 class="text-xs-center">
         <v-select
+          outline
+          label="Please choose a list"
           item-text="text"
           item-value="value"
-          @input="changed"
           :items="lists"
-          label="Please choose a list"
-          outline
           v-model="currentListCopy.value"
-        ></v-select>
+          @input="changed"
+        />
       </v-flex>
       <v-flex xs12 sm12 md6 class="text-xs-center">
-        <v-btn color="blue" @click="newList()" class="white--text">New List</v-btn>
+        <v-btn color="blue" class="white--text" @click="newList()">
+          New List
+        </v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -36,7 +43,10 @@ export default {
   },
   data() {
     return {
-      currentListCopy: { text: this.currentList.text, value: this.currentList.value },
+      currentListCopy: {
+        text: this.currentList.text,
+        value: this.currentList.value
+      },
       modal: false
     };
   },

@@ -1,16 +1,18 @@
 <template>
   <div id="task">
     <v-layout wrap align-center>
-      <v-flex xs12 sm12 md9 class="text-xs-center" >
+      <v-flex xs12 sm12 md9 class="text-xs-center">
         <v-checkbox
-          :label="`${this.message}`"
           color="blue"
+          :label="`${this.message}`"
           v-model="completeCopy"
           @change="setTaskComplete"
         ></v-checkbox>
       </v-flex>
       <v-flex xs12 sm12 md3 class="text-xs-center">
-        <v-btn color="blue" @click="deleteTask" class="white--text">Clear</v-btn>
+        <v-btn color="blue" class="white--text" @click="deleteTask">
+          Clear
+        </v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -25,7 +27,7 @@ export default {
       this.completeCopy = newVal;
     }
   },
-  data () {
+  data() {
     return {
       completeCopy: this.complete
     };

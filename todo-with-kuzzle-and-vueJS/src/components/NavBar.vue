@@ -11,25 +11,27 @@
     <v-navigation-drawer
       id="NavMobile"
       app
-      v-model="drawer"
       absolute
       dark
       temporary
-      :clipped="clipped"
       enable-resize-watcher
+      :clipped="clipped"
+      v-model="drawer"
     >
       <v-list>
         <v-list-tile>
-          <v-list-tile-title color="dark" class="white--text">Welcome !</v-list-tile-title>
+          <v-list-tile-title color="dark" class="white--text">
+            Welcome !
+          </v-list-tile-title>
         </v-list-tile>
         <v-divider light></v-divider>
         <v-list-tile>
           <v-checkbox
-          :label="`Toasts: ${this.toasts}`"
-          color="dark"
-          v-model="toastsEnabled"
-          @change="setToastEnabled"
-        ></v-checkbox>
+            color="dark"
+            :label="`Toasts: ${this.toasts}`"
+            v-model="toastsEnabled"
+            @change="setToastEnabled"
+          ></v-checkbox>
         </v-list-tile>
         <v-divider light></v-divider>
       </v-list>
@@ -48,14 +50,14 @@ export default {
         position: 'bottomRight'
       },
       toasts: 'Enable',
-      toastsEnabled: (localStorage.getItem('toastsEnabled') === 'true')
+      toastsEnabled: localStorage.getItem('toastsEnabled') === 'true'
     };
   },
   methods: {
     setToastEnabled() {
       localStorage.setItem('toastsEnabled', this.toastsEnabled);
-      this.toasts = (this.ToastsEnabled)? 'Enable': 'Disable';
-    },
+      this.toasts = this.ToastsEnabled ? 'Enable' : 'Disable';
+    }
   },
   mounted() {
     if (localStorage.getItem('toastsEnabled') === null) {
@@ -70,8 +72,8 @@ export default {
   background-color: #ffffff;
 }
 #NavMobile {
-  position:fixed;
-  top:0;
-  left:0;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 </style>
