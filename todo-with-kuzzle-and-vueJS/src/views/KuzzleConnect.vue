@@ -21,21 +21,9 @@ export default {
   name: 'KuzzleConnect',
   methods: {
     async connect() {
-      const indexName = this.$store.state.indexName;
       try {
         await kuzzle.connect();
         clearInterval(this.interval);
-        const exists = await kuzzle.index.exists(indexName);
-        if (!exists) {
-          await kuzzle.index.create(indexName);
-          const mapping = {
-            properties: {
-              complete: { type: 'boolean' },
-              task: { type: 'text' }
-            }
-          };
-          await kuzzle.collection.create(indexName, 'FirstList', mapping);
-        }
       } catch (error) {
         this.$toast.info(`${error.message}`, 'INFO', {
           position: 'bottomLeft'
@@ -45,8 +33,24 @@ export default {
   },
   mounted() {
     kuzzle
-      .addListener('connected', () => {
+      .addListener('connected', async () => {
         store.commit('setConnection', true);
+        const indexName = this.$store.state.indexName;
+        try {
+          const exists = await kuzzle.index.exists(indexName);
+          if (!exists) {
+            await kuzzle.index.create(indexName);
+            const mapping = {
+              properties: {
+                complete: { type: 'boolean' },
+                task: { type: 'text' }
+              }
+            };
+            await kuzzle.collection.create(indexName, 'FirstList', mapping);
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
         this.$router.push({ name: 'home' });
       })
       .addListener('disconnected', () => {

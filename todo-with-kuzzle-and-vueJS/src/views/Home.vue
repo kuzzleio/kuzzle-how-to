@@ -175,7 +175,6 @@ export default {
 
     async deleteSelectedTasks() {
       let deleted = false;
-
       this.tasks.forEach(async elem => {
         if (elem.complete === true) {
           deleted = true;

@@ -20,7 +20,11 @@
     >
       <v-list>
         <v-list-tile>
-          <v-list-tile-title color="dark" class="white--text">
+          <v-list-tile-title
+            color="dark"
+            class="white--text"
+            @click="changeClipped"
+          >
             Welcome !
           </v-list-tile-title>
         </v-list-tile>
@@ -57,6 +61,10 @@ export default {
     setToastEnabled() {
       localStorage.setItem('toastsEnabled', this.toastsEnabled);
       this.toasts = this.ToastsEnabled ? 'Enable' : 'Disable';
+    },
+    changeClipped() {
+      this.clipped = !this.clipped;
+      this.drawer = !this.drawer;
     }
   },
   mounted() {
