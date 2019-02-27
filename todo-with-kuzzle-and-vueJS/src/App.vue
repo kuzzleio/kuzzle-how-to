@@ -2,15 +2,14 @@
   <v-app light id="app">
     <v-container grid-list-sm text-xs-center>
       <div>
-        <router-view/>
+        <router-view />
       </div>
     </v-container>
   </v-app>
 </template>
 
 <script>
-export default {
-};
+export default {};
 </script>
 
 <style scoped>
