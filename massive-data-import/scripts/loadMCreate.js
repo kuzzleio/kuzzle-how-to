@@ -3,7 +3,8 @@ const
   fs = require('fs'),
   readline = require('readline');
 
-const step = 100000;
+const step = 1500;
+let steps = 10;
 const fileName = '/yellow_taxi/yellow_taxi_data.csv';
 const hostName = 'localhost';
 const testOnly = process.argv[2] == 'test' || false;
@@ -13,6 +14,7 @@ if (testOnly) {
 }
 
 let
+  number = 0,
   inserted = 0,
   headerSkipped = false;
 
@@ -32,6 +34,7 @@ const kuzzle = new Kuzzle(hostName, error => {
       const fields = line.split(',');
       documents.push({
         body: {
+          licence: number,
           pickup_datetime: fields[1],
           dropoff_datetime: fields[2],
           passenger_count: fields[3],
@@ -42,14 +45,17 @@ const kuzzle = new Kuzzle(hostName, error => {
         }
       });
 
+      number += 1;
+
       if (documents.length === step) {
         const packet = documents;
         documents = [];
         dataFile.pause();
         mcreate(packet).then(() => {
-          if (testOnly) {
+          if (steps === 0) {
             dataFile.close();
           } else {
+            steps -= 1;
             dataFile.resume();
           }
         });
