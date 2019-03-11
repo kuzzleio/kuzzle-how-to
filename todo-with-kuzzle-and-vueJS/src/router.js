@@ -9,7 +9,7 @@ Vue.use(Router);
 const checkConnected = async (to, from, next) => {
   const connection = store.state.connectedToKuzzle;
 
-  if (!connection || connection === false) {
+  if (!connection) {
     next('/');
     return false;
   }

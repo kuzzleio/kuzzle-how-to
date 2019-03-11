@@ -8,42 +8,50 @@ Kuzzle
 Kuzzle SDK JS 6
 
 ## Suggestion
-Dans ce how-to, nous avons utilisé Vuetify pour nos templates ainsi que Izitoast pour nos notifications.
+Dans ce how-to, nous allons utilisé Vuetify pour les templates, 
+ainsi que vue-izitoast pour afficher des notifications.
 
 ## Introduction
 Kuzzle permet de gerer de nombreuses données de manière très simple.
 
-Dans ce How-to, nous allons vous montrer comment réaliser une simple todoMVC en utilisant Kuzzle et VueJS.
+Dans ce how-to, nous allons réaliser une simple todo-list utilisant 
+le pattern modèle-vue-controleur avec Kuzzle et VueJS.
 
-Cette première partie mettra en avant les fonctionnalitées de bases de Kuzzle telles que:
-- La connexion a Kuzzle
-- La création d'Index
-- La vérification de l'existence d'un Index
-- La création d'une Collection
-- La récupération d'une liste des Collections existantes
-- La création d'un Document
-- La suppression d'un Document
-- La mise à jour d'un Document
-- La recherche de Documents
+Cette première partie mettra en avant les fonctionnalitées de 
+Kuzzle telles que:
+- la connexion à Kuzzle,
+- la création d'un index,
+- la vérification de l'existence d'un index,
+- la création d'une collection,
+- la récupération d'une liste des collections existantes,
+- la création d'un document,
+- la suppression d'un document,
+- la mise à jour d'un document,
+- la recherche de documents
 
-Les parties `<template>` et `style`, étant liées a VueJS et Vuetify mais n'ayant pas d'intéraction avec Kuzzle, ne seront pas détaillées dans ce how-to, vous pouvez cependant consulter les fichier concernés parallèlement à la lecture de ce tutoriel.
+Les parties `<template>` et `style`, étant liées à VueJS et Vuetify mais
+n'ayant pas d'intéraction avec Kuzzle, ne seront pas détaillées dans ce how-to; 
+vous pouvez cependant consulter les fichier concernés parallèlement à 
+la lecture de ce tutoriel.
 
-## Project setup
-Creation d'un projet avec Vue Cli:
+## Configuation du projet
+Création d'un projet avec Vue Cli:
 ```
 vue create todomvc
 ```
-Sélectionnez manuellement les features pour ajouter le '`router`' ainsi que le '`vuex`'.
-Sélectionnez '`Eslint + Standart config`', puis '`Lint on save`', puis '`In dedicated config files`'.
-Vous pouvez maintenant lancer votre projet via la commande:
+Ajoutez manuellement les fonctionnalités suivantes au projet : `router` et `vuex`.
+Sélectionnez ensuite '`Eslint + Standard config`', puis '`Lint on save`', et enfin '`In dedicated config files`'.
+Vous pouvez maintenant lancer votre projet via la commande :
 ```
 npm run serve
 ```
 puis vous rendre a l'adresse http://localhost:8080/
 
-Nous allons maintenant mettre en place le store, qui nous permettra de stocker et d'utiliser certaines données devant être globales à notre application.
+Nous allons maintenant mettre en place le store, qui nous permettra de
+stocker et d'utiliser certaines données devant être globales à notre 
+application.
 
-Vous pouvez modifier l'export du fichier `/src/store.js` de la façon suivante:
+Pour cela, modifiez l'export du fichier `/src/store.js` de la façon suivante :
 ```js
 export default new Vuex.Store({
   state: {
@@ -58,14 +66,15 @@ export default new Vuex.Store({
 });
 ```
 
-#### Optionnal
-Si vous voulez utiliser vuetify et izitoast, vous pouvez lancer les commandes suivantes et choisir la configuration par défaut:
+#### Optionnel
+Afin d'installer vuetify et vue-izitoast, lancez les 
+commandes suivantes et choisissez la configuation par défaut :
 ```
 vue add vuetify
 npm install vue-izitoast --save
 npm install material-design-icons-iconfont -D
 ```
-Vous devez ensuite ajouter les lignes suivantes dans votre fichier `/src/main.js`:
+Ajoutez ensuite les lignes suivantes dans le fichier `/src/main.js` :
 ```js
 import VueIziToast from 'vue-izitoast';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
@@ -75,10 +84,11 @@ import 'izitoast/dist/css/iziToast.css';
 Vue.use(VueIziToast);
 ```
 
-## Set up your Kuzzle
-### Instantiation
+## Se connecter à Kuzzle
+### Instanciation
 Dans un premier temps nous allons créer le service Kuzzle.
-Ajoutez le dossier '/src/service', créez un fichier Kuzzle.js puis ajoutez le code suivant:
+Ajoutez le dossier '/src/service', créez un fichier Kuzzle.js
+puis ajoutez le code suivant :
 
 ```js
 const {
@@ -96,23 +106,28 @@ kuzzle.on('networkError', error => {
 
 export default kuzzle;
 ```
-Nous venons d'instancier un Kuzzle et nous allons maintenant pouvoir nous y connecter.
+Nous venons d'instancier un Kuzzle et nous allons maintenant pouvoir
+nous y connecter.
 
-### Connection
-Créez la vue '`/src/views/KuzzleConnect.vue`' puis ajoutez si vous le souhaitez un `<template></template>` et un `<style></style>` pour afficher le chargement.
+### Connexion
+Créez la vue '`/src/views/KuzzleConnect.vue`' puis ajoutez
+les parties `<template></template>` et `<style></style>`
+du fichier `KuzzleConnect.vue` présent dans ce projet pour afficher le chargement.
 
-Ajoutez ensuite la balise `<script></script>` dans laquelle nous allons mettre en place la connection au serveur Kuzzle.
+Ajoutez ensuite la balise `<script></script>` dans laquelle nous allons
+mettre en place la connection au serveur Kuzzle.
 
-Vous devez commencer par importer le service que nous avons crée précédemment ainsi que le store:
+Commencez par importer le service que nous avons créé 
+précédemment, ainsi que le store :
 ```js
 import kuzzle from '../service/Kuzzle.js';
 import store from '../store.js';
 ```
 
-Dans le store crée précédement, nous avons initialisé la variable `connectedToKuzzle` à `false`.
-
-Nous allons ajouter des Listener sur notre Kuzzle afin d'être informé lors des évènements de connection ou de déconnection, selon lesquels nous modifieront notre variable `connectedToKuzzle` dans notre store et placeront l'utilisateur sur la route de connection ou non.
-Nous allons également mettre en place un appel à notre future fonction de connexion toutes les 200ms, jusqu'à ce que celle-ci soit établie.
+Nous allons tout d'abord ajouter des Listener sur notre Kuzzle afin
+d'être informé lors des évènements de connexion ou de déconnexion.
+Esnuite, nous allons mettre en place un appel à notre fonction
+de connexion toutes les 200ms, jusqu'à ce que celle-ci soit établie.
 ```js
   mounted() {
     kuzzle
@@ -127,18 +142,19 @@ Nous allons également mettre en place un appel à notre future fonction de conn
     this.interval = setInterval(this.connect, 200);
   },
 ```
-Une fois ceci fait, nous pouvons créer notre fonction de connexion:
+Une fois ceci fait, nous pouvons créer notre fonction de connexion :
 ```js
 methods: {
   async connect() {
     // Récupération du nom de l'index dans le store
     const indexName = this.$store.state.indexName;
     try {
-      // Connection a Kuzzle
+      // Connexion à Kuzzle
       await kuzzle.connect();
-      // En cas de réussite, on stop l'appel automatique à la fonction connect()
+      // En cas de réussite, on stoppe l'appel automatique à la 
+      // fonction connect()
       clearInterval(this.interval);
-      // On vérifie si l'index dont on a besoin est déjà créée
+      // On vérifie si l'index dont on a besoin est déjà créé
       const exists = await kuzzle.index.exists(indexName);
       if (!exists) {
         //Si ce n'est pas le cas on l'ajoute
@@ -149,8 +165,10 @@ methods: {
             task: { type: 'text' }
           }
         };
-        // On ajoute également la collection 'FirsList' selon le mapping décrit si dessus
-        // Notre collection aura donc deux champs: complete et task, respectivement de types boolean et text
+        // On ajoute également la collection 'FirstList'
+        // selon le mapping décrit ci-dessus
+        // Notre collection aura donc deux champs: complete 
+        // et task, respectivement de types boolean et text
         await kuzzle.collection.create(indexName, 'FirstList', mapping);
       }
     } catch (error) {
@@ -163,24 +181,28 @@ methods: {
 },
 ```
 
-## Set up your router
-Nous allons maintenant éditer le fichier `/src/router.js` pour y ajouter notre page `kuzzleConnect`. La page principale `Home` qui est crée par défaut et que nous modifierons ensuite,est déjà importée dans notre router.
-Nous allons également une fonction pour vérifier si nous sommes bien connecté au serveur Kuzzle.
+## Configuration du routeur
+Nous allons maintenant éditer le fichier `/src/router.js` pour y ajouter
+notre page `kuzzleConnect`. La page principale `Home` qui est créé par
+défaut et que nous modifierons ensuite est déjà importée dans notre routeur.
+Nous allons également écrire une fonction pour vérifier si nous sommes bien
+connecté au serveur Kuzzle.
 
-Vous pouvez donc commencer par ajouter les lignes suivantes:
+Ajoutez les lignes suivantes au début du fichier `/src/router.js` :
 ```js
 import KuzzleConnect from './views/KuzzleConnect.vue';
 import store from './store';
 ```
 
-Puis créer la fonction de vérification:
+Puis créez la fonction de vérification :
 
 ```js
 const checkConnected = async (to, from, next) => {
   // Récupération de la variable dans le store
   const connection = store.state.connectedToKuzzle;
-  // Si l'on est pas connecté, on redirige vers notre page de connection qui correspond à la racine de notre site
-  if (!connection || connection === false) {
+  // Si l'on n'est pas connecté, on redirige vers la page de
+  // connexion qui correspond à la racine de notre site
+  if (!connection) {
     next('/');
     return false;
   }
@@ -189,7 +211,9 @@ const checkConnected = async (to, from, next) => {
 };
 ```
 
-Nous pouvons maintenant modifier la section `routes` de notre `Router` pour rediriger automatiquement vers notre page de connexion et créer la route vers notre page principale:
+Nous pouvons maintenant modifier la section `routes` de notre
+`Router` pour rediriger automatiquement vers notre page de
+connexion et créer la route vers notre page principale :
 
 ```js
 base: process.env.BASE_URL || '/',
@@ -208,57 +232,82 @@ routes: [
 ]
 ```
 
-## Components
-Nous allons maintenant ajouter les composants qui formeront notre page principale:
- - `Add.vue` => barre d'ajout de tache.
- - `ManageList.vue` => barre de création/sélection de liste.
- - `Menu.vue` => boutons de gestion multiple des taches (tout completer, tout supprimer) et de visualisation.
- - `ModalList.vue` => modale de création de liste.
- - `NavBar.vue` => barre de navigation permettant l'activation ou non des notifications.
+## Composants
+Nous allons maintenant ajouter les composants qui formeront notre page
+principale :
+ - `Add.vue` => barre d'ajout de tache ;
+ - `ManageList.vue` => barre de création/sélection de liste ;
+ - `Menu.vue` => boutons de gestion multiple des taches (tout completer, tout supprimer) et de visualisation ;
+ - `ModalList.vue` => modale de création de liste ;
+ - `NavBar.vue` => barre de navigation permettant l'activation ou non des notifications ;
  - `Task.vue` => ligne correspondant à une tache avec boutons pour compléter/supprimer.
 
-La construction de ces composants ne sera pas détaillée étant donné qu'ils n'ont aucune intéraction directe avec Kuzzle. Vous pouvez vous référer aux fichiers correspondants pour avoir un exemple de code.
+La construction de ces composants ne sera pas détaillée étant donné
+qu'ils n'ont aucune interaction directe avec Kuzzle. Vous pouvez vous
+référer aux fichiers correspondants pour avoir un exemple de code.
 
 ### Add
-Créez le composant `/src/components/Add.vue`
-Ce composant est assez simple. La partie template sera composée d'un champ de saisie de texte ainsi que d'un bouton. Lors du click, un signal `addTask` sera envoyé au parent de ce composant, accompagné de la saisie.
+Créez le fichier `/src/components/Add.vue`
+Ce composant est assez simple. La partie template sera composée d'un
+champ de saisie de texte ainsi que d'un bouton. Lors du click, un signal
+`addTask` sera envoyé au parent de ce composant, accompagné de la saisie.
 
 ### ModalList
-Créez le composant `/src/components/ModalList.vue`
-Ce composant doit contenir un champ de saisie de text ainsi qu'un bouton. Lors d'un click, un signal `create` sera envoyé au parent de ce composant, accompagné de la saisie.
+Créez le fichier `/src/components/ModalList.vue`
+Ce composant doit contenir un champ de saisie de text ainsi qu'un bouton.
+Lors d'un click, un signal `create` sera envoyé au parent de ce composant,
+accompagné de la saisie.
 
 ### ManageList
-Créez le composant `/src/components/ManageList.vue`
-Ce composant doit contenir un composant ModalList (crée ci-dessus) qui sera actif ou non selon l'état d'une variable appelée `modal` initialisée a `false`. Le signal `create` reçu par cette ModalList doit être bindé a une fonction `create` qui émettra également un signal `createList` à son parent.
-Il doit également proposer un select basé sur un tableau `lists` reçu en props, et appelant une fonction `changed` lorsque sa valeur change qui va émettre un signal `setCurrentList`. Pour finir, il doit contenir un bouton appelant une fonction `newList` qui passera la variable `modal` a `true` afin de l'activer.
+Créez le fichier `/src/components/ManageList.vue`
+Ce composant doit contenir un composant ModalList (créé ci-dessus) qui sera
+actif ou non selon l'état d'une variable appelée `modal` initialisée a `false`.
+Le signal `create` reçu par cette ModalList doit être relié a une fonction
+`create` qui émettra également un signal `createList` à son parent.
+Il doit également proposer un select basé sur un tableau `lists` reçu en props,
+et appelant une fonction `changed` lorsque sa valeur change qui va émettre un
+signal `setCurrentList`. Pour finir, il doit contenir un bouton appelant une 
+fonction `newList` qui passera la variable `modal` a `true` afin de l'activer.
 
 ### Menu
-Créez le composant `/src/components/Menu.vue`
+Créez le fichier `/src/components/Menu.vue`
 Ce composant doit afficher une checkbox, un bouton, et deux switchs.
-La checkbox va permettre de passer toutes les taches affichées de l'état actif à l'état complété et inversement. Le bouton va permettre de supprimer toutes les taches affichées et complétées. Les deux switchs permettront de choisir d'afficher ou non les taches actives et les taches complétées.
-Ces composants appelleront, sur changement de leur valeur associée, respectivement les fonctions suivantes, qui n'auront pour seul effet que d'émettre un signal a parent. 
+La checkbox va permettre de passer toutes les taches affichées de l'état actif
+à l'état complété et inversement. Le bouton va permettre de supprimer toutes
+les taches affichées et complétées. Les deux switchs permettront de choisir
+d'afficher ou non les taches actives et les taches complétées.
+Ces composants appelleront, sur changement de leur valeur associée, 
+respectivement les fonctions suivantes, qui n'auront pour seul effet que
+d'émettre un signal au parent. 
  - `setSelectedTasksComplete`
  - `deleteSelectedTasks`
  - `setSeeCompletedTasks`
  - `setSeeActiveTasks`
 
 ### NavBar
-Créez le composant `/src/components/NavBar.vue`
-La barre de navigation ne proposera pour cette étape que la possibilité d'activer ou non les notifications. Elle devra avoir une data `toastsEnabled` qui sera bindée avec le cookie du même nom.
-Lors du changement de valeur de la checkbox, la fonction `setToastEnabled` est appelée et va modifier la valeur du cookie.
-Il est impératif de créer et initialiser ce cookie a `true` dès l'affichage de ce composant dans la fonction `mounted`.
+Créez le fichier `/src/components/NavBar.vue`
+La barre de navigation ne proposera pour cette étape que la possibilité 
+d'activer ou non les notifications. Elle devra avoir une data `toastsEnabled`
+qui sera reliée avec le cookie du même nom.
+Lors du changement de valeur de la checkbox, la fonction `setToastEnabled`
+est appelée et va modifier la valeur du cookie.
+Il faut ensuite donner à ce cookie une valeur par défaut s'il n'existe pas, dans la fonction `mounted` de ce composant.
 
 ### Task
-Créez le composant `/src/components/Task.vue`
-Ce composant correspond aux taches, il sera appelé via une boucle pour en créer autant que de taches dans notre liste en cours d'édition.
+Créez le fichier `/src/components/Task.vue`
+Ce composant correspond aux taches, il sera appelé via une boucle pour créer
+autant de fois ce composant que de taches dans notre liste en cours d'édition.
 Il reçoit à sa création les props suivantes: `complete`, `index`, `message`.
-Il doit contenir une checkbox envoyant un signal `setTaskComplete` dont le label sera la props `message` et un bouton envoyant un signal `deleteTask`.
+Il doit contenir une checkbox envoyant un signal `setTaskComplete` dont le
+label sera la props `message` et un bouton envoyant un signal `deleteTask`.
 
 ## Main Page
-Maintenant que les composants sont crées, nous allons pouvoir les instancier dans notre page principale, puis récupérer les signaux émis et ainsi envoyer les requêtes correspondantes a Kuzzle.
+Maintenant que les composants sont créés, nous allons pouvoir les instancier
+dans notre page principale, puis récupérer les signaux émis et ainsi envoyer
+les requêtes correspondantes a Kuzzle.
 
-Voici l'odre dans lequel nous allons procéder:
- - Ajout des datas
+Voici l'ordre dans lequel nous allons procéder:
+ - Ajout des données
  - Ajout des fonctions non liées à des évènements
  - Ajout des fonctions du composant ManageList
  - Ajout des fonctions du composant Add
