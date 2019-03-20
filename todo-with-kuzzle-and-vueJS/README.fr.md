@@ -1,18 +1,13 @@
 # Todo MVC Step1
+##Pré-requis
+Node.js
 
-## Pré-requis
-Vue Cli 3
-
-Kuzzle 
-
-Kuzzle SDK JS 6
-
-## Suggestion
-Nous allons utiliser Vuetify pour les templates, 
-ainsi que vue-izitoast pour afficher des notifications.
+npm
 
 ## Introduction
 Kuzzle permet de gérer de nombreuses données de manière très simple.
+
+Afin de l'installer, vous pouvez vous rendre [ici](https://docs.kuzzle.io/guide/1/getting-started/running-kuzzle/).
 
 Dans ce how-to, nous allons réaliser une simple todo-list utilisant 
 le pattern modèle-vue-controleur avec Kuzzle et VueJS.
@@ -35,7 +30,12 @@ vous pouvez cependant consulter les fichiers concernés parallèlement à
 la lecture de ce tutoriel.
 
 ## Configuation du projet
-Création d'un projet avec Vue Cli:
+Commençons par installer Vue Cli : 
+```
+npm install -g @vue/cli
+```
+
+Nous pouvons maintenant créer un projet :
 ```
 vue create todomvc
 ```
@@ -68,9 +68,12 @@ export default new Vuex.Store({
 });
 ```
 
-#### Optionnel
-Afin d'installer vuetify et vue-izitoast, lancez les 
-commandes suivantes et choisissez la configuration par défaut :
+#### Framework et plugin
+Nous allons utiliser Vuetify pour les templates, 
+ainsi que vue-izitoast pour afficher des notifications.
+
+Afin de les installer lancez les commandes suivantes et
+choisissez la configuration par défaut :
 ```
 vue add vuetify
 npm install vue-izitoast --save
@@ -88,7 +91,11 @@ Vue.use(VueIziToast);
 
 ## Se connecter à Kuzzle
 ### Instanciation
-Dans un premier temps nous allons créer le service Kuzzle.
+Dans un premier temps nous allons ajouter le sdk javascript au projet: 
+```
+npm install kuzzle-sdk --save
+```
+Nous pouvons ensuite créer le service Kuzzle.
 Ajoutez le dossier '/src/service', créez un fichier Kuzzle.js
 puis ajoutez le code suivant :
 
@@ -420,7 +427,7 @@ actuellement créées. Elle fait appel à la fonction `list` du contrôleur
 async fetchIndex() {
   this.lists = [];
   try {
-    //Requête Kuzzle pour lister les collections de l'index contenu
+    // Requête Kuzzle pour lister les collections de l'index contenu
     // dans this.indexName
     const collectionList = await kuzzle.collection.list(this.indexName);
     //La réponse est de type:
@@ -432,7 +439,7 @@ async fetchIndex() {
       size: 1
     }
     */
-   //On rempli ensuite notre tableau
+   // On rempli ensuite notre tableau
     this.lists = collectionList.collections.map(elem => (
       {text: elem.name, value:elem.name}
     ));
@@ -450,18 +457,18 @@ async fetchCollection() {
   this.tasks = [];
   let results = {};
   try {
-    //Requête Kuzzle pour récupérer les 100 premiers documents contenus dans
-    //la collection this.currentList.value de l'index this.indexName
-    //triés par date de création.
+    // Requête Kuzzle pour récupérer les 100 premiers documents contenus dans
+    // la collection this.currentList.value de l'index this.indexName
+    // triés par date de création.
     results = await kuzzle.document.search(
       this.indexName,
       this.currentList.value,
       { sort: ['_kuzzle_info.createdAt'] },
       { size: 100 }
     );
-    //La réponse contiendra un tableau nommé hits dans lequel nous trouverons
-    //les informations de notre tache (index, message, complete) que nous
-    //allons mettre dans notre tableau.
+    // La réponse contiendra un tableau nommé hits dans lequel nous trouverons
+    // les informations de notre tache (index, message, complete) que nous
+    // allons mettre dans notre tableau.
     this.tasks = results.hits.map(hit => {
       return {
         message: hit._source.task,
@@ -511,9 +518,9 @@ La fonction `createList` va effectuer une requête Kuzzle via le contrôleur
 pour créer une nouvelle todoList.
 ```js
 async createList(input) {
-  //Le mapping correspond a la structure de la collection qui va etre crée.
-  //Ici, les documents de la collection auront une propriété complete de
-  //type boolean et une propriété task de type text.
+  // Le mapping correspond a la structure de la collection qui va etre crée.
+  // Ici, les documents de la collection auront une propriété complete de
+  // type boolean et une propriété task de type text.
   const mapping = {
     properties: {
       complete: { type: 'boolean' },
@@ -521,10 +528,10 @@ async createList(input) {
     }
   };
   try {
-    //Requête Kuzzle pour créer la collection input dans l'index
-    //this.indexName avec le mapping mapping. 
+    // Requête Kuzzle pour créer la collection input dans l'index
+    // this.indexName avec le mapping mapping. 
     await kuzzle.collection.create(this.indexName, input, mapping);
-    //Update de la liste en cours d'édition
+    // Mise à jour de la liste en cours d'édition
     this.setCurrentList({ text: input, value: input });
   } catch (error) {
     this.toasted('error',`${error.message}`);
@@ -546,12 +553,12 @@ La fonction `deleteTask` va faire un appel à la fonction `delete` du contrôleu
 ```js
 async deleteTask(index) {
   try {
-    //Requête Kuzzle pour supprimer le document dont l'index est index, 
-    //dans la colelction this.currentList.value, dans l'index this.indexName
+    // Requête Kuzzle pour supprimer le document dont l'index est index, 
+    // dans la collection this.currentList.value, dans l'index this.indexName
     await kuzzle.document.delete(this.indexName, this.currentList.value, index);
-    //Mise à jour de notre tableau des taches
+    // Mise à jour de notre tableau des taches
     this.tasks = this.tasks.filter(task => task.index !== index);
-    //Notification
+    // Notification
     this.toasted('info',`Task ${index} deleted`);
   } catch (error) {
     this.toasted('error',`${error.message}`);
@@ -566,14 +573,14 @@ la documentation de cette fonction [ici](https://docs.kuzzle.io/sdk-reference/js
 ```js
 async setTaskComplete(index, newValue) {
   try {
-    //Requête Kuzzle pour mettre a jour le document dont l'index est index,
-    //dans la collection this.currentList.value, dans l'index this.indexName
-    //en modifiant la propriété complete avec la valeur newValue
+    // Requête Kuzzle pour mettre à jour le document dont l'index est index,
+    // dans la collection this.currentList.value, dans l'index this.indexName
+    // en modifiant la propriété complete avec la valeur newValue
     await kuzzle.document.update(this.indexName, this.currentList.value, index, {
       complete: newValue
     });
-    //On met ensuite à jour la valeur dans notre tableau puis on affiche
-    //une notification
+    // On met ensuite à jour la valeur dans notre tableau puis on affiche
+    // une notification
     const updatedTask = this.tasks.find(task => task.index === index);
     updatedTask.complete = newValue;
     this.toasted('info',`Task ${updatedTask.Task} updated`);
@@ -656,8 +663,8 @@ La fonction `addTask` va faire appel à la fonction `create` du contrôleur
 `document` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/create/).
 ```js
 async addTask(message) {
-  //Etant donné que les nouvelles taches sont initialement actives,
-  //on force l'affichage de ces dernieres.
+  // Etant donné que les nouvelles taches sont initialement actives,
+  // on force l'affichage de ces dernieres.
   if (!this.seeActiveTasks) {
     this.setSeeActiveTasks();
   }
@@ -666,18 +673,18 @@ async addTask(message) {
     return;
   }
   try {
-    //Requete Kuzzle pour créer un document dans la collection 
-    //this.currentList.value dans l'index this.indexName, du document définit
-    //dans l'objet en 3ème parametre contenant une propriété task avec la 
-    //valeur message et une propriété complete avec la valeur false.
+    // Requête Kuzzle pour créer un document dans la collection 
+    // this.currentList.value dans l'index this.indexName, du document définit
+    // dans l'objet en 3ème paramètre contenant une propriété task avec la 
+    // valeur message et une propriété complete avec la valeur false.
     const Result = await kuzzle.document.create(this.indexName,
     this.currentList.value, {
       task: message,
       complete: false
     });
-    //On ajoute ensuite la nouvelle tache dans notre tableau
-    //La réponse récupérée dans Result contiendra l'id du nouveau document
-    //que l'on va stocker.
+    // On ajoute ensuite la nouvelle tache dans notre tableau
+    // La réponse récupérée dans Result contiendra l'id du nouveau document
+    // que l'on va stocker.
     this.tasks.push({
       message: message,
       index: Result._id,
