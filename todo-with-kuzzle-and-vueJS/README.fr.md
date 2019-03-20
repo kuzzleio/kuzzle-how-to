@@ -1,5 +1,6 @@
 # Todo MVC Step1
 ##Pré-requis
+
 Node.js
 
 npm
@@ -7,7 +8,7 @@ npm
 ## Introduction
 Kuzzle permet de gérer de nombreuses données de manière très simple.
 
-Afin de l'installer, vous pouvez vous rendre [ici](https://docs.kuzzle.io/guide/1/getting-started/running-kuzzle/).
+Afin de l'installer, vous pouvez vous rendre [ici](https://docs.kuzzle.io/guide/1/essentials/installing-kuzzle/).
 
 Dans ce how-to, nous allons réaliser une simple todo-list utilisant 
 le pattern modèle-vue-controleur avec Kuzzle et VueJS.
