@@ -1,6 +1,6 @@
 # Todo MVC Step1
 
-## Requirements
+## Pré-requis
 Vue Cli 3
 
 Kuzzle 
@@ -8,16 +8,16 @@ Kuzzle
 Kuzzle SDK JS 6
 
 ## Suggestion
-Dans ce how-to, nous allons utilisé Vuetify pour les templates, 
+Nous allons utiliser Vuetify pour les templates, 
 ainsi que vue-izitoast pour afficher des notifications.
 
 ## Introduction
-Kuzzle permet de gerer de nombreuses données de manière très simple.
+Kuzzle permet de gérer de nombreuses données de manière très simple.
 
 Dans ce how-to, nous allons réaliser une simple todo-list utilisant 
 le pattern modèle-vue-controleur avec Kuzzle et VueJS.
 
-Cette première partie mettra en avant les fonctionnalitées de 
+Cette première partie mettra en avant les fonctionnalités de 
 Kuzzle telles que:
 - la connexion à Kuzzle,
 - la création d'un index,
@@ -30,8 +30,8 @@ Kuzzle telles que:
 - la recherche de documents
 
 Les parties `<template>` et `style`, étant liées à VueJS et Vuetify mais
-n'ayant pas d'intéraction avec Kuzzle, ne seront pas détaillées dans ce how-to; 
-vous pouvez cependant consulter les fichier concernés parallèlement à 
+n'ayant pas d'interaction avec Kuzzle, ne seront pas détaillées dans ce how-to;
+vous pouvez cependant consulter les fichiers concernés parallèlement à 
 la lecture de ce tutoriel.
 
 ## Configuation du projet
@@ -39,13 +39,15 @@ Création d'un projet avec Vue Cli:
 ```
 vue create todomvc
 ```
-Ajoutez manuellement les fonctionnalités suivantes au projet : `router` et `vuex`.
-Sélectionnez ensuite '`Eslint + Standard config`', puis '`Lint on save`', et enfin '`In dedicated config files`'.
+Ajoutez manuellement les fonctionnalités suivantes au projet : `router`
+et `vuex`.
+Sélectionnez ensuite '`Eslint + Standard config`', puis '`Lint on save`',
+et enfin '`In dedicated config files`'.
 Vous pouvez maintenant lancer votre projet via la commande :
 ```
 npm run serve
 ```
-puis vous rendre a l'adresse http://localhost:8080/
+puis vous rendre a l'adresse http://localhost:8080/.
 
 Nous allons maintenant mettre en place le store, qui nous permettra de
 stocker et d'utiliser certaines données devant être globales à notre 
@@ -68,7 +70,7 @@ export default new Vuex.Store({
 
 #### Optionnel
 Afin d'installer vuetify et vue-izitoast, lancez les 
-commandes suivantes et choisissez la configuation par défaut :
+commandes suivantes et choisissez la configuration par défaut :
 ```
 vue add vuetify
 npm install vue-izitoast --save
@@ -112,10 +114,11 @@ nous y connecter.
 ### Connexion
 Créez la vue '`/src/views/KuzzleConnect.vue`' puis ajoutez
 les parties `<template></template>` et `<style></style>`
-du fichier `KuzzleConnect.vue` présent dans ce projet pour afficher le chargement.
+du fichier `KuzzleConnect.vue` présent dans ce projet pour afficher 
+le chargement.
 
 Ajoutez ensuite la balise `<script></script>` dans laquelle nous allons
-mettre en place la connection au serveur Kuzzle.
+mettre en place la connexion au serveur Kuzzle.
 
 Commencez par importer le service que nous avons créé 
 précédemment, ainsi que le store :
@@ -124,10 +127,10 @@ import kuzzle from '../service/Kuzzle.js';
 import store from '../store.js';
 ```
 
-Nous allons tout d'abord ajouter des Listener sur notre Kuzzle afin
+Nous allons maintenant ajouter des Listener sur notre Kuzzle afin
 d'être informé lors des évènements de connexion ou de déconnexion.
-Esnuite, nous allons mettre en place un appel à notre fonction
-de connexion toutes les 200ms, jusqu'à ce que celle-ci soit établie.
+Ensuite, nous allons mettre en place un appel à notre fonction
+de connexion toutes les 200 ms, jusqu'à ce que celle-ci soit établie.
 ```js
   mounted() {
     kuzzle
@@ -183,10 +186,10 @@ methods: {
 
 ## Configuration du routeur
 Nous allons maintenant éditer le fichier `/src/router.js` pour y ajouter
-notre page `kuzzleConnect`. La page principale `Home` qui est créé par
+notre page `kuzzleConnect`. La page principale `Home` qui est créée par
 défaut et que nous modifierons ensuite est déjà importée dans notre routeur.
 Nous allons également écrire une fonction pour vérifier si nous sommes bien
-connecté au serveur Kuzzle.
+connectés au serveur Kuzzle.
 
 Ajoutez les lignes suivantes au début du fichier `/src/router.js` :
 ```js
@@ -237,10 +240,13 @@ Nous allons maintenant ajouter les composants qui formeront notre page
 principale :
  - `Add.vue` => barre d'ajout de tache ;
  - `ManageList.vue` => barre de création/sélection de liste ;
- - `Menu.vue` => boutons de gestion multiple des taches (tout completer, tout supprimer) et de visualisation ;
- - `ModalList.vue` => modale de création de liste ;
- - `NavBar.vue` => barre de navigation permettant l'activation ou non des notifications ;
- - `Task.vue` => ligne correspondant à une tache avec boutons pour compléter/supprimer.
+ - `Menu.vue` => boutons de gestion multiple des taches 
+    (tout completer, tout supprimer) et de visualisation ;
+ - `ModalList.vue` => modale de création de listes ;
+ - `NavBar.vue` => barre de navigation permettant l'activation ou non
+    des notifications ;
+ - `Task.vue` => ligne correspondant à une tache avec boutons pour
+    compléter/supprimer.
 
 La construction de ces composants ne sera pas détaillée étant donné
 qu'ils n'ont aucune interaction directe avec Kuzzle. Vous pouvez vous
@@ -254,20 +260,20 @@ champ de saisie de texte ainsi que d'un bouton. Lors du click, un signal
 
 ### ModalList
 Créez le fichier `/src/components/ModalList.vue`
-Ce composant doit contenir un champ de saisie de text ainsi qu'un bouton.
+Ce composant doit contenir un champ de saisie de texte ainsi qu'un bouton.
 Lors d'un click, un signal `create` sera envoyé au parent de ce composant,
 accompagné de la saisie.
 
 ### ManageList
 Créez le fichier `/src/components/ManageList.vue`
 Ce composant doit contenir un composant ModalList (créé ci-dessus) qui sera
-actif ou non selon l'état d'une variable appelée `modal` initialisée a `false`.
-Le signal `create` reçu par cette ModalList doit être relié a une fonction
+actif ou non selon l'état d'une variable appelée `modal` initialisée à `false`.
+Le signal `create` reçu par cette ModalList doit être relié à une fonction
 `create` qui émettra également un signal `createList` à son parent.
 Il doit également proposer un select basé sur un tableau `lists` reçu en props,
 et appelant une fonction `changed` lorsque sa valeur change qui va émettre un
 signal `setCurrentList`. Pour finir, il doit contenir un bouton appelant une 
-fonction `newList` qui passera la variable `modal` a `true` afin de l'activer.
+fonction `newList` qui passera la variable `modal` à `true` afin de l'activer.
 
 ### Menu
 Créez le fichier `/src/components/Menu.vue`
@@ -291,7 +297,8 @@ d'activer ou non les notifications. Elle devra avoir une data `toastsEnabled`
 qui sera reliée avec le cookie du même nom.
 Lors du changement de valeur de la checkbox, la fonction `setToastEnabled`
 est appelée et va modifier la valeur du cookie.
-Il faut ensuite donner à ce cookie une valeur par défaut s'il n'existe pas, dans la fonction `mounted` de ce composant.
+Il faut ensuite créer et initialiser ce cookie s'il n'existe pas, dans la 
+fonction `mounted` de ce composant.
 
 ### Task
 Créez le fichier `/src/components/Task.vue`
@@ -301,12 +308,12 @@ Il reçoit à sa création les props suivantes: `complete`, `index`, `message`.
 Il doit contenir une checkbox envoyant un signal `setTaskComplete` dont le
 label sera la props `message` et un bouton envoyant un signal `deleteTask`.
 
-## Main Page
+## Page principale
 Maintenant que les composants sont créés, nous allons pouvoir les instancier
 dans notre page principale, puis récupérer les signaux émis et ainsi envoyer
-les requêtes correspondantes a Kuzzle.
+les requêtes correspondantes à Kuzzle.
 
-Voici l'ordre dans lequel nous allons procéder:
+Voici l'ordre dans lequel nous allons procéder :
  - Ajout des données
  - Ajout des fonctions non liées à des évènements
  - Ajout des fonctions du composant ManageList
@@ -315,10 +322,12 @@ Voici l'ordre dans lequel nous allons procéder:
  - Ajout des fonctions des composants Task
  - Ajout de l'initialisation de la page
 
-Encore une fois, la partie template ne sera pas détaillée ici, nous allons nous concentrer sur les fonctions faisant des appels a Kuzzle. Vous pourrez trouver le code du template dans le fichier `/src/views/Home.vue` de ce projet.
+Encore une fois, la partie template ne sera pas détaillée ici, nous allons nous
+concentrer sur les fonctions faisant des appels à Kuzzle. Vous pourrez trouver
+le code du template dans le fichier `/src/views/Home.vue` de ce projet.
 
-### Datas
-En premier lieu, nous allons ajouter les datas suivantes: 
+### Data
+En premier lieu, nous allons ajouter les data suivantes: 
 ```js
   data() {
     return {
@@ -340,7 +349,7 @@ En premier lieu, nous allons ajouter les datas suivantes:
       seeCompletedTasks: true,
       //La liste sélectionnée
       currentList: { text: 'build', value: 'build' },
-      //le nom de l'index dans lequel les todoLists sont créees
+      //le nom de l'index dans lequel les todoLists sont créées
       indexName: this.$store.state.indexName,
       //Les type de positionnements de nos toasts
       success: {
@@ -356,10 +365,14 @@ En premier lieu, nous allons ajouter les datas suivantes:
   },
 ```
 
-### Other Functions
-Nous allons ici créer quelques fonctions qui ne seront pas directement appelées selon les signaux de nos composants mais qui vont nous permettre de mieux structurer notre code et d'éviter les redondances.
+### Autres Fonctions
+Nous allons ici créer quelques fonctions qui ne seront pas directement appelées
+selon les signaux de nos composants mais qui vont nous permettre de mieux
+structurer notre code et d'éviter les redondances.
 
-La fonction `Toasted` va simplement nous permettre de centraliser la création de nos notifications et ainsi pouvoir gérer leur affichage ou non en fonction de notre cookie (cf: NavBar).
+La fonction `Toasted` va simplement nous permettre de centraliser la création
+de nos notifications et ainsi pouvoir gérer leur affichage ou non en fonction
+de notre cookie (cf: NavBar).
 ```js
 toasted(type, message) {
   if (localStorage.getItem('toastsEnabled') === 'false') {
@@ -379,7 +392,9 @@ toasted(type, message) {
 },
 ```
 
-La fonction `UpdateCompleteAll` va simplement mettre à jour l'état de notre variable `completeAllTasks` (liée au composant Menu), selon l'affichage sélectionné.
+La fonction `UpdateCompleteAll` va simplement mettre à jour l'état de notre
+variable `completeAllTasks` (liée au composant Menu), selon l'affichage
+sélectionné.
 ```js
 updateCompleteAll() {
   let completeValue = true;
@@ -395,14 +410,18 @@ updateCompleteAll() {
 },
 ```
 
-Les fonctions suivantes font une requête à notre serveur Kuzzle, elles seront donc plus détaillées.
+Les fonctions suivantes font une requête à notre serveur Kuzzle, 
+elles seront donc plus détaillées.
 
-La fonction `fetchIndex` va nous permettre de récupérer toutes les todoLists actuellement créées. Elle fait appel à la fonction `list` du controller `collection` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/list/)
+La fonction `fetchIndex` va nous permettre de récupérer toutes les todoLists
+actuellement créées. Elle fait appel à la fonction `list` du contrôleur
+`collection` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/list/)
 ```js
 async fetchIndex() {
   this.lists = [];
   try {
-    //Requête Kuzzle pour lister les collections de l'index contenu dans this.indexName
+    //Requête Kuzzle pour lister les collections de l'index contenu
+    // dans this.indexName
     const collectionList = await kuzzle.collection.list(this.indexName);
     //La réponse est de type:
     /*
@@ -414,27 +433,35 @@ async fetchIndex() {
     }
     */
    //On rempli ensuite notre tableau
-    this.lists = collectionList.collections.map(elem => ({text: elem.name, value:elem.name}));
+    this.lists = collectionList.collections.map(elem => (
+      {text: elem.name, value:elem.name}
+    ));
   } catch (error) {
     this.toasted('error',`${error.message}`);
   }
 },
 ```
 
-La fonction `fetchCollection` nous permet de lister les taches contenues dans la todoList en cours d'édition. Elle utilise la fonction `search` du controller `document` donc vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/search/)
+La fonction `fetchCollection` nous permet de lister les taches contenues dans
+la todoList en cours d'édition. Elle utilise la fonction `search` du contrôleur
+`document` donc vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/search/)
 ```js
 async fetchCollection() {
   this.tasks = [];
   let results = {};
   try {
-    //Requête Kuzzle pour récupérer les 100 premiers documents contenus dans la collection this.currentList.value de l'index this.indexName triés par date de création.
+    //Requête Kuzzle pour récupérer les 100 premiers documents contenus dans
+    //la collection this.currentList.value de l'index this.indexName
+    //triés par date de création.
     results = await kuzzle.document.search(
       this.indexName,
       this.currentList.value,
       { sort: ['_kuzzle_info.createdAt'] },
       { size: 100 }
     );
-    //La réponse contiendra un tableau nommé hits dans lequel nous trouverons les informations de notre tache (index, message, complete) que nous allons mettre dans notre tableau.
+    //La réponse contiendra un tableau nommé hits dans lequel nous trouverons
+    //les informations de notre tache (index, message, complete) que nous
+    //allons mettre dans notre tableau.
     this.tasks = results.hits.map(hit => {
       return {
         message: hit._source.task,
@@ -448,13 +475,19 @@ async fetchCollection() {
 },
 ```
 
-### Functions for ManageList signals
-Nous pouvons commencer par ajouter le composant NavBar étant donné qu'il ne nécessite pas d'intéraction particulière.
+### Fonctions pour les signaux du composant ManageList
+Nous pouvons commencer par ajouter le composant NavBar étant donné 
+qu'il ne nécessite pas d'interaction particulière.
 
-Ensuite, nous allons ajouter le composant ManageList. Il prendra en paramètre notre tableau de listes et la liste sélectionnée. 
-Nous allons ensuite créer deux fonctions afin de réagir aux signaux `setCurrentList` et `createList`, elles porteront respectivement les mêmes noms.
+Ensuite, nous allons ajouter le composant ManageList. Il prendra en
+paramètre notre tableau de listes et la liste sélectionnée. 
+Nous allons ensuite créer deux fonctions afin de réagir aux signaux
+`setCurrentList` et `createList`, elles porteront respectivement les
+mêmes noms.
 
-La fonction `setCurrentList` va modifier la liste en cours d'édition puis appeler nos trois fonctions précédentes afin de mettre à jour les données de nos tableaux puis celles affichées. 
+La fonction `setCurrentList` va modifier la liste en cours d'édition puis
+appeler nos trois fonctions précédentes afin de mettre à jour les données
+de nos tableaux puis celles affichées. 
 ```js
 async setCurrentList(collection) {
   if (collection.value === '') {
@@ -473,10 +506,14 @@ async setCurrentList(collection) {
 },
 ```
 
-La fonction `createList` va effectuer une requete Kuzzle via le controller `collection` et la fonction `create` (dont la documentation est disponible [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/create/)) pour créer une nouvelle todoList.
+La fonction `createList` va effectuer une requête Kuzzle via le contrôleur
+`collection` et la fonction `create` (dont la documentation est disponible [ici](https://docs.kuzzle.io/sdk-reference/js/6/collection/create/))
+pour créer une nouvelle todoList.
 ```js
 async createList(input) {
-  //Le mapping correspond a la structure de la collection qui va etre crée. Ici, les documents de la collection auront une propriété complete de type boolean et une propriété task de type text.
+  //Le mapping correspond a la structure de la collection qui va etre crée.
+  //Ici, les documents de la collection auront une propriété complete de
+  //type boolean et une propriété task de type text.
   const mapping = {
     properties: {
       complete: { type: 'boolean' },
@@ -484,7 +521,8 @@ async createList(input) {
     }
   };
   try {
-    //Requête Kuzzle pour créer la collection input dans l'index this.indexName avec le mapping mapping. 
+    //Requête Kuzzle pour créer la collection input dans l'index
+    //this.indexName avec le mapping mapping. 
     await kuzzle.collection.create(this.indexName, input, mapping);
     //Update de la liste en cours d'édition
     this.setCurrentList({ text: input, value: input });
@@ -494,16 +532,22 @@ async createList(input) {
 },
 ```
 
-### Functions for Task signals
-Dans un second temps, nous allons ajouter le composant Task. Il sera instancié autant de fois qu'il y a de tache dans notre tableau via l'utilisation d'une boucle `v-for`. Ce composant prendra en props les attributs `index`, `complete` et `message` de l'element courant dans la boucle et sera actif selon l'attribut `displayed`.
+### Fonctions pour les signaux du composant Task
+Dans un second temps, nous allons ajouter le composant Task. Il sera instancié
+autant de fois qu'il y a de tache dans notre tableau via l'utilisation d'une
+boucle `v-for`. Ce composant prendra en props les attributs `index`, `complete`
+et `message` de l'element courant dans la boucle et sera actif selon l'attribut
+`displayed`.
 Nous avons deux foncions à ajouter pour réagir aux signaux suivants: 
 `deleteTask` et `setTaskComplete`.
 
-La fonction `deleteTask` va faire un appel à la fonction `delete` du controller `document` dont la documentation se trouve [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/delete/).
+La fonction `deleteTask` va faire un appel à la fonction `delete` du contrôleur
+`document` dont la documentation se trouve [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/delete/).
 ```js
 async deleteTask(index) {
   try {
-    //Requête Kuzzle pour supprimer le document dont l'index est index, dans la colelction this.currentList.value, dans l'index this.indexName
+    //Requête Kuzzle pour supprimer le document dont l'index est index, 
+    //dans la colelction this.currentList.value, dans l'index this.indexName
     await kuzzle.document.delete(this.indexName, this.currentList.value, index);
     //Mise à jour de notre tableau des taches
     this.tasks = this.tasks.filter(task => task.index !== index);
@@ -516,15 +560,20 @@ async deleteTask(index) {
 },
 ```
 
-La fonction `setTaskComplete` va utiliser la fonction `update` du controller `document` afin de mettre a jour les données de notre tache. Vous trouverez la documentation de cette fonction [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/update/).
+La fonction `setTaskComplete` va utiliser la fonction `update` du contrôleur
+`document` afin de mettre à jour les données de notre tache. Vous trouverez
+la documentation de cette fonction [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/update/).
 ```js
 async setTaskComplete(index, newValue) {
   try {
-    //Requête Kuzzle pour mettre a jour le document dont l'index est index, dans la collection this.currentList.value, dans l'index this.indexName en modifiant la propriété complete avec la valeur newValue
+    //Requête Kuzzle pour mettre a jour le document dont l'index est index,
+    //dans la collection this.currentList.value, dans l'index this.indexName
+    //en modifiant la propriété complete avec la valeur newValue
     await kuzzle.document.update(this.indexName, this.currentList.value, index, {
       complete: newValue
     });
-    //On met ensuite à jour la valeur dans notre tableau puis on affiche une notification
+    //On met ensuite à jour la valeur dans notre tableau puis on affiche
+    //une notification
     const updatedTask = this.tasks.find(task => task.index === index);
     updatedTask.complete = newValue;
     this.toasted('info',`Task ${updatedTask.Task} updated`);
@@ -535,12 +584,15 @@ async setTaskComplete(index, newValue) {
 },
 ```
 
-### Functions for Menu signals
-Ensuite, nous allons ajouter le composant Menu. Ce composant prendra en props la longueur de notre tableau de taches ainsi que la variable `completeAllTasks`.
+### Fonctions pour les signaux du composant Menu
+Ensuite, nous allons ajouter le composant Menu. Ce composant prendra en props
+la longueur de notre tableau de taches ainsi que la variable `completeAllTasks`.
 Nous avons quatre foncions à ajouter pour réagir aux signaux suivants:
-`deleteSelectedTasks`, `setSelectedTasksComplete`, `setSeeActiveTasks`, `setSeeCompletedTasks`.
+`deleteSelectedTasks`, `setSelectedTasksComplete`, `setSeeActiveTasks`,
+`setSeeCompletedTasks`.
 
-La fonction `deleteSelectedTasks` va simplement appeler la fonction `deleteTask` créée précédement pour chacune des taches complétées. 
+La fonction `deleteSelectedTasks` va simplement appeler la fonction
+`deleteTask` créée précédemment pour chacune des taches complétées. 
 ```js
 async deleteSelectedTasks() {
   let deleted = false;
@@ -558,7 +610,8 @@ async deleteSelectedTasks() {
 },
 ```
 
-La fonction `setSelectedTasksComplete` va simplement faire passer toutes les taches dans le même état que la variable `completeAllTasks`.
+La fonction `setSelectedTasksComplete` va simplement faire passer toutes
+les taches dans le même état que la variable `completeAllTasks`.
 ```js
 async setSelectedTasksComplete(newValue) {
   if (this.tasks.length === 0) {
@@ -578,14 +631,16 @@ async setSelectedTasksComplete(newValue) {
 },
 ```
 
-La fonction `setSeeActiveTasks` va simplement inverser la valeur de la variable qui affiche ou non les taches actives puis mettre à jour l'affichage.
+La fonction `setSeeActiveTasks` va simplement inverser la valeur de la variable
+qui affiche ou non les taches actives puis mettre à jour l'affichage.
 ```js
 setSeeActiveTasks(seeActiveValue) {
   this.seeActiveTasks = seeActiveValue;
   this.updateCompleteAll();
 },
 ```
-La fonction `setSeeCompletedTasks` va simplement inverser la valeur de la variable qui affiche ou non les taches complete puis mettre à jour l'affichage.
+La fonction `setSeeCompletedTasks` va simplement inverser la valeur de la
+variable qui affiche ou non les taches complete puis mettre à jour l'affichage.
 ```js
 setSeeCompletedTasks(seeCompletedValue) {
   this.seeCompletedTasks = seeCompletedValue;
@@ -593,13 +648,16 @@ setSeeCompletedTasks(seeCompletedValue) {
 },
 ```
 
-### Functions for Add signals
-Dans un second temps, nous allons ajouter le composant Add. Nous devons juste ajouter une foncion pour réagir au signal `addTask`.
+### Fonctions pour les signaux du composant Add
+Dans un second temps, nous allons ajouter le composant Add. Nous devons juste
+ajouter une fonction pour réagir au signal `addTask`.
 
-La fonction `addTask` va faire appel a la fonction `create` du controller `document` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/create/).
+La fonction `addTask` va faire appel à la fonction `create` du contrôleur
+`document` dont vous pouvez trouver la documentation [ici](https://docs.kuzzle.io/sdk-reference/js/6/document/create/).
 ```js
 async addTask(message) {
-  //Etant donné que les nouvelles taches sont initialement actives, on force l'affichage de ces dernieres.
+  //Etant donné que les nouvelles taches sont initialement actives,
+  //on force l'affichage de ces dernieres.
   if (!this.seeActiveTasks) {
     this.setSeeActiveTasks();
   }
@@ -608,13 +666,18 @@ async addTask(message) {
     return;
   }
   try {
-    //Requete Kuzzle pour créer un document dans la collection this.currentList.value dans l'index this.indexName, du document définit dans l'objet en 3ème parametre contenant une propriété task avec la valeur message et une propriété complete avec la valeur false.
-    const Result = await kuzzle.document.create(this.indexName, this.currentList.value, {
+    //Requete Kuzzle pour créer un document dans la collection 
+    //this.currentList.value dans l'index this.indexName, du document définit
+    //dans l'objet en 3ème parametre contenant une propriété task avec la 
+    //valeur message et une propriété complete avec la valeur false.
+    const Result = await kuzzle.document.create(this.indexName,
+    this.currentList.value, {
       task: message,
       complete: false
     });
     //On ajoute ensuite la nouvelle tache dans notre tableau
-    //La réponse récupérée dans Result contiendra l'id du nouveau document que l'on va stocker.
+    //La réponse récupérée dans Result contiendra l'id du nouveau document
+    //que l'on va stocker.
     this.tasks.push({
       message: message,
       index: Result._id,
@@ -628,8 +691,9 @@ async addTask(message) {
 },
 ```
 
-### Initialize Main Page
-Maintenant que tous est en place, il ne nous reste plus qu'à initialiser certaines données de notre page: 
+### Initialisation de la page principale
+Maintenant que tout est en place, il ne nous reste plus qu'à initialiser
+certaines données de notre page: 
 
 ```js
 async mounted() {
@@ -647,4 +711,6 @@ async mounted() {
 }
 ```
 
-Vous devez maintenant avoir une todo MVC fonctionnelle que vous pouvez lancer via la commande suivante : `npm run serve`, après avoir au préalable lancé votre kuzzle `docker-compose up` comme précisé au début de ce how-to.
+Vous devez maintenant avoir une todo MVC fonctionnelle que vous pouvez lancer
+via la commande suivante : `npm run serve`, après avoir au préalable lancé
+votre kuzzle `docker-compose up` comme précisé au début de ce how-to.
