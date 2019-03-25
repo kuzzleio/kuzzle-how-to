@@ -1,7 +1,7 @@
 <template>
   <div id="ModalList">
     <v-layout row justify-center>
-      <v-dialog v-model="modal" max-width="290">
+      <v-dialog max-width="290" v-model="modal">
         <v-card>
           <v-card-title class="headline">Creating new List</v-card-title>
           <v-card-text>
