@@ -36,7 +36,7 @@ Commençons par installer Vue Cli :
 npm install -g @vue/cli
 ```
 
-Nous pouvons maintenant créer un projet :
+Ensuite, créez un nouveau projet dédié à ce tutoriel :
 ```
 vue create todomvc
 ```
