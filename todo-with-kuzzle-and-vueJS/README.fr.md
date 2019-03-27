@@ -26,7 +26,7 @@ Kuzzle telles que:
 - la recherche de documents
 
 Les parties `<template>` et `style`, étant liées à VueJS et Vuetify mais
-n'ayant pas d'interaction avec Kuzzle, ne seront pas détaillées dans ce how-to;
+n'ayant pas d'interaction avec Kuzzle, ne seront pas détaillées dans ce how-to ;
 vous pouvez cependant consulter les fichiers concernés parallèlement à 
 la lecture de ce tutoriel.
 
