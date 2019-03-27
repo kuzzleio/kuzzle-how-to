@@ -31,7 +31,7 @@ vous pouvez cependant consulter les fichiers concernés parallèlement à
 la lecture de ce tutoriel.
 
 ## Configuration du projet
-Commençons par installer Vue Cli : 
+Tout d'abord, installez l'outil de ligne de commande Vue.js :
 ```
 npm install -g @vue/cli
 ```
