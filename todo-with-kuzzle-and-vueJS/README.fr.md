@@ -8,7 +8,7 @@ npm
 ## Introduction
 Kuzzle permet de gérer de nombreuses données de manière très simple.
 
-Afin de l'installer, vous pouvez vous rendre [ici](https://docs.kuzzle.io/guide/1/essentials/installing-kuzzle/).
+Pour installer Kuzzle, suivez les étapes détaillées dans [le guide d'installation](https://docs.kuzzle.io/guide/1/essentials/installing-kuzzle/).
 
 Dans ce how-to, nous allons réaliser une simple todo-list utilisant 
 le schéma modèle-vue-controleur avec Kuzzle et VueJS.
