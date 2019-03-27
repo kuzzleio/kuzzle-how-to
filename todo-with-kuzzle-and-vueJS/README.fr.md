@@ -30,7 +30,7 @@ n'ayant pas d'interaction avec Kuzzle, ne seront pas détaillées dans ce how-to
 vous pouvez cependant consulter les fichiers concernés parallèlement à 
 la lecture de ce tutoriel.
 
-## Configuation du projet
+## Configuration du projet
 Commençons par installer Vue Cli : 
 ```
 npm install -g @vue/cli
