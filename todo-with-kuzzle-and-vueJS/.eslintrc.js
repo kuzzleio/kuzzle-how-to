@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    "es6": true,
+    "ecmaVersion": 6,
     "mocha": true
   },
   'extends': [

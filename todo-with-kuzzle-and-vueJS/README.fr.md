@@ -1,12 +1,23 @@
 # Todo MVC Step1
 ## Pré-requis
 
-Node.js
+[Node.js 8.9+](https://nodejs.org/en/)
 
-npm
+[npm 5+](https://www.npmjs.com/)
+
+[Vue CLI 3.4+](https://cli.vuejs.org/)
+
+[vue-izitoast 1.4+](https://github.com/arthurvasconcelos/vue-izitoast)
+
+[Vuetify 1.4+](https://vuetifyjs.com/en/)
+
+[kuzzle-sdk JS 6+](https://docs.kuzzle.io/sdk-reference/js/6/getting-started/node-js/)
+
+Ce how-to suppose que les lecteurs connaissent les bases de [Vue.js](https://vuejs.org/)
 
 ## Introduction
-Kuzzle permet de gérer de nombreuses données de manière très simple.
+[Kuzzle](https://kuzzle.io/) est une suite prête à l'emploi, open source et installable qui vous permet
+de créer des applications Web, mobiles et IoT modernes en un rien de temps.
 
 Pour installer Kuzzle, suivez les étapes détaillées dans [le guide d'installation](https://docs.kuzzle.io/guide/1/essentials/installing-kuzzle/).
 
@@ -14,7 +25,7 @@ Dans ce how-to, nous allons réaliser une simple todo-list utilisant
 le schéma modèle-vue-controleur avec Kuzzle et VueJS.
 
 Cette première partie mettra en avant les fonctionnalités de 
-Kuzzle telles que:
+Kuzzle suivantes:
 - la connexion à Kuzzle,
 - la création d'un index,
 - la vérification de l'existence d'un index,
@@ -31,28 +42,13 @@ vous pouvez cependant consulter les fichiers concernés parallèlement à
 la lecture de ce tutoriel.
 
 ## Configuration du projet
-Tout d'abord, installez l'outil de ligne de commande Vue.js :
-```
-npm install -g @vue/cli
-```
 
-Ensuite, créez un nouveau projet dédié à ce tutoriel :
-```
-vue create todomvc
-```
-Ajoutez manuellement les fonctionnalités suivantes au projet : `router`
-et `vuex`.
-Sélectionnez ensuite '`Eslint + Standard config`', puis '`Lint on save`',
-et enfin '`In dedicated config files`'.
-Vous pouvez maintenant lancer votre projet via la commande :
-```
-npm run serve
-```
-puis vous rendre a l'adresse http://localhost:8080/.
+Tout d'abord, créez un projet avec Vue-cli comprenant les fonctionnalités
+router et vuex.
 
-Nous allons maintenant mettre en place le store, qui nous permettra de
-stocker et d'utiliser certaines données devant être globales à notre 
-application.
+Nous allons maintenant mettre en place le gestionnaire d'état ([vuex](https://vuex.vuejs.org/fr/)),
+qui nous permettra de stocker et d'utiliser certaines données devant
+être globales à notre application.
 
 Pour cela, modifiez l'export du fichier `/src/store.js` de la façon suivante :
 ```js
@@ -69,34 +65,9 @@ export default new Vuex.Store({
 });
 ```
 
-#### Framework et plugin
-Nous allons utiliser Vuetify pour les templates, 
-ainsi que vue-izitoast pour afficher des notifications.
-
-Afin de les installer lancez les commandes suivantes et
-choisissez la configuration par défaut :
-```
-vue add vuetify
-npm install vue-izitoast --save
-npm install material-design-icons-iconfont -D
-```
-Ajoutez ensuite les lignes suivantes dans le fichier `/src/main.js` :
-```js
-import VueIziToast from 'vue-izitoast';
-import 'material-design-icons-iconfont/dist/material-design-icons.css';
-import 'vuetify/dist/vuetify.min.css';
-import 'izitoast/dist/css/iziToast.css';
-
-Vue.use(VueIziToast);
-```
-
 ## Se connecter à Kuzzle
 ### Instanciation
-Dans un premier temps nous allons ajouter le sdk javascript au projet: 
-```
-npm install kuzzle-sdk --save
-```
-Nous pouvons ensuite créer le service Kuzzle.
+Dans un premier temps nous allons créer le service Kuzzle.
 Ajoutez le dossier '/src/service', créez un fichier Kuzzle.js
 puis ajoutez le code suivant :
 
