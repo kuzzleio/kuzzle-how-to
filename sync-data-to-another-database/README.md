@@ -96,8 +96,8 @@ Each method will receive two parameters :
 
 In order to reflect the changes in Cassandra, we need to know the content of the document as well as the collection and index it is stored in.
 
-Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api-documentation/controller-document/create/))
-(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api/1/controller-document/create/) for the contents of the Response object)  
+Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api/1/controller-document/create/))
+(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api/1/controller-document) for the contents of the Response object)  
 
 For each event, we will transform the input data so that each document has the following format:
 
