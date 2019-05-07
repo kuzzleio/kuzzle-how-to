@@ -5,8 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    connectedToKuzzle: false,
-    indexName: 'todolists'
+    connectedToKuzzle: false
   },
   mutations: {
     setConnection(state, value) {

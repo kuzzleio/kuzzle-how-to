@@ -70,16 +70,7 @@ export default {
       seeActiveTasks: true,
       seeCompletedTasks: true,
       currentList: { text: 'build', value: 'build' },
-      indexName: this.$store.state.indexName,
-      success: {
-        position: 'bottomRight'
-      },
-      info: {
-        position: 'bottomLeft'
-      },
-      error: {
-        position: 'topRight'
-      }
+      indexName: 'todolists'
     };
   },
   methods: {
@@ -87,56 +78,99 @@ export default {
       if (localStorage.getItem('toastsEnabled') === 'false') {
         return;
       }
+      const position = {
+        position: 'bottomRight'
+      };
       switch (type) {
         case 'info':
-          this.$toast.info(message, 'INFO', this.info);
+          this.$toast.info(message, 'INFO', position);
           break;
         case 'error':
-          this.$toast.error(message, 'ERROR', this.error);
+          this.$toast.error(message, 'ERROR', position);
           break;
         case 'success':
-          this.$toast.success(message, 'SUCCESS', this.success);
+          this.$toast.success(message, 'SUCCESS', position);
           break;
       }
     },
 
-    setSeeActiveTasks(seeActiveValue) {
-      this.seeActiveTasks = seeActiveValue;
-      this.updateCompleteAll();
-    },
-
-    setSeeCompletedTasks(seeCompletedValue) {
-      this.seeCompletedTasks = seeCompletedValue;
-      this.updateCompleteAll();
-    },
-
-    async addTask(message) {
-      if (!this.seeActiveTasks) {
-        this.setSeeActiveTasks();
+    updateCompleteAll() {
+      let completeValue = true;
+      this.tasks.some(elem => {
+        if (!elem.complete) {
+          completeValue = false;
+          return false;
+        }
+      });
+      if (completeValue !== this.completeAllTasks) {
+        this.completeAllTasks = completeValue;
       }
-      if (message === '') {
-        this.toasted('error', 'Cannot add empty todo!');
+    },
+
+    async fetchIndex() {
+      this.lists = [];
+      try {
+        const collectionList = await kuzzle.collection.list(this.indexName);
+        this.lists = collectionList.collections.map(elem => ({
+          text: elem.name,
+          value: elem.name
+        }));
+      } catch (error) {
+        this.toasted('error', `${error.message}`);
+      }
+    },
+
+    async fetchCollection() {
+      this.tasks = [];
+      let results = {};
+      try {
+        results = await kuzzle.document.search(
+          this.indexName,
+          this.currentList.value,
+          { sort: ['_kuzzle_info.createdAt'] },
+          { size: 100 }
+        );
+        this.tasks = results.hits.map(hit => {
+          return {
+            message: hit._source.task,
+            index: hit._id,
+            complete: hit._source.complete
+          };
+        });
+      } catch (error) {
+        this.toasted('error', `${error.message}`);
+      }
+    },
+
+    async setCurrentList(collection) {
+      if (collection.value === '') {
+        this.tasks = [];
+        this.updateCompleteAll();
         return;
       }
       try {
-        const Result = await kuzzle.document.create(
-          this.indexName,
-          this.currentList.value,
-          {
-            task: message,
-            complete: false
-          }
-        );
-        this.tasks.push({
-          message: message,
-          index: Result._id,
-          complete: false
-        });
-        this.toasted('info', `New task ${message}`);
+        this.currentList = { text: collection.text, value: collection.value };
+        await this.fetchIndex();
+        await this.fetchCollection();
       } catch (error) {
         this.toasted('error', `${error.message}`);
       }
       this.updateCompleteAll();
+    },
+
+    async createList(input) {
+      const mapping = {
+        properties: {
+          complete: { type: 'boolean' },
+          task: { type: 'text' }
+        }
+      };
+      try {
+        await kuzzle.collection.create(this.indexName, input, mapping);
+        this.setCurrentList({ text: input, value: input });
+      } catch (error) {
+        this.toasted('error', `${error.message}`);
+      }
     },
 
     async deleteTask(index) {
@@ -204,83 +238,43 @@ export default {
       this.updateCompleteAll();
     },
 
-    updateCompleteAll() {
-      let completeValue = true;
-      this.tasks.some(elem => {
-        if (!elem.complete) {
-          completeValue = false;
-          return false;
-        }
-      });
-      if (completeValue !== this.completeAllTasks) {
-        this.completeAllTasks = completeValue;
-      }
+    setSeeActiveTasks(seeActiveValue) {
+      this.seeActiveTasks = seeActiveValue;
+      this.updateCompleteAll();
     },
 
-    async fetchCollection() {
-      this.tasks = [];
-      let results = {};
-      try {
-        results = await kuzzle.document.search(
-          this.indexName,
-          this.currentList.value,
-          { sort: ['_kuzzle_info.createdAt'] },
-          { size: 100 }
-        );
-        this.tasks = results.hits.map(hit => {
-          return {
-            message: hit._source.task,
-            index: hit._id,
-            complete: hit._source.complete
-          };
-        });
-      } catch (error) {
-        this.toasted('error', `${error.message}`);
-      }
+    setSeeCompletedTasks(seeCompletedValue) {
+      this.seeCompletedTasks = seeCompletedValue;
+      this.updateCompleteAll();
     },
 
-    async setCurrentList(collection) {
-      if (collection.value === '') {
-        this.tasks = [];
-        this.updateCompleteAll();
+    async addTask(message) {
+      if (!this.seeActiveTasks) {
+        this.setSeeActiveTasks();
+      }
+      if (message === '') {
+        this.toasted('error', 'Cannot add empty todo!');
         return;
       }
       try {
-        this.currentList = { text: collection.text, value: collection.value };
-        await this.fetchIndex();
-        await this.fetchCollection();
+        const Result = await kuzzle.document.create(
+          this.indexName,
+          this.currentList.value,
+          {
+            task: message,
+            complete: false
+          }
+        );
+        this.tasks.push({
+          message: message,
+          index: Result._id,
+          complete: false
+        });
+        this.toasted('info', `New task ${message}`);
       } catch (error) {
         this.toasted('error', `${error.message}`);
       }
       this.updateCompleteAll();
-    },
-
-    async fetchIndex() {
-      this.lists = [];
-      try {
-        const collectionList = await kuzzle.collection.list(this.indexName);
-        this.lists = collectionList.collections.map(elem => ({
-          text: elem.name,
-          value: elem.name
-        }));
-      } catch (error) {
-        this.toasted('error', `${error.message}`);
-      }
-    },
-
-    async createList(input) {
-      const mapping = {
-        properties: {
-          complete: { type: 'boolean' },
-          task: { type: 'text' }
-        }
-      };
-      try {
-        await kuzzle.collection.create(this.indexName, input, mapping);
-        this.setCurrentList({ text: input, value: input });
-      } catch (error) {
-        this.toasted('error', `${error.message}`);
-      }
     }
   },
   async mounted() {

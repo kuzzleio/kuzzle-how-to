@@ -2,7 +2,6 @@ module.exports = {
   root: true,
   env: {
     node: true,
-    "ecmaVersion": 6,
     "mocha": true
   },
   'extends': [
@@ -67,6 +66,7 @@ module.exports = {
   },
   parserOptions: {
     parser: 'babel-eslint',
-    sourceType: "module"
+    sourceType: "module",
+    "ecmaVersion": 7
   }
 }
