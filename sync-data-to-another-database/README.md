@@ -50,18 +50,18 @@ CREATE TABLE IF NOT EXISTS nyc_open_data.yellow_taxi (kuzzle_id text, pickup_dat
 
 ## Plugin development
 
-The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins-reference/plugins-features/) lets you extend Kuzzle's functionality by adding code modules that offer auxiliary features. These modules can:
+The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins/1) lets you extend Kuzzle's functionality by adding code modules that offer auxiliary features. These modules can:
 
   - Listen asynchronously to events
   - Listen synchronously to events (and pipe a request)
   - Add a controller route
   - Add a new authentication strategy
 
-We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins-reference/plugins-features/adding-pipes/) to Document Controller events in order to report document changes in Cassandra.  
+We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins/1/essentials/pipes/) to Document Controller events in order to report document changes in Cassandra.  
 
 ### Pipe some events
 
-The first step is to declare which [Plugin Events](https://docs.kuzzle.io/kuzzle-events/plugin-events/) we are going to pipe. These pipes must be declared in the plugin constructor.  
+The first step is to declare which [Plugin Events](https://docs.kuzzle.io/plugins/1/events) we are going to pipe. These pipes must be declared in the plugin constructor.  
 Each pipe is associated with a plugin method that will be called when the event occurs.  
 
 At the Document Controller level, we have two main families of events:
@@ -91,13 +91,13 @@ constructor () {
 ```
 
 Each method will receive two parameters :
- - a [Request](https://github.com/kuzzleio/kuzzle-common-objects#request) object when an event occurs. Depending on the event triggered, the Request exposes a [Response](https://docs.kuzzle.io/api-documentation/kuzzle-response/) object that will contain the result of the controller's action corresponding to the event.
+ - a [Request](https://github.com/kuzzleio/kuzzle-common-objects#request) object when an event occurs. Depending on the event triggered, the Request exposes a [Response](https://docs.kuzzle.io/api/1/essentials/kuzzle-response/) object that will contain the result of the controller's action corresponding to the event.
  - a callback that should be called when the pipe has finished processing the data. The callback take two arguments, an eventual error and the request object : `callback(error, request)`.
 
 In order to reflect the changes in Cassandra, we need to know the content of the document as well as the collection and index it is stored in.
 
-Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api-documentation/controller-document/create/))
-(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api-documentation/controller-document/) for the contents of the Response object)  
+Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api/1/controller-document/create/))
+(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api/1/controller-document) for the contents of the Response object)  
 
 For each event, we will transform the input data so that each document has the following format:
 
