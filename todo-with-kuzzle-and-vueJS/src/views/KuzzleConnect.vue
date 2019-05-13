@@ -35,21 +35,18 @@ export default {
           };
           await kuzzle.collection.create('todolists', 'FirstList', mapping);
         }
+        store.commit('setConnection', true);
+        this.$router.push({ name: 'home' });
       } catch (error) {
         console.error(error);
       }
     }
   },
   mounted() {
-    kuzzle
-      .addListener('connected', async () => {
-        store.commit('setConnection', true);
-        this.$router.push({ name: 'home' });
-      })
-      .addListener('disconnected', () => {
-        store.commit('setConnection', false);
-        this.$router.push({ name: 'kuzzleConnect' });
-      });
+    kuzzle.addListener('disconnected', () => {
+      store.commit('setConnection', false);
+      this.$router.push({ name: 'kuzzleConnect' });
+    });
     this.interval = setInterval(this.connect, 1000);
   }
 };

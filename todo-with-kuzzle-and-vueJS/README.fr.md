@@ -108,17 +108,12 @@ import store from '../store.js';
 ```
 
 Nous allons maintenant ajouter des Listener sur notre Kuzzle afin
-d'être informé lors des évènements de connexion ou de déconnexion.
+d'être informé lors des évènements de déconnexion.
 Ensuite, nous allons mettre en place un appel à notre fonction
 de connexion toutes les secondes, jusqu'à ce que celle-ci soit établie.
 ```js
   mounted() {
-    kuzzle
-      .addListener('connected', () => {
-        store.commit('setConnection', true);
-        this.$router.push({ name: 'home' });
-      })
-      .addListener('disconnected', () => {
+    kuzzle.addListener('disconnected', () => {
         store.commit('setConnection', false);
         this.$router.push({ name: 'kuzzleConnect' });
       });
@@ -154,6 +149,10 @@ methods: {
         // et task de type texte (le texte de la tache)
         await kuzzle.collection.create('todolists', 'FirstList', mapping);
       }
+      // On assigne a la variable 'connectedToKuzzle' la valeur true  
+      store.commit('setConnection', true);
+      // Puis on redirige sur la page home 
+      this.$router.push({ name: 'home' });
     } catch (error) {
       // En cas d'erreur on l'affiche via un toast
       this.$toast.info(`${error.message}`, 'INFO', {
