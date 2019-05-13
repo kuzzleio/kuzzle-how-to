@@ -45,10 +45,10 @@ la lecture de ce tutoriel.
 
 ## Configuration du projet
 
-Tout d'abord, créez un projet avec ([Vue-cli](https://cli.vuejs.org/guide/creating-a-project.html)) comprenant les fonctionnalités
+Tout d'abord, créez un projet avec [Vue-cli](https://cli.vuejs.org/guide/creating-a-project.html) comprenant les fonctionnalités
 router et vuex.
 
-Nous allons ensuite mettre en place le gestionnaire d'état ([vuex](https://vuex.vuejs.org/fr/)),
+Nous allons ensuite mettre en place le gestionnaire d'état [vuex](https://vuex.vuejs.org/fr/),
 qui nous permettra de stocker et d'utiliser certaines données devant
 être globales à notre application.
 
@@ -69,7 +69,7 @@ export default new Vuex.Store({
 ## Se connecter à Kuzzle
 ### Instanciation
 Dans un premier temps nous allons créer le service Kuzzle.
-Ajoutez le dossier '/src/service', créez un fichier Kuzzle.js
+Ajoutez le dossier `'/src/service'`, créez un fichier Kuzzle.js
 puis ajoutez le code suivant :
 
 ```js
@@ -254,7 +254,7 @@ Ce composant doit contenir:
   `create`, qui transmettra à son tour l'information au composant parent via 
   l'émission d'un signal `createList`.
   
-  Une liste d'options basée sur un tableau `lists` reçu en props.
+  Une liste d'options basée sur un tableau `lists` reçu en `props`.
   Lorsque l'élément sélectionné de cette liste change, une fonction `changed`
   doit être appelée. Cette-dernière va émettre un signal `setCurrentList`. 
 
@@ -281,7 +281,7 @@ Ce composant doit afficher:
 ### NavBar
 Créez le fichier `/src/components/NavBar.vue`
 La barre de navigation ne proposera pour cette étape que la possibilité 
-d'activer ou non les notifications. Elle devra avoir une data `toastsEnabled`
+d'activer ou non les notifications. Elle devra avoir une `data` `toastsEnabled`
 qui sera reliée avec un cookie du même nom.
 Lors du changement de valeur de la checkbox, la fonction `setToastEnabled`
 est appelée et va modifier la valeur du cookie.
@@ -292,9 +292,9 @@ fonction `mounted` de ce composant.
 Créez le fichier `/src/components/Task.vue`
 Ce composant correspond aux taches, il sera affiché via une boucle pour en 
 créer autant que de taches dans notre liste en cours d'édition.
-Il reçoit à sa création les props suivantes: `complete`, `index`, `message`.
+Il reçoit à sa création les `props` suivantes: `complete`, `index`, `message`.
 Il doit contenir une checkbox envoyant un signal `setTaskComplete` dont le
-label sera la props `message` et un bouton envoyant un signal `deleteTask`.
+label sera la `props` `message` et un bouton envoyant un signal `deleteTask`.
 
 ## Page principale
 Maintenant que les composants sont créés, nous allons pouvoir les instancier
@@ -316,7 +316,7 @@ les fonctions aux évènements émis par les différents composants, référez v
 au fichier `/src/views/Home.vue` de ce projet.
 
 ### Data
-En premier lieu, ajoutez les data suivantes: 
+En premier lieu, ajoutez les `data` suivantes: 
 ```js
   data() {
     return {
@@ -512,7 +512,7 @@ async createList(input) {
 
 ### Fonctions pour les signaux du composant Task
 Le composant Task instancié autant de fois qu'il y a de tache dans notre 
-tableau via l'utilisation d'une boucle `v-for`. Ce composant prendra en props
+tableau via l'utilisation d'une boucle `v-for`. Ce composant prendra en `props`
 les attributs `index`, `complete` et `message` de l'element courant dans la
 boucle et sera actif selon l'attribut `displayed`.
 Ici encore, deux fonction son nécessaires pour réagir aux signaux suivants: 
@@ -562,7 +562,7 @@ async setTaskComplete(index, newValue) {
 ```
 
 ### Fonctions pour les signaux du composant Menu
-Le composant Menu prendra en props la longueur de notre tableau de taches ainsi
+Le composant Menu prendra en `props` la longueur de notre tableau de taches ainsi
 que la variable `completeAllTasks`. Cette fois ci, quatre foncions seront 
 nécessaires pour réagir aux signaux suivants: `deleteSelectedTasks`,
 `setSelectedTasksComplete`, `setSeeActiveTasks`, `setSeeCompletedTasks`.
@@ -693,4 +693,4 @@ async mounted() {
 
 Vous devez maintenant avoir une todo MVC fonctionnelle que vous pouvez lancer
 via la commande suivante : `npm run serve`, après avoir au préalable lancé
-votre kuzzle `docker-compose up`.k
+votre kuzzle `docker-compose up`.
