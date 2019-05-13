@@ -70,7 +70,8 @@ export default {
       seeActiveTasks: true,
       seeCompletedTasks: true,
       currentList: { text: 'build', value: 'build' },
-      indexName: 'todolists'
+      indexName: 'todolists',
+      roomId: ''
     };
   },
   methods: {
@@ -180,8 +181,6 @@ export default {
           this.currentList.value,
           index
         );
-        this.tasks = this.tasks.filter(task => task.index !== index);
-        this.toasted('info', `Task ${index} deleted`);
       } catch (error) {
         this.toasted('error', `${error.message}`);
       }
@@ -198,9 +197,6 @@ export default {
             complete: newValue
           }
         );
-        const updatedTask = this.tasks.find(task => task.index === index);
-        updatedTask.complete = newValue;
-        this.toasted('info', `Task ${updatedTask.Task} updated`);
       } catch (error) {
         this.toasted('error', `${error.message}`);
       }
@@ -257,24 +253,52 @@ export default {
         return;
       }
       try {
-        const Result = await kuzzle.document.create(
-          this.indexName,
-          this.currentList.value,
-          {
-            task: message,
-            complete: false
-          }
-        );
-        this.tasks.push({
-          message: message,
-          index: Result._id,
+        await kuzzle.document.create(this.indexName, this.currentList.value, {
+          task: message,
           complete: false
         });
-        this.toasted('info', `New task ${message}`);
       } catch (error) {
         this.toasted('error', `${error.message}`);
       }
       this.updateCompleteAll();
+    },
+    notificationsCallback(notification) {
+      if (notification.type === 'document') {
+        const { _source: newTask, _id: taskId } = notification.result;
+        switch (notification.action) {
+          case 'create':
+            this.tasks.push({
+              message: newTask.task,
+              index: taskId,
+              complete: newTask.complete,
+              displayed: true
+            });
+            this.toasted('info', `New task ${newTask.task}`);
+            break;
+          case 'delete':
+            this.tasks = this.tasks.filter(task => task.index !== taskId);
+            this.toasted('info', `Task ${taskId} deleted`);
+            break;
+          case 'update':
+            this.tasks.find(task => task.index === taskId).complete =
+              newTask.complete;
+            this.toasted('info', `Task ${newTask.task} updated`);
+            break;
+        }
+        this.updateCompleteAll();
+      }
+    },
+    async notificationSubscribe() {
+      try {
+        this.roomId = await kuzzle.realtime.subscribe(
+          this.indexName,
+          this.currentList.value,
+          {},
+          this.notificationsCallback
+        );
+      } catch (error) {
+        this.toasted('error', `${error.message}`);
+      }
     }
   },
   async mounted() {
@@ -286,6 +310,7 @@ export default {
       this.currentList.value = this.lists[0].value;
       await this.fetchCollection();
       this.updateCompleteAll();
+      await this.notificationSubscribe();
     } catch (error) {
       this.toasted('error', `${error.message}`);
     }
