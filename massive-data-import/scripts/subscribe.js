@@ -1,25 +1,31 @@
-const Kuzzle = require('kuzzle-sdk');
+const {
+  Kuzzle,
+  WebSocket
+} = require('kuzzle-sdk');
 
-const timeSquareArea = {
-  topLeft: { lat: 40.759507, lon: -73.985384 },
-  bottomRight: { lat: 40.758372, lon: -73.984591 }
-};
-
-const hostName = 'localhost';
+const
+  timeSquareArea = {
+    topLeft: { lat: 40.759507, lon: -73.985384 },
+    bottomRight: { lat: 40.758372, lon: -73.984591 }
+  },
+  filters = {
+    geoBoundingBox: {
+      dropoff_position: timeSquareArea
+    }
+  };
 
 let count = 0;
 
-const kuzzle = new Kuzzle(hostName, error => {
-  if (error) {
-    console.error('Error: ', error);
-    process.exit(1);
-  }
+const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
-  kuzzle
-    .collection('yellow-taxi', 'nyc-open-data')
-    .subscribe({geoBoundingBox: {dropoff_position: timeSquareArea}}, (err, notification) => {
+kuzzle.on('networkError', console.error);
+
+kuzzle.connect()
+  .then(() => {
+    return kuzzle.realtime.subscribe('nyc-open-data', 'yellow-taxi', filters, notification => {
+      const document = notification.result._source;
       count++;
-      console.log(`[${count}] ${notification.document.content.passenger_count} passengers just arrived, and paid ${notification.document.content.fare_amount}$`);
-    })
-    .onDone(() => console.log('Subscribed. Waiting for passengers...'));
-});
+      console.log(`[${count}] ${document.passenger_count} passengers just arrived, and paid ${document.fare_amount}$`);
+    });
+  })
+  .then(() => console.log('Subscribed. Waiting for passengers...'));
