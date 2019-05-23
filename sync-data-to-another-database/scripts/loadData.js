@@ -1,8 +1,12 @@
 const
-  Kuzzle = require('kuzzle-sdk'),
   fs = require('fs'),
   readline = require('readline'),
-  program = require('commander');
+  program = require('commander'),
+  {
+    Kuzzle,
+    WebSocket
+  } = require('kuzzle-sdk');
+
 
 
 program
@@ -38,67 +42,66 @@ let
   inserted = 0,
   headerSkipped = false;
 
-const kuzzle = new Kuzzle(host, { port: port }, error => {
-  if (error) {
-    console.error('Error: ', error);
-    process.exit(1);
-  }
+const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
-  let documents = [];
+kuzzle.on('networkError', console.error);
 
-  const dataFile = readline.createInterface({
-    input: fs.createReadStream(dataPath)
-  });
+kuzzle.connect()
+  .then(() => {
+    let documents = [];
 
-  dataFile.on('line', line => {
-    if (headerSkipped) {
-      const fields = line.split(',');
+    const dataFile = readline.createInterface({
+      input: fs.createReadStream(dataPath)
+    });
 
-      documents.push({
-        body: {
-          pickup_datetime: fields[1],
-          dropoff_datetime: fields[2],
-          passenger_count: fields[3],
-          trip_distance: fields[4],
-          pickup_position: { lon: Number.parseFloat(fields[5]), lat: Number.parseFloat(fields[6]) },
-          dropoff_position: { lon: Number.parseFloat(fields[9]), lat: Number.parseFloat(fields[10]) },
-          fare_amount: fields[18]
-        }
-      });
+    dataFile.on('line', line => {
+      if (headerSkipped) {
+        const fields = line.split(',');
 
-      if (documents.length === program.batchSize) {
-        const packet = documents;
-        inserted += documents.length;
-        documents = [];
+        documents.push({
+          body: {
+            pickup_datetime: fields[1],
+            dropoff_datetime: fields[2],
+            passenger_count: fields[3],
+            trip_distance: fields[4],
+            pickup_position: { lon: Number.parseFloat(fields[5]), lat: Number.parseFloat(fields[6]) },
+            dropoff_position: { lon: Number.parseFloat(fields[9]), lat: Number.parseFloat(fields[10]) },
+            fare_amount: fields[18]
+          }
+        });
 
-        if (inserted - program.batchSize >= program.maxCount) {
-          dataFile.close();
-        } else {
-          dataFile.pause();
-          console.log(`Insert ${inserted} lines`);
-          mcreate(packet).then(() => dataFile.resume());
+        if (documents.length === program.batchSize) {
+          const packet = documents;
+          inserted += documents.length;
+          documents = [];
+
+          if (inserted - program.batchSize >= program.maxCount) {
+            dataFile.close();
+          } else {
+            dataFile.pause();
+            console.log(`Insert ${inserted} lines`);
+            mcreate(packet).then(() => dataFile.resume());
+          }
         }
       }
-    }
-    else {
-      headerSkipped = true;
-    }
-  });
-
-  dataFile.on('close', () => {
-    if (documents.length > 0) {
-      mcreate(documents).then(() => kuzzle.disconnect());
-    } else {
-      kuzzle.disconnect();
-    }
-  });
-});
-
-function mcreate(docs) {
-  return kuzzle.collection(collection, index)
-    .mCreateDocumentPromise(docs)
-    .catch(err => {
-      console.dir(err, { depth: null, colors: true });
-      process.exit(1);
+      else {
+        headerSkipped = true;
+      }
     });
-}
+
+    dataFile.on('close', () => {
+      if (documents.length > 0) {
+        mcreate(documents).then(() => kuzzle.disconnect());
+      } else {
+        kuzzle.disconnect();
+      }
+    });
+
+    const mcreate = documents => {
+      return kuzzle.document.mCreate('nyc-open-data', 'yellow-taxi', documents)
+        .catch(error => {
+          console.error('Error: ');
+          console.dir(error, {colors: true, depth: null});
+        });
+      }
+  });
