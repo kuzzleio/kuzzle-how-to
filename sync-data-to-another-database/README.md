@@ -139,43 +139,50 @@ Placeholders allow the Cassandra NodeJS driver to correctly map javascript types
 Finally we generate a query table that we concatenate to the same batch and then we execute the batch query in a Promise.
 
 ```js
-createOrUpdateDocuments (documents) {
-  // Split documents array in chunk to avoid the batch size limit
-  const chunkedDocuments = chunkArray(documents, this.config.maximumBatchSize);
+  createOrUpdateDocuments (documents) {
+    // Split documents array in chunk to avoid the batch size limit
+    const documentChunks = chunkArray(documents, this.config.maximumBatchSize);
 
-  const requestPromises =
-    chunkedDocuments.map(documentsBatch => {
+    const requestPromises =
+      documentChunks.map(documentsBatch => {
 
-      // Create an array of update queries and an array of matching values
-      const { query, values } = documentsBatch.reduce((memo, document) => {
+        // Create an array of update queries and an array of matching values
+        const { queries, values } = documentsBatch.reduce(({ queries, values }, document) => {
 
-        // Create the column list with the placeholder
-        const columnsList = Object.keys(document._source).filter(key => key !== '_id').map(column => `${column} = ?`).join(', ');
+          // List of exported document fields
+          const exportedFields = Object.keys(document._source).filter(key => ['_id', '_kuzzle_info'].indexOf(key) === -1);
 
-        // Create an array of values to allow the driver to map javascript types to cassandra types
-        const valuesList = Object.keys(document._source).filter(key => key !== '_id').map(key => {
-          switch (key) {
-            case 'trip_distance':
-            case 'fare_amount':
-              return parseFloat(document._source[key]);
-            default:
-              return document._source[key];
-          }
-        }).concat([document._id]);
+          // Create the column list with the placeholder
+          const columnsList = exportedFields.map(column => `${column} = ?`).join(', ');
 
-        // Create the query and replace Cassandra forbidden characters
-        const updateQuery = this.normalize(`UPDATE ${document._index}.${document._type} SET ${columnsList} WHERE kuzzle_id = ?`);
+          // Create an array of values to allow the driver to map javascript types to cassandra types
+          const valuesList = exportedFields.map(key => {
+            switch (key) {
+              case 'trip_distance':
+              case 'fare_amount':
+                return parseFloat(document._source[key]);
+              default:
+                return document._source[key];
+            }
+          });
+          valuesList.push(document._id);
 
-        return { query: memo.query.concat([updateQuery]), values: memo.values.concat(valuesList) };
-      }, { query: [], values: []});
+          // Create the query and replace Cassandra forbidden characters
+          const updateQuery = this.normalize(`UPDATE ${document._index}.${document._type} SET ${columnsList} WHERE kuzzle_id = ?`);
 
-      const batchQuery = `BEGIN BATCH ${query.join(';')} APPLY BATCH`;
+          queries.push(updateQuery);
+          values.push(...valuesList);
 
-      // Create a promise to execute the query
-      return this.client.execute(batchQuery, values, { prepare: true });
-    });
-  return Promise.all(requestPromises);
-}
+          return { queries, values };
+        }, { queries: [], values: [] });
+
+        const batchQuery = `BEGIN BATCH ${queries.join(';')} APPLY BATCH`;
+        // Execute the batch query
+        return this.client.execute(batchQuery, values, { prepare: true });
+      });
+
+    return Promise.all(requestPromises);
+  }
 ```
 ### Try it yourself
 
