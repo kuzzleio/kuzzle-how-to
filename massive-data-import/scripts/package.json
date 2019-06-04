@@ -13,6 +13,6 @@
     "eslint": "4.18.2"
   },
   "dependencies": {
-    "kuzzle-sdk": "^5.0.11"
+    "kuzzle-sdk": "^6.1.1"
   }
 }

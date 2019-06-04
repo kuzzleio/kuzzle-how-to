@@ -2,14 +2,14 @@
 
 ## Requirements
 
-Kuzzle : `>= 1.2.11`  
+Kuzzle : `>= 1.2.11`
 
 ## Introduction
 
-Kuzzle is capable of managing a large number of documents while maintaining high performance.  
+Kuzzle is capable of managing a large number of documents while maintaining high performance.
 
 However, in some scenarios, it can be useful  to manage a smaller volume of data in Kuzzle and use a secondary datastore synchronized with Kuzzle (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)) to maintain a larger dataset.
-This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where a set of data needs to be accessed quickly (Hot data) and another set of data needs to be stored but is not accessed frequently (Warm data).  
+This is commonly referred to as a Hot/Warm architecture, where only the most recent data would be kept in Kuzzle. Such an architecture is used in scenarios where a set of data needs to be accessed quickly (Hot data) and another set of data needs to be stored but is not accessed frequently (Warm data).
 
 An example of this is a platform that manages both a set of data that is accessed by users in real-time through a Mobile App (Hot) and a historical aggregate of this data used to generate insights into user behavior through analytics (Warm).
 
@@ -31,19 +31,17 @@ Kuzzle will store "Hot" data in the `yellow-taxi` collection of the `nyc-open-da
 }
 ```
 
-In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/guide/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).  
+In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/guide/1/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).
 
 For the purpose of this How-To, we will insert documents directly into Elasticsearch so that we can override the value of the `createdAt` metadata field. This way we can set a `createdAt` date in the past and simulate a scenario where Kuzzle has older data in its datastore (i.e Elasticsearch).
 
-To do this we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).  
+To do this we will use the Elasticsearch [Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).
 
 ## Cleaning old data
 
-Since we only want to keep relevant data in Kuzzle, we need to  remove any older and irrelevant data. However, we cannot use the Kuzzle APIs to do this because these changes could automatically be propagated to the secondary database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)).  So, we will bypass the Kuzzle API and use the Elasticsearch API instead.   
+Since we only want to keep relevant data in Kuzzle, we need to  remove any older and irrelevant data. However, we cannot use the Kuzzle APIs to do this because these changes could automatically be propagated to the secondary database (see [How-To Synchronize Kuzzle with another database](../sync-data-to-another-database)).  So, we will bypass the Kuzzle API and use the Elasticsearch API instead.
 
-To delete data through the Elasticsearch API, we will perform a query that targets the oldest documents based on the `createdAt` field in the metadata. This field stores the date the document was created in Epoch-millis format.
-
-Kuzzle uses a trash bin to temporarily store documents that have been deleted. These documents are flagged as inactive and do not appear in search results. A [garbage collector](https://docs.kuzzle.io/guide/essentials/document-metadata/#garbage-collection) then periodically deletes documents from the trash bin (i.e where `active` metadata field is set to `false`). In our scenario, we want to delete old documents which are active, so we need to ignore documents that are in the trash bin. To do this we will query documents where the `active` metadata field is set to true.
+To delete data through the Elasticsearch API, we will perform a query that targets the oldest documents based on the `createdAt` field in kuzzle metadata. This field stores the date the document was created in Epoch-millis format.
 
 ```js
 // Get all documents created before the 12 April 2018
@@ -60,11 +58,6 @@ const query = {
                 lte: 1523522843802 // 2018-04-12T08:47:29
               }
             }
-          },
-          {
-            term: {
-              '_kuzzle_info.active': true
-            }
           }
         ]
       }
@@ -73,7 +66,7 @@ const query = {
 };
 ```
 
-Then, we use the official [Elasticsearch client](https://github.com/elastic/elasticsearch-js) to execute a [deleteByQuery](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#api-deletebyquery) request with our filters.  
+Then, we use the official [Elasticsearch client](https://github.com/elastic/elasticsearch-js) to execute a [deleteByQuery](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#api-deletebyquery) request with our filters.
 
 ```js
 const elasticsearchClient = new ElasticSearch.Client({ host: 'localhost:9200' });
@@ -91,11 +84,11 @@ elasticsearchClient
 
 ## Try it yourself
 
-You can try this How-To yourself by using the [docker-compose.yml](docker-compose.yml) we provided as well as the [database-cleaner.js](scripts/database-cleaner.js) script.  
+You can try this How-To yourself by using the [docker-compose.yml](docker-compose.yml) we provided as well as the [database-cleaner.js](scripts/database-cleaner.js) script.
 
-This script lets you set a retention period and will delete all documents prior to the specified period.  
+This script lets you set a retention period and will delete all documents prior to the specified period.
 
-A test dataset is also available via the [loadData.js](scripts/loadData.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.  
+A test dataset is also available via the [loadData.js](scripts/loadData.js) script. This script will load one document per day over a period of two months directly into Elasticsearch.
 
 Start by launching the containers with Docker Compose:
 

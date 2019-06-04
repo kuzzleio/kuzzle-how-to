@@ -14,11 +14,9 @@ const
 let
   inserted = 0,
   headerSkipped = false,
-  currentDay = 0;
-
-const currentDate = moment().subtract(currentDay, 'days');
-
-const documents = [];
+  currentDay = 0,
+  currentDate = moment().subtract(currentDay, 'days'),
+  documents = [];
 
 function flatten(arr) {
   return arr.reduce((flat, toFlatten) => flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten), []);

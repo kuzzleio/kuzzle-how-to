@@ -15,6 +15,6 @@
   "dependencies": {
     "cassandra-driver": "^3.4.1",
     "commander": "^2.15.1",
-    "kuzzle-sdk": "^5.0.11"
+    "kuzzle-sdk": "^6.1.1"
   }
 }

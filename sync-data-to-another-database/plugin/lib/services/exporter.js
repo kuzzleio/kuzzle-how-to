@@ -43,19 +43,22 @@ class Exporter {
 
   createOrUpdateDocuments (documents) {
     // Split documents array in chunk to avoid the batch size limit
-    const chunkedDocuments = chunkArray(documents, this.config.maximumBatchSize);
+    const documentChunks = chunkArray(documents, this.config.maximumBatchSize);
 
     const requestPromises =
-      chunkedDocuments.map(documentsBatch => {
+      documentChunks.map(documentsBatch => {
 
         // Create an array of update queries and an array of matching values
-        const { query, values } = documentsBatch.reduce((memo, document) => {
+        const { queries, values } = documentsBatch.reduce(({ queries, values }, document) => {
+
+          // List of exported document fields
+          const exportedFields = Object.keys(document._source).filter(key => ['_id', '_kuzzle_info'].indexOf(key) === -1);
 
           // Create the column list with the placeholder
-          const columnsList = Object.keys(document._source).filter(key => key !== '_id').map(column => `${column} = ?`).join(', ');
+          const columnsList = exportedFields.map(column => `${column} = ?`).join(', ');
 
           // Create an array of values to allow the driver to map javascript types to cassandra types
-          const valuesList = Object.keys(document._source).filter(key => key !== '_id').map(key => {
+          const valuesList = exportedFields.map(key => {
             switch (key) {
               case 'trip_distance':
               case 'fare_amount':
@@ -63,16 +66,19 @@ class Exporter {
               default:
                 return document._source[key];
             }
-          }).concat([document._id]);
+          });
+          valuesList.push(document._id);
 
           // Create the query and replace Cassandra forbidden characters
           const updateQuery = this.normalize(`UPDATE ${document._index}.${document._type} SET ${columnsList} WHERE kuzzle_id = ?`);
 
-          return { query: memo.query.concat([updateQuery]), values: memo.values.concat(valuesList) };
-        }, { query: [], values: []});
+          queries.push(updateQuery);
+          values.push(...valuesList);
 
-        const batchQuery = `BEGIN BATCH ${query.join(';')} APPLY BATCH`;
+          return { queries, values };
+        }, { queries: [], values: [] });
 
+        const batchQuery = `BEGIN BATCH ${queries.join(';')} APPLY BATCH`;
         // Create a promise to execute the query
         return this.client.execute(batchQuery, values, { prepare: true });
       });

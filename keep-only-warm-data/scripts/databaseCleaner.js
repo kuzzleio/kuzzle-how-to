@@ -1,5 +1,3 @@
-'use strict';
-
 const
   ElasticSearch = require('elasticsearch'),
   program = require('commander'),

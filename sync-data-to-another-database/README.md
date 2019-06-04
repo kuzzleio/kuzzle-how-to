@@ -2,17 +2,17 @@
 
 ## Requirements
 
-Kuzzle : `>= 1.2.11`  
+Kuzzle : `>= 1.2.11`
 Cassandra : `>= 3`
 
 ## Introduction
 
-Kuzzle uses Elasticsearch, which allows it to offer very good search performance on large volumes.  
+Kuzzle uses Elasticsearch, which allows it to offer very good search performance on large volumes.
 
-However, when integrating Kuzzle into an existing infrastructure, you may want Kuzzle to also dump its data into your databases for use by your other applications.  
+However, when integrating Kuzzle into an existing infrastructure, you may want Kuzzle to also dump its data into your databases for use by your other applications.
 
-In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's data with any other database system by taking [Cassandra](https://cassandra.apache.org/) as an example.  
-For this example we will use data from the NYC Yellow Taxi dataset.  
+In this How-To, we will show you how to develop a Kuzzle Plugin that synchonizes Kuzzle's data with any other database system by taking [Cassandra](https://cassandra.apache.org/) as an example.
+For this example we will use data from the NYC Yellow Taxi dataset.
 
 ## Architecture
 
@@ -32,11 +32,11 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 }
 ```
 
-On Cassandra's side, we will store the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)  
+On Cassandra's side, we will store the data into the `yellow_taxi` table of the `nyc_open_data` keyspace. (Note the use of `_` instead of `-` because of Cassandra's restrictions)
 
 In Elasticseach we use the geo_point type to index our documents geographically. With Cassandra, we will have to create a [User Defined Type](https://docs.datastax.com/en/cql/3.3/cql/cql_using/useCreateUDT.html) emulating that type, and we will name it geopoint
 
-Finally an additional column will be created to store the Kuzzle document id (`kuzzle_id`).  
+Finally an additional column will be created to store the Kuzzle document id (`kuzzle_id`).
 
 Just like the name of the table and keyspace, the columns will have a structure similar to the Kuzzle mapping :
 
@@ -57,12 +57,12 @@ The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins/1) lets you extend Kuz
   - Add a controller route
   - Add a new authentication strategy
 
-We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins/1/essentials/pipes/) to Document Controller events in order to report document changes in Cassandra.  
+We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins/1/essentials/pipes/) to Document Controller events in order to report document changes in Cassandra.
 
 ### Pipe some events
 
-The first step is to declare which [Plugin Events](https://docs.kuzzle.io/plugins/1/events) we are going to pipe. These pipes must be declared in the plugin constructor.  
-Each pipe is associated with a plugin method that will be called when the event occurs.  
+The first step is to declare which [Plugin Events](https://docs.kuzzle.io/plugins/1/events) we are going to pipe. These pipes must be declared in the plugin constructor.
+Each pipe is associated with a plugin method that will be called when the event occurs.
 
 At the Document Controller level, we have two main families of events:
  - actions on a document
@@ -97,7 +97,7 @@ Each method will receive two parameters :
 In order to reflect the changes in Cassandra, we need to know the content of the document as well as the collection and index it is stored in.
 
 Depending on the triggered event, we will have different Response object formats. (Example for the `create` action : [document:create](https://docs.kuzzle.io/api/1/controller-document/create/))
-(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api/1/controller-document) for the contents of the Response object)  
+(You can refer to the [Document controller documentation](https://docs.kuzzle.io/api/1/controller-document) for the contents of the Response object)
 
 For each event, we will transform the input data so that each document has the following format:
 
@@ -110,21 +110,21 @@ For each event, we will transform the input data so that each document has the f
 }
 ```
 
-See the [index.js](lib/index.js) file of the plugin for more details on implementing these transformations.  
+See the [index.js](lib/index.js) file of the plugin for more details on implementing these transformations.
 
-Once formatted correctly, the data are passed in one of the two methods of the class performing the insertion of the data in Cassandra.  
+Once formatted correctly, the data are passed in one of the two methods of the class performing the insertion of the data in Cassandra.
 
 ### Export data to Cassandra
 
-In order to insert the data in Cassandra, we will use the [Cassandra driver for NodeJS](https://github.com/datastax/nodejs-driver).  
-This library will allow us to connect to Cassandra and execute [CQL](http://cassandra.apache.org/doc/latest/cql/) commands.  
+In order to insert the data in Cassandra, we will use the [Cassandra driver for NodeJS](https://github.com/datastax/nodejs-driver).
+This library will allow us to connect to Cassandra and execute [CQL](http://cassandra.apache.org/doc/latest/cql/) commands.
 
-We will use the same method for inserts and updates using the CQL keyword [UPDATE](https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlUpdate.html?).  
-The generated queries will be executed by [batch query](https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlBatch.html) for better performance.  
+We will use the same method for inserts and updates using the CQL keyword [UPDATE](https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlUpdate.html?).
+The generated queries will be executed by [batch query](https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cqlBatch.html) for better performance.
 
-The first step is to cut our document table into smaller pieces so as not to exceed the maximum batch size limit for Cassandra (50 Kb by default).  
+The first step is to cut our document table into smaller pieces so as not to exceed the maximum batch size limit for Cassandra (50 Kb by default).
 
-For each piece, we will prepare the values to insert in our query: the kuzzle id of the document (`_id`) is excluded and the numerical values are converted into the corresponding type.  
+For each piece, we will prepare the values to insert in our query: the kuzzle id of the document (`_id`) is excluded and the numerical values are converted into the corresponding type.
 
 Requests will be in the following form:
 
@@ -134,53 +134,60 @@ SET pickup_datetime = ?, dropoff_datetime = ?, passenger_count = ?, trip_distanc
 WHERE kuzzle_id = ?
 ```
 
-Placeholders allow the Cassandra NodeJS driver to correctly map javascript types to Cassandra types.  
+Placeholders allow the Cassandra NodeJS driver to correctly map javascript types to Cassandra types.
 
-Finally we generate a query table that we concatenate to the same batch and then we execute the batch query in a Promise.  
+Finally we generate a query table that we concatenate to the same batch and then we execute the batch query in a Promise.
 
 ```js
-createOrUpdateDocuments (documents) {
-  // Split documents array in chunk to avoid the batch size limit
-  const chunkedDocuments = chunkArray(documents, this.config.maximumBatchSize);
+  createOrUpdateDocuments (documents) {
+    // Split documents array in chunk to avoid the batch size limit
+    const documentChunks = chunkArray(documents, this.config.maximumBatchSize);
 
-  const requestPromises =
-    chunkedDocuments.map(documentsBatch => {
+    const requestPromises =
+      documentChunks.map(documentsBatch => {
 
-      // Create an array of update queries and an array of matching values
-      const { query, values } = documentsBatch.reduce((memo, document) => {
+        // Create an array of update queries and an array of matching values
+        const { queries, values } = documentsBatch.reduce(({ queries, values }, document) => {
 
-        // Create the column list with the placeholder
-        const columnsList = Object.keys(document._source).filter(key => key !== '_id').map(column => `${column} = ?`).join(', ');
+          // List of exported document fields
+          const exportedFields = Object.keys(document._source).filter(key => ['_id', '_kuzzle_info'].indexOf(key) === -1);
 
-        // Create an array of values to allow the driver to map javascript types to cassandra types
-        const valuesList = Object.keys(document._source).filter(key => key !== '_id').map(key => {
-          switch (key) {
-            case 'trip_distance':
-            case 'fare_amount':
-              return parseFloat(document._source[key]);
-            default:
-              return document._source[key];
-          }
-        }).concat([document._id]);
+          // Create the column list with the placeholder
+          const columnsList = exportedFields.map(column => `${column} = ?`).join(', ');
 
-        // Create the query and replace Cassandra forbidden characters
-        const updateQuery = this.normalize(`UPDATE ${document._index}.${document._type} SET ${columnsList} WHERE kuzzle_id = ?`);
+          // Create an array of values to allow the driver to map javascript types to cassandra types
+          const valuesList = exportedFields.map(key => {
+            switch (key) {
+              case 'trip_distance':
+              case 'fare_amount':
+                return parseFloat(document._source[key]);
+              default:
+                return document._source[key];
+            }
+          });
+          valuesList.push(document._id);
 
-        return { query: memo.query.concat([updateQuery]), values: memo.values.concat(valuesList) };
-      }, { query: [], values: []});
+          // Create the query and replace Cassandra forbidden characters
+          const updateQuery = this.normalize(`UPDATE ${document._index}.${document._type} SET ${columnsList} WHERE kuzzle_id = ?`);
 
-      const batchQuery = `BEGIN BATCH ${query.join(';')} APPLY BATCH`;
+          queries.push(updateQuery);
+          values.push(...valuesList);
 
-      // Create a promise to execute the query
-      return this.client.execute(batchQuery, values, { prepare: true });
-    });
-  return Promise.all(requestPromises);
-}
+          return { queries, values };
+        }, { queries: [], values: [] });
+
+        const batchQuery = `BEGIN BATCH ${queries.join(';')} APPLY BATCH`;
+        // Execute the batch query
+        return this.client.execute(batchQuery, values, { prepare: true });
+      });
+
+    return Promise.all(requestPromises);
+  }
 ```
 ### Try it yourself
 
-You can use the [docker-compose.yml](docker-compose.yml) included in this How-To to test the synchronization plugin to Cassandra.  
-The containers are preconfigured to work with NYC Open Data's Yellow Taxi dataset.  
+You can use the [docker-compose.yml](docker-compose.yml) included in this How-To to test the synchronization plugin to Cassandra.
+The containers are preconfigured to work with NYC Open Data's Yellow Taxi dataset.
 
 ```bash
 docker-compose up
@@ -194,7 +201,7 @@ docker-compose exec kuzzle node /scripts/loadData.js
 docker-compose exec kuzzle node /scripts/loadData.js --max-count 10000 --batch-size 1000
 ```
 
-On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra synchronization.  
+On a laptop with a I5-7300U CPU @ 2.60 GHz, 16GiB of RAM and a SSD it takes approximatively 2 minutes to load 1 millions of document in Kuzzle with the Cassandra synchronization.
 
 We can then check that the synchronization worked as expected:
 
