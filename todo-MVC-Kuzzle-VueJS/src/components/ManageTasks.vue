@@ -43,7 +43,7 @@ export default {
   watch: {
     completeAll: {
       immediate: true,
-      handler: function handler(newVal, oldVal) {
+      handler(newVal, oldVal) {
         this.completeAllCopy = newVal;
       }
     }
