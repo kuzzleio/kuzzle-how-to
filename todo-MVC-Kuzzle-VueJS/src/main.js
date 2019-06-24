@@ -12,7 +12,7 @@ Vue.use(VueIziToast);
 Vue.use(Vuetify, {
   iconfont: 'md'
 });
-Vue.config.prodctionTip = false;
+Vue.config.productionTip = false;
 
 new Vue({
   store,
