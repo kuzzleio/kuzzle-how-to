@@ -23,7 +23,7 @@ export default {
   name: 'Task',
   props: ['task'],
   watch: {
-    task: function handler(newVal, oldVal) {
+    task(newVal, oldVal) {
       this.completeCopy = newVal.complete;
     },
     deep: true
