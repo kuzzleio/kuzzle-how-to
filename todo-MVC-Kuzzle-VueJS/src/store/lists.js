@@ -67,12 +67,11 @@ const actions = {
 
   SUBSCRIBE_LIST: async ({ commit }, { kuzzle }) => {
     const callback = notification => {
-      if (notification.action === 'publish') {
-        switch (notification.result._source.type) {
-          case 'create':
-            commit('ADD_LIST', notification.result._source.listName);
-            break;
-        }
+      if (
+        notification.action === 'publish' &&
+        notification.result._source.type === 'create'
+      ) {
+        commit('ADD_LIST', notification.result._source.listName);
         commit(
           'app/SET_NOTIFICATION',
           {
