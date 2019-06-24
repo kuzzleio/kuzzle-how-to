@@ -110,12 +110,11 @@ const mutations = {
 };
 
 const getters = {
-  GET_CURRENT_LIST: state => {
-    return { value: state.currentList, text: state.currentList };
-  },
-  GET_LISTS: state => {
-    return state.lists.map(elem => ({ text: elem, value: elem }));
-  }
+  GET_CURRENT_LIST: state => ({
+    value: state.currentList,
+    text: state.currentList
+  }),
+  GET_LISTS: state => state.lists.map(elem => ({ text: elem, value: elem }))
 };
 
 export default {

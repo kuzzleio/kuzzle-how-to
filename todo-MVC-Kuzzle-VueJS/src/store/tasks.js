@@ -189,24 +189,22 @@ const mutations = {
 };
 
 const getters = {
-  GET_TASKS: state => {
-    return (seeActiveTasks, seeCompletedTasks) => {
-      let tmp = [];
-      for (let task in state.tasks) {
-        const document = state.tasks[task];
-        if (
-          (document && document.complete && seeCompletedTasks) ||
-          (!document.complete && seeActiveTasks)
-        ) {
-          tmp.push({
-            message: state.tasks[task].task,
-            complete: state.tasks[task].complete,
-            index: task
-          });
-        }
+  GET_TASKS: state => (seeActiveTasks, seeCompletedTasks) => {
+    let tmp = [];
+    for (let task in state.tasks) {
+      const document = state.tasks[task];
+      if (
+        (document && document.complete && seeCompletedTasks) ||
+        (!document.complete && seeActiveTasks)
+      ) {
+        tmp.push({
+          message: state.tasks[task].task,
+          complete: state.tasks[task].complete,
+          index: task
+        });
       }
-      return tmp;
-    };
+    }
+    return tmp;
   }
 };
 
