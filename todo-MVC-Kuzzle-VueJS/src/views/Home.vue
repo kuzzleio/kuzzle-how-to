@@ -60,14 +60,7 @@ export default {
 
   computed: {
     completeAll() {
-      let completeValue = true;
-      this.tasks.some(elem => {
-        if (!elem.complete) {
-          completeValue = false;
-          return false;
-        }
-      });
-      return completeValue;
+      return this.tasks.every(elem => elem.complete);
     },
     lists() {
       return this.$store.getters['lists/GET_LISTS'];
