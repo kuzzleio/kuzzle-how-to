@@ -5,12 +5,12 @@ describe('Tests on todoMVC step 1', () => {
     cy.clearLocalStorage();
     cy.initKuzzle();
     cy.visit('http://localhost:8080/');
-  })
+  });
 
   beforeEach(() => {
     cy.clearList('todolists', 'FirstList');
     cy.setUp();
-  })
+  });
 
   it('Create a task', () => {
     cy.get('#CreateNewTask')
@@ -23,7 +23,7 @@ describe('Tests on todoMVC step 1', () => {
       .should('have.value', 'test task');
     cy.contains('ADD').click();
     cy.get('#Task').contains('test task');
-  })
+  });
 
   it('Update a task', () => {
     cy.createMultipleTasks('todolists', 'FirstList', false, ['test task']);
@@ -35,7 +35,7 @@ describe('Tests on todoMVC step 1', () => {
       .first()
       .click();
     cy.checkTaskComplete('test task', /true/);
-  })
+  });
 
   it('Delete a task', () => {
     cy.createMultipleTasks('todolists', 'FirstList', false, ['test task']);
@@ -46,7 +46,7 @@ describe('Tests on todoMVC step 1', () => {
       .parent()
       .click();
     cy.get('#Task').should('not.exist');
-  })
+  });
 
   it('Update multiple tasks', () => {
     cy.createMultipleTasks('todolists', 'FirstList', false, [
@@ -76,7 +76,7 @@ describe('Tests on todoMVC step 1', () => {
     cy.checkTaskComplete('Task for test n2', /false/);
     cy.checkTaskComplete('Task for test n3', /false/);
     cy.checkTaskComplete('Task for test n4', /false/);
-  })
+  });
 
   it('Delete multiple tasks', () => {
     cy.createMultipleTasks('todolists', 'FirstList', true, [
@@ -91,7 +91,7 @@ describe('Tests on todoMVC step 1', () => {
       .contains('Clear Completed')
       .click();
     cy.contains('#Task').should('not.exist');
-  })
+  });
 
   it('Change view', () => {
     cy.createMultipleTasks('todolists', 'FirstList', false, [
@@ -124,7 +124,7 @@ describe('Tests on todoMVC step 1', () => {
 
     cy.contains('Task for test n1').should('be.visible');
     cy.contains('Task for test n2').should('be.visible');
-  })
+  });
 
   it('Create a list', () => {
     cy.setUp();
@@ -139,7 +139,7 @@ describe('Tests on todoMVC step 1', () => {
       .contains('Create')
       .click();
     cy.contains('SecondList');
-  })
+  });
 
   it('Change list', () => {
     cy.createMultipleTasks('todolists', 'FirstList', false, [
@@ -152,12 +152,12 @@ describe('Tests on todoMVC step 1', () => {
     cy.contains('arrow_drop_down').click();
     cy.contains('SecondList').click();
     cy.contains('Task for test of change list').should('not.exist');
-  })
+  });
 
   it('Enable toasts', () => {
     cy.contains('ADD').click();
     cy.contains('ERROR');
-  })
+  });
 
   it('Disable toasts', () => {
     cy.setUp();
@@ -170,5 +170,5 @@ describe('Tests on todoMVC step 1', () => {
 
     cy.contains('ADD').click();
     cy.contains('ERROR').should('not.exist');
-  })
-})
+  });
+});
