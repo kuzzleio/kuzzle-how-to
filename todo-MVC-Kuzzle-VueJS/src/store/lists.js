@@ -56,7 +56,7 @@ const actions = {
 
   FETCH_LISTS: async ({ commit, dispatch }, { kuzzle }) => {
     commit('RESET_LISTS');
-    const lists = await kuzzle.collection.list(state.groupList);
+    const { collections } = await kuzzle.collection.list(state.groupList);
     lists.collections.forEach(list => {
       commit('ADD_LIST', list.name);
     });
