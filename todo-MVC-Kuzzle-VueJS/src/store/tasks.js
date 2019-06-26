@@ -43,7 +43,7 @@ const actions = {
   },
 
   DELETE_COMPLETED_TASKS: async ({ dispatch }, { kuzzle }) => {
-    for (let taskId in state.tasks) {
+    for (const taskId of Object.keys(state.tasks)) {
       if (state.tasks[taskId].complete) {
         await dispatch('DELETE_TASK', { kuzzle, taskId });
       }
@@ -51,7 +51,7 @@ const actions = {
   },
 
   SET_ALL_TASKS_COMPLETE: async ({ dispatch }, { kuzzle }) => {
-    for (let taskId in state.tasks) {
+    for (const taskId of Object.keys(state.tasks)) {
       if (!state.tasks[taskId].complete) {
         await dispatch('SET_TASK_COMPLETE', { kuzzle, taskId });
       }
@@ -59,7 +59,7 @@ const actions = {
   },
 
   UNSET_ALL_TASKS_COMPLETE: async ({ dispatch }, { kuzzle }) => {
-    for (let taskId in state.tasks) {
+    for (const taskId of Object.keys(state.tasks)) {
       if (state.tasks[taskId].complete) {
         await dispatch('UNSET_TASK_COMPLETE', { kuzzle, taskId });
       }
