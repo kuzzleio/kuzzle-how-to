@@ -22,7 +22,7 @@ before_install:
   - sudo sysctl -w vm.max_map_count=262144
   # Build images
   - docker login -u aschen -p $DOCKER_PASSWORD
-  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then cd ${base}/docker && bash build_images.sh && bash push_images.sh && cd ../..; fi; done
+  - for dir in $(\ls -1d */docker); do sh -c "cd $i && bash build_images.sh && bash push_images.sh"; done
 
 addons:
   apt:
