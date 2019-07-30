@@ -1,1 +1,0 @@
-../../kuzzle-esp32/01-rgb-led/rgb-led.md

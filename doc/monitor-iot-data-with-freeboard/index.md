@@ -1,1 +1,0 @@
-../../monitor-iot-data-with-freeboard/README.md
