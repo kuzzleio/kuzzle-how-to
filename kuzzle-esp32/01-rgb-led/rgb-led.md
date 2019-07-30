@@ -1,3 +1,10 @@
+---
+code: true
+type: page
+title: IOT backend with ESP32 
+description: How to use Kuzzle as an IOT ackend with ESP32 MCU
+---
+
 # USE KUZZLE AS AN IOT BACKEND WITH ESP32 MCU
 
 ![kuzzle](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)

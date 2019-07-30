@@ -1,3 +1,11 @@
+---
+code: true
+type: page
+title: Sync to another database
+description: How to synchronise data to another database
+---
+
+
 # Synchronize Kuzzle with another database
 
 ## Requirements

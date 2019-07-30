@@ -1,3 +1,10 @@
+---
+code: true
+type: page
+title: IOT Dashboard
+description: How to create a realtime IoT dashboard for Kuzzle
+---
+
 # How to create a realtime IoT dashboard for Kuzzle
 
 ## Table of Contents
