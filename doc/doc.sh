@@ -26,7 +26,7 @@ case $1 in
       git -C framework/ pull origin master
     else
       echo "Clone documentation framework"
-      git clone --depth 10 --single-branch --branch add-how-to https://github.com/kuzzleio/documentation.git framework/
+      git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git framework/
     fi
 
     echo "Link local doc for dead links checking"
