@@ -20,17 +20,11 @@ fi
 
 case $1 in
   prepare)
-    if [ -d "framework" ];
-    then
-      echo "Update documentation framework"
-      git -C framework/ pull origin master
-    else
-      echo "Clone documentation framework"
-      git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git framework/
-    fi
+    echo "Clone documentation framework"
+    git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git framework/
 
     echo "Link local doc for dead links checking"
-    rm framework/src$DOC_PATH
+    rm -f framework/src$DOC_PATH
     ln -s ../../../$DOC_VERSION framework/src$DOC_PATH
 
     echo "Install dependencies"
@@ -44,6 +38,12 @@ case $1 in
   build)
     ./framework/node_modules/.bin/vuepress build $DOC_VERSION/ $ARGS
   ;;
+
+  build-netlify)
+    export SITE_BASE="/"
+    ./framework/node_modules/.bin/vuepress build $DOC_VERSION/ $ARGS
+  ;;
+
 
   upload)
     aws s3 sync $DOC_VERSION/.vuepress/dist s3://$S3_BUCKET$SITE_BASE --delete
