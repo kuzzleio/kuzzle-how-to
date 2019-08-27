@@ -21,6 +21,7 @@ fi
 case $1 in
   prepare)
     echo "Clone documentation framework"
+    rm -rf framework/
     git clone --depth 10 --single-branch --branch master https://github.com/kuzzleio/documentation.git framework/
 
     echo "Link local doc for dead links checking"
@@ -50,7 +51,7 @@ case $1 in
   ;;
 
   cloudfront)
-    aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths $SITE_BASE
+    aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths $SITE_BASE*
   ;;
 
   *)

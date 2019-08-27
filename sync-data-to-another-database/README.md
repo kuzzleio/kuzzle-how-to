@@ -2,7 +2,7 @@
 code: true
 type: page
 title: Sync to another database
-description: How to synchronise data to another database
+description: How to synchronize data to another database
 ---
 
 

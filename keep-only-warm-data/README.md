@@ -2,7 +2,7 @@
 code: true
 type: page
 title: Keep only warm data
-description: How to keeping only warm data in Kuzzle
+description: How to keep only warm data in Kuzzle
 ---
 
 # Keeping only warm data in Kuzzle
