@@ -1,3 +1,10 @@
+---
+code: true
+type: page
+title: Massive Data Import to Kuzzle
+description: How to import massive data to Kuzzle
+---
+
 # Massive Data Import to Kuzzle
 
 ## Requirements

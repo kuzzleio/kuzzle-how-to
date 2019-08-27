@@ -1,3 +1,10 @@
+---
+code: true
+type: page
+title: IOT Dashboard
+description: How to create a realtime IoT dashboard for Kuzzle
+---
+
 # How to create a realtime IoT dashboard for Kuzzle
 
 ## Table of Contents
@@ -39,19 +46,19 @@ To follow this how-to, you will need:
 
 - Get **freeboard** from github:
 
-```console
+```bash
 $ git clone https://github.com/Freeboard/freeboard.git
 ```
 
 - Install **freeboard**
 
-```console
+```bash
 $ cd freeboard && npm install
 ```
 
 - Get Kuzzle Feeboard Datasource plugin
 
-```console
+```bash
 $ git clone https://github.com/kuzzleio/kuzzle-freeboard-plugin.git
 ```
 
@@ -59,7 +66,7 @@ We recommend that you clone both repositories into the same folder
 so that your directory tree matches this how-to.
 You should end up with a folder containing the following subfolders:
 
-```console
+```bash
 .
 ├── freeboard
 └── kuzzle-freeboard-plugin
@@ -73,7 +80,7 @@ Assuming you already have an intance of Kuzzle running on *localhost*, you will 
 
 In `scripts` folder, you can launch `fb-kuzzle-fixtures.sh` to create the required data structure. This will create an `fb-howto-index` index, and `fb-howto-collection` as shown below.
 
-![alt text](img/kuzzle-admin-console.png "Kuzzle freeboard fixture")
+![alt text](./img/kuzzle-admin-console.png "Kuzzle freeboard fixture")
 
 ### Step 1: Enable Kuzzle Datasource Plugin
 
@@ -82,7 +89,7 @@ One way to do this, is to import the *kuzzle-sdk* module into *freeboard*, using
 
 In `freeboard` folder enter the following command:
 
-```console
+```bash
 $ npm install kuzzle-sdk
 ```
 
@@ -113,13 +120,13 @@ Then modify `freeboard/index-dev.html` file to add loading of Kuzzle Javascript 
 You can now check that Kuzzle DataSource plugin is available. Open `freeboard/index-dev.html` in your favorite web browser.
 Under *DATASOURCES*, click the *ADD* button. In the dropdown list, you should be able to see **Kuzzle Datasource** entry.
 
-![alt text](img/datasource-plugins.png "Kuzzle Datasource plugin")
+![alt text](./img/datasource-plugins.png "Kuzzle Datasource plugin")
 
 ### Step 2: Kuzzle Datasource Configuration
 
 Once you clicked on **Kuzzle Datasource** entry, you see the plugin settings screen.
 
-![alt text](img/kuzzle-datasource-settings.png "Kuzzle Datasource settings")
+![alt text](./img/kuzzle-datasource-settings.png "Kuzzle Datasource settings")
 
 Settings:
 
@@ -151,7 +158,7 @@ The `sin-generator-device.sh` scipt, that you can find in `scripts` folder, will
 
 Launching `sin-generator-device.sh` will start creating documents in Kuzzle. You should be able to see the documents using *Kuzzle Admin Console*
 
-![alt text](img/kuzzle-sin-gen-docs.png "Sinus generator device documents")
+![alt text](./img/kuzzle-sin-gen-docs.png "Sinus generator device documents")
 
 To monitor this device's *value* field, in *freeboard*, we will create a datasource that will monitor documents in `fb-howto-index/fb-howto-collection` and subscribe to documents for which the `device_id` field equals *`SIN_GENERATOR`*
 
@@ -181,13 +188,13 @@ We will use the *Sparkline* widget to visualize the SIN_GENERATOR device `value`
 - Give a title to the widget: *My Sin Generator*
 - In the `VALUE` field, enter *`datasources["MySinGenerator"]["value"]`*
 
-![alt text](img/sin-gen-sparkline.png "Sparkline settings")
+![alt text](./img/sin-gen-sparkline.png "Sparkline settings")
 
 Click **SAVE**
 
 You should start visualizing the evolution of the `SIN_GENERATOR` device over time:
 
-![alt text](img/sin-gen-sparkline-viz.png "SinGenerator device spakline")
+![alt text](./img/sin-gen-sparkline-viz.png "SinGenerator device spakline")
 
 ### Step 5: Adding other devices
 
@@ -197,12 +204,12 @@ You can follow  steps 3 and 4 using *`SQUARE_GENERATOR`* in place of *`SIN_GENER
 
 Both scripts accept a argument that will be used as `device_id` field in the created document, allowing to simulate several differents generator devices.
 
-```console
+```bash
 $ ./square-generator-device.sh my_square_gen_id
 Generating square function as "device_id" : my_square_gen_id
 ```
 
-![alt test](img/dashboard.png "Dashboard")
+![alt test](./img/dashboard.png "Dashboard")
 
 ## Conclusion
 

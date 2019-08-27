@@ -1,6 +1,13 @@
+---
+code: true
+type: page
+title: IOT backend with ESP32 
+description: How to use Kuzzle as an IOT ackend with ESP32 MCU
+---
+
 # USE KUZZLE AS AN IOT BACKEND WITH ESP32 MCU
 
-![kuzzle](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
+![kuzzle](./img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
 
 ## Intro: Use Kuzzle as an IoT backend With ESP32
 
@@ -18,7 +25,7 @@ By default, Kuzzle does not support MQTT communication, but it features an exten
 
 To browse and manage your data, either install Kuzzle's [administration console](https://github.com/kuzzleio/kuzzle-admin-console), or use the online version available [here](http://console.kuzzle.io) (although it is hosted online, no data will ever leave your network).
 
-![esp32 picture](img/esp32-rgb-led-1.jpg)
+![esp32 picture](./img/esp32-rgb-led-1.jpg)
 
 ## Components prerequisites
 
@@ -35,7 +42,7 @@ For this tutorial, you need the following components:
 Our IoT application requires a simple storage setup: a data index, data collections and their corresponding mappings.  
 Read our [persistence layer documentation](https://docs.kuzzle.io/guide/essentials/persisted/#working-with-persistent-data) for more information.
 
-![kuzzle admin console](img/kuzzle-iot-backoffice.png)
+![kuzzle admin console](./img/kuzzle-iot-backoffice.png)
 
 The script [iot-deploy](./iot-deploy/README.md) creates the necessary storage structures in a Kuzzle instance.
 
@@ -53,13 +60,13 @@ First, install the ESP32 toolchain and SDK: <https://esp-idf.readthedocs.io/en/l
 
 Then, create your project by cloning Espressif's [application template](https://github.com/espressif/esp-idf-template): 
 
-```console
+```bash
 $ git clone https://github.com/espressif/esp-idf-template my-connected-rgb-light
 ```
 
 Make sure you are able to build and flash the application to your ESP32 module.
 
-![code](img/esp32-template-code-fx.png)
+![code](./img/esp32-template-code-fx.png)
 
 ## Dependencies
 
@@ -90,7 +97,7 @@ $ tree -d -L 2
 
 ## Wiring the RGB LED to ESP32 DevKit C
 
-![wiring](img/esp32-rgb-led-sch.png)
+![wiring](./img/esp32-rgb-led-sch.png)
 
 The RGB LED will be driven by GPIO 25, 26 and 27.
 
@@ -288,7 +295,7 @@ The whole source code for the rgb light is available in the `src` folder.
 
 ## Visualize the device state
 
-![visualize device state](img/admin-console-device-state.png)
+![visualize device state](./img/admin-console-device-state.png)
 
 When booting, the device publishes its current state to Kuzzle. It can then be viewed in the administration console, as shown in the screenshot above:
 
@@ -315,7 +322,7 @@ Click on the `Create` button and enter the following JSON:
 }
 ```
 
-![new state](img/admin-console-new-state.png)
+![new state](./img/admin-console-new-state.png)
 
 Once you click on the Create button to validate your document, the RGB light should turn to bright blue. When you refresh your browser, you should now have 3 documents:
 
@@ -323,7 +330,7 @@ Once you click on the Create button to validate your document, the RGB light sho
 * The partial one you entered, turning r to 0
 * The new complete state published by the device with r set to 0 and g and b still set to 255
 
-![image](img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
+![image](./img/35656a24-30e3-4241-a4c0-29e40c4e5b1c.jpg)
 
 ## Going Further
 

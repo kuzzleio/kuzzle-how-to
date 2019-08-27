@@ -2,3 +2,4 @@ node_modules/
 yellow_taxi_data.csv
 .byebug_history
 package-lock.json
+doc/framework
