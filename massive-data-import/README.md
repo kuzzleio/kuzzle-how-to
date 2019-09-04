@@ -90,7 +90,7 @@ const bulkQuery = {
 }
 ```
 
-This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](https://docs.kuzzle.io/sdk-reference/js/6/bulk/import/) method from the SDK Javascript.
+This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](https://docs.kuzzle.io/sdk/js/6/controllers/bulk/import) method from the SDK Javascript.
 
 ```js
 kuzzle.bulk.import(bulkData)
@@ -135,7 +135,7 @@ kuzzle.realtime.subscribe('nyc-open-data', 'yellow-taxi', filters, notification 
 ```
 
 After that we are going to import our documents.
-The documents to be inserted will have to be collected in an array before being passed to the [Kuzzle.document.mCreate](https://docs.kuzzle.io/sdk-reference/js/6/document/mCreate/) method of the SDK:
+The documents to be inserted will have to be collected in an array before being passed to the [Kuzzle.document.mCreate](/sdk/js/6/controllers/document/m-create) method of the SDK:
 
 ```js
 const documents = [
@@ -183,7 +183,7 @@ The containers are preconfigured to work with NYC Open Data's Yellow Taxi datase
 docker-compose up
 ```
 
-Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/koncorde/1/essentials/terms/#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
+Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/koncorde/1/essentials/terms#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
 
 ```bash
 docker-compose exec kuzzle node /scripts/subscribe.js
