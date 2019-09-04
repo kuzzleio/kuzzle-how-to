@@ -183,7 +183,7 @@ The containers are preconfigured to work with NYC Open Data's Yellow Taxi datase
 docker-compose up
 ```
 
-Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/koncorde/1/essentials/terms#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
+Then in another terminal we are going to subscribe to a room with [geoBoundingBox](/core/1/guides/cookbooks/realtime-api/terms#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
 
 ```bash
 docker-compose exec kuzzle node /scripts/subscribe.js
