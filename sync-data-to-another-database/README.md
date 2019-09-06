@@ -58,14 +58,14 @@ CREATE TABLE IF NOT EXISTS nyc_open_data.yellow_taxi (kuzzle_id text, pickup_dat
 
 ## Plugin development
 
-The [Kuzzle Plugin Engine](https://docs.kuzzle.io/plugins/1) lets you extend Kuzzle's functionality by adding code modules that offer auxiliary features. These modules can:
+The [Kuzzle Plugin Engine](https://docs.kuzzle.io/core/1/plugins/essentials/introduction/) lets you extend Kuzzle's functionality by adding code modules that offer auxiliary features. These modules can:
 
   - Listen asynchronously to events
   - Listen synchronously to events (and pipe a request)
   - Add a controller route
   - Add a new authentication strategy
 
-We will create a plugin [listening synchronously](https://docs.kuzzle.io/plugins/1/essentials/pipes/) to Document Controller events in order to report document changes in Cassandra.
+We will create a plugin [listening synchronously](https://docs.kuzzle.io/core/1/plugins/guides/pipes/) to Document Controller events in order to report document changes in Cassandra.
 
 ### Pipe some events
 

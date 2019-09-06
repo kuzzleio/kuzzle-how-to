@@ -134,10 +134,10 @@ Settings:
 |----------------------|------|
 | Kuzzle host  | The hostname of the machine *Kuzzle*  instance is running on, default is `localhost`. |
 | Kuzzle port | The port through which Kuzzle Server is accessible, default is `7512` |
-| Token | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/api-documentation/controller-auth/login/) to learn how to generate a JWT encrypted token |
+| Token | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/core/1/api/controllers/auth/login/) to learn how to generate a JWT encrypted token |
 | Index | The Kuzzle *index* that holds the documents your are interested in. |
 | Collection | The Kuzzle *collection* that holds the documents your are interested in. |
-| Filter | The filter the document you are interested in must match. Refer [Koncord documentation](https://docs.kuzzle.io/kuzzle-dsl/essential/koncorde/) for further information about Kuzzle realtime filters.|
+| Filter | The filter the document you are interested in must match. Refer [Koncord documentation](https://docs.kuzzle.io/core/1/guides/cookbooks/realtime-api/introduction/) for further information about Kuzzle realtime filters.|
 
 The Kuzzle Datasource plugin will receive a notification each time a document is **created** in the specified `index/collection` that matches the `filter`.
 
@@ -213,6 +213,6 @@ Generating square function as "device_id" : my_square_gen_id
 
 ## Conclusion
 
-Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/kuzzleio/kuzzle-freeboard-plugin), and the correct [subscription](https://docs.kuzzle.io/sdk-reference/collection/subscribe/) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
+Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/kuzzleio/kuzzle-freeboard-plugin), and the correct [subscription](https://docs.kuzzle.io/core/1/guides/cookbooks/realtime-api/introduction/) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
 
 For now, Kuzzle Freeboard Datasource plugin is limited to monitoring document when they are **created**, but you could easily adapt it to monitor document when they are **updated**, **deleted**, or **published**.
