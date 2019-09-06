@@ -90,7 +90,7 @@ const bulkQuery = {
 }
 ```
 
-This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](https://docs.kuzzle.io/sdk/js/6/controllers/bulk/import) method from the SDK Javascript.
+This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](/sdk/js/6/controllers/bulk/import) method from the SDK Javascript.
 
 ```js
 kuzzle.bulk.import(bulkData)
