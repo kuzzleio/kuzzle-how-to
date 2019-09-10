@@ -77,7 +77,7 @@ To allow your application to communicate with Kuzzle, you need 2 components:
 
 Clone the esp-mqtt and kuzzle-esp32 components in the `components` folder to add them to your project:
 
-``` console
+```shell
 $ git submodule add https://github.com/espressif/esp-mqtt components/esp-mqtt
 $ git submodule add https://github.com/kuzzleio/kuzzle-esp32 components/kuzzle-esp32
 ```
@@ -86,7 +86,7 @@ $ git submodule add https://github.com/kuzzleio/kuzzle-esp32 components/kuzzle-e
 
 Your project folder structure should now look like this:
 
-``` console
+```shell
 $ tree -d -L 2
 .
 ├── components
