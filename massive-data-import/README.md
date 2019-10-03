@@ -180,7 +180,7 @@ You can use the [docker-compose.yml](docker-compose.yml) included in this How-To
 The containers are preconfigured to work with NYC Open Data's Yellow Taxi dataset.
 
 ```bash
-docker-compose up
+docker-compose u
 ```
 
 Then in another terminal we are going to subscribe to a room with [geoBoundingBox](/core/1/guides/cookbooks/realtime-api/terms#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
