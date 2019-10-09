@@ -1,4 +1,4 @@
-FROM kuzzleio/kuzzle:develop
+FROM kuzzleio/kuzzle:1
 
 LABEL maintainer="support@kuzzle.io"
 
