@@ -213,6 +213,6 @@ Generating square function as "device_id" : my_square_gen_id
 
 ## Conclusion
 
-Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/kuzzleio/kuzzle-freeboard-plugin), and the correct [subscription](/sdk/js/6/controllers/collection/subscribe) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
+Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource freeboard plugin](http://www.github.com/kuzzleio/kuzzle-freeboard-plugin), and the correct [subscription](/sdk/js/6/controllers/realtime/subscribe) filter, you are able to monitor/vizualize any realtime parametter of your Kuzzle based IoT application.
 
 For now, Kuzzle Freeboard Datasource plugin is limited to monitoring document when they are **created**, but you could easily adapt it to monitor document when they are **updated**, **deleted**, or **published**.
