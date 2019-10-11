@@ -19,10 +19,10 @@ services:
       - DEBUG=kuzzle:plugins
 
   redis:
-    image: redis:3.2
+    image: redis:5
 
   elasticsearch:
-    image: kuzzleio/elasticsearch:5.4.1
+    image: kuzzleio/elasticsearch:5.6.10
     environment:
       - cluster.name=kuzzle
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"

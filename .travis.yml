@@ -1,41 +1,145 @@
-group: edge
+---
 
-services:
-  - docker
+# -----------------
+# YAML Templates
+# -----------------
+# Documentation build and deploy
+_doc-deploy-content: &doc-deploy-content
+  install:
+    - pip install awscli --upgrade --user
+  script:
+    - npm run doc-prepare
+    - npm run doc-build
+  deploy:
+    provider: script
+    script:
+      - npm run doc-upload
+    skip_cleanup: true
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(master|develop)$
+  after_deploy:
+    - npm run doc-cloudfront
 
-on:
-  branch: master
+# Deployments
+_deploy-base: &deploy-base
+  stage: Deployments
+  language: node_js
+  node_js: 10
+  env: &deploy-base-env
+    - NODE_ENV=production
+    - AWS_DEFAULT_REGION=us-west-2
+    - S3_BUCKET=dl.kuzzle.io
+    - DOCKER_COMPOSE_VERSION=1.12.0
+    - TAR_EXCLUDES="--exclude=docker --exclude=features --exclude=run_tests.sh --exclude=*node_modules"
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "I98SvXLnFp5GzJkjBCnwOUVHHZCfzRuuKXYfMjf2T9st7UNSNIvKJUW0kTyrHWyrN0uOeB3LC4IB5oVSjwnsMjxu3oFiUpozaTMWpbjormMEs2kg8akHSTrrokTlJpBjTM6PMMKi3O08FrA3zzRVOJW0jqvtZmtE+/rtNfv2cptdHhx3lLEkuyWVgN5CXN6cvfSE2CJcYVHvEf3YUeDoWsi3Vdj0lXKXFvLL2I1IvVBv4DQWTUBpddjZES1amN2bbw5zX1jegxT3aka6qTjSlVY4lU+8g/PP2Ro66xB7YdWVthBxexNFFZEQT4sIrRpRhBX7Ha09eG2vUIdPUZZ789+H3MewAOL/YNoSn8pc5lwCud4A3l1XojM8bZBmQ3B1tqdCxo39w4gqD7ZLl3l/LFOZ26WLuw3GeJwDo787NdTxM34eLRsGfpu/t3fZC5GXnb65Lfvg/QTJ9J/gMugZdGt+FwPPUbas3CqaiwArT3XoD9gR31ZnUA/g45oUtjqsoF1dhTkxHzQ3xfOHVknx037dvjciypsh8EezTgZeuEFXoLXkUPPj3XTlnOoP5Xo9Ye75j+KKWasKvBpD+lgCmA4hX6OnlEfSmCG2KrvAy31fQLyIblm6hdRGvPoStDecWIhSuZR5EoGJlJFuE0+rQDr7C/KVYdPRHFPnchu/IoY="
+    # AWS_ACCESS_KEY_ID
+    - secure: "oPl7aI9rCab0Q1qWu+ikMWKsFUhzkvqyXNwrPzeKtg9AifBMGmil2H5A877yajwbU6cyPxmRr8HGrUo4kMoOn8eqaVhSjt41Qi0X11ftx4gjz+MRpSMXso3dKxXsS2vh72B23tm9MqnP8OBkxESEDCBiV7IRIuS9B9zvCEr8jkfLw4BpZy7unyEMkXW3yrPuoehZ4voN7igUgn0+1EqK7aAeev3zCRcehW8rq3Zis+0IOw0KZeF8+kvi56FLXUzR96FfxxS+DoCRiU3T/+o7bKROGabZnc4aCrmMwGiUfGiffNoJSc3OzhqzNubYalRhZyrf//tRWewnQlUtIQzn8CHONwOxQFIw8RzIOwAej05Qr32lOLdtivUxMerokRA3Hc4l0IKeyaR7tMuzHs2T/i/IborBF5rUKBKbVTABvzVhuID79KXTxvp9y1MHdT5tybJLI4CqBH5XuT3GW5LweaDJ5MIIeRRKyQDjq08l1z5Btd65y/FyaZcFGzvkjzgxRj8g1+mXdUwiW6f/FmtFP8T+d9LNxW/30tx9rtPi/XBoi5RyewN88VUAeZq36sgmunLWozLQppdzhtSpDUc2GO48HxYsasuQUOdgQWy24sGFpWtT1/h79Wl1dxUkHTAw5a6OcXYfH6HoWanhSQ20vxBS1ZbcpoVHoqf1RdGJ/XU="
+  cache:
+    directories:
+      - $HOME/.cache/pip
+ 
 
-env:
-  global:
-  # Secret
-  - secure: I98SvXLnFp5GzJkjBCnwOUVHHZCfzRuuKXYfMjf2T9st7UNSNIvKJUW0kTyrHWyrN0uOeB3LC4IB5oVSjwnsMjxu3oFiUpozaTMWpbjormMEs2kg8akHSTrrokTlJpBjTM6PMMKi3O08FrA3zzRVOJW0jqvtZmtE+/rtNfv2cptdHhx3lLEkuyWVgN5CXN6cvfSE2CJcYVHvEf3YUeDoWsi3Vdj0lXKXFvLL2I1IvVBv4DQWTUBpddjZES1amN2bbw5zX1jegxT3aka6qTjSlVY4lU+8g/PP2Ro66xB7YdWVthBxexNFFZEQT4sIrRpRhBX7Ha09eG2vUIdPUZZ789+H3MewAOL/YNoSn8pc5lwCud4A3l1XojM8bZBmQ3B1tqdCxo39w4gqD7ZLl3l/LFOZ26WLuw3GeJwDo787NdTxM34eLRsGfpu/t3fZC5GXnb65Lfvg/QTJ9J/gMugZdGt+FwPPUbas3CqaiwArT3XoD9gR31ZnUA/g45oUtjqsoF1dhTkxHzQ3xfOHVknx037dvjciypsh8EezTgZeuEFXoLXkUPPj3XTlnOoP5Xo9Ye75j+KKWasKvBpD+lgCmA4hX6OnlEfSmCG2KrvAy31fQLyIblm6hdRGvPoStDecWIhSuZR5EoGJlJFuE0+rQDr7C/KVYdPRHFPnchu/IoY=
-  # ID
-  - secure: oPl7aI9rCab0Q1qWu+ikMWKsFUhzkvqyXNwrPzeKtg9AifBMGmil2H5A877yajwbU6cyPxmRr8HGrUo4kMoOn8eqaVhSjt41Qi0X11ftx4gjz+MRpSMXso3dKxXsS2vh72B23tm9MqnP8OBkxESEDCBiV7IRIuS9B9zvCEr8jkfLw4BpZy7unyEMkXW3yrPuoehZ4voN7igUgn0+1EqK7aAeev3zCRcehW8rq3Zis+0IOw0KZeF8+kvi56FLXUzR96FfxxS+DoCRiU3T/+o7bKROGabZnc4aCrmMwGiUfGiffNoJSc3OzhqzNubYalRhZyrf//tRWewnQlUtIQzn8CHONwOxQFIw8RzIOwAej05Qr32lOLdtivUxMerokRA3Hc4l0IKeyaR7tMuzHs2T/i/IborBF5rUKBKbVTABvzVhuID79KXTxvp9y1MHdT5tybJLI4CqBH5XuT3GW5LweaDJ5MIIeRRKyQDjq08l1z5Btd65y/FyaZcFGzvkjzgxRj8g1+mXdUwiW6f/FmtFP8T+d9LNxW/30tx9rtPi/XBoi5RyewN88VUAeZq36sgmunLWozLQppdzhtSpDUc2GO48HxYsasuQUOdgQWy24sGFpWtT1/h79Wl1dxUkHTAw5a6OcXYfH6HoWanhSQ20vxBS1ZbcpoVHoqf1RdGJ/XU=
-  # DOCKER_PASSWORD
-  - secure: "IWWZ673TdyxLsvURJUMFt9fzDp7pKMRrZjCHkBqLrJE7fqECfN0WN+rkY2IaVsjGvc5VIa/05/9xYVEIX4rBhtLtZE2YTkXjU/eMjxs+lSHpVkyyLebYJVmCV+f6P4fjNIKNtr+ucMBklExKYaW9LI2noeYXKzyHmWfDmAy7KubFo8J5OHaODYqOQgNKdeX15JAJFH3K5CjhQxY5QBTvuXhZFDwcPeDo526mYiHJBXszpOCCjmEXN/YYT+gEO/jxakCUT4vLaZt9feSY1Sd6Wxm9eGLvYa6B/lwvMt0FWehZ+TSDGXagDyyK8oFqeZojbZyBTjhWj/12qaf3uPiHUU60eMbwaOfqwOZUxuVU+atx/ntxMQO22mr66DyGTcyVET9Yf5nFuVfyTiwPbBIDY4jLMRL/ZcOQDLrX2ObWRqSIvxHh24qzTFqvxR2FBqf+WHvYf4FVDUxmC3GxS5RRZ8n5osHic7tnEKij0lU9TlYfBYn7ESXyWB7iZsj5lw73s9ityXpJo3AfffCWBttAhI/FfDckwyF+vhh0+ULU8mYpgbCCZ3DKob35bZmS97LAE4QBKe22INfKH8Lxzq3qDp5tcbwDCjJUsEF9HP3oBy/F36OO1CZarrVJXDuWi1hf51KtWuEusOdcF4twZn3RVB+7M72prkx+YRh2P5UvQoM="
-  - BUCKET_NAME=dl.kuzzle.io
-  - DOCKER_COMPOSE_VERSION=1.12.0
-  - TAR_EXCLUDES="--exclude=docker --exclude=features --exclude=run_tests.sh --exclude=*node_modules"
+# ------------------------
+# Jobs configuration
+# ------------------------
+jobs:
+  include:
+    # ----------------------------
+    # Deadlinks Tests
+    # ----------------------------
+    - name: Dead link check
+      stage: Tests
+      language: node_js
+      node_js: "10"
+      cache:
+        directories:
+          - "$HOME/.gem/specs"
+          - ".doc/framework/node_modules"
+      before_script:
+        - npm run doc-prepare
+        - npm run --prefix doc/framework clone-repos
+      script:
+        - gem install typhoeus
+        - HYDRA_MAX_CONCURRENCY=20 npm run --prefix doc/framework dead-links
 
-before_install:
-  - sudo sysctl -w vm.max_map_count=262144
-  # Build images
-  - docker login -u aschen -p $DOCKER_PASSWORD
-  - for dir in $(\ls -1d */docker); do sh -c "cd $dir && bash build_images.sh && bash push_images.sh"; done
+    # ----------------------------
+    # Archive deployment
+    # ----------------------------
+    - <<: *deploy-base
+      name: Deploy Archives to dl.kuzzle.io
+      if: branch = master
+      stage: Deployments
 
-addons:
-  apt:
-    packages:
-      - ruby
-      - awscli
+      install:
+        - pip install awscli --upgrade --user
+      before_install:
+        - sudo sysctl -w vm.max_map_count=262144
+        # Build images
+        - docker login -u kuzzleteam -p $DOCKER_PASSWORD
+        - |
+          for dir in $(\ls -1d */docker)
+          do
+            cd $dir
+            bash build_images.sh
+            bash push_images.sh
+          done
+      script:
+        - mkdir build
+        # Run tests
+        - |
+          for dir in */
+          do
+            base=$(basename "$dir")
+            if [ $base != 'samples' ] && [ $base != 'build' ]
+            then
+              cd ${base}
+              ./run_tests.sh
+              cd -
+            fi
+          done
+      after_success:
+        # Create how-to.tar.gz
+        - |
+          for dir in */
+          do
+            base=$(basename "$dir")
+            if [ $base != 'samples' ] && [ $base != 'build' ]
+            then
+              tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}
+            fi
+          done
+        - aws s3 cp build s3://$S3_BUCKET/how-to/ --recursive --region us-west-2
+    
+    # ----------------------------
+    # Prod deployment
+    # ----------------------------
+    - <<: *deploy-base
+      <<: *doc-deploy-content
+      name: Deploy docs.kuzzle.io
+      if: branch = master
+      stage: Deployments
+      env:
+        - *deploy-base-env
+        - S3_BUCKET=docs.kuzzle.io
+        - CLOUDFRONT_DISTRIBUTION_ID=E3D6RP0POLCJMM
+  
+    # ----------------------------
+    # Dev deployment
+    # ----------------------------
+    - <<: *deploy-base
+      <<: *doc-deploy-content
+      name: Deploy next-docs.kuzzle.io
+      if: branch = develop
+      stage: Deployments
+      env:
+        - *deploy-base-env
+        - S3_BUCKET=docs-next.kuzzle.io
+        - CLOUDFRONT_DISTRIBUTION_ID=E2ZCCEK9GRB49U
 
-script:
-  - mkdir build
-  # Run tests
-  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then cd ${base} ; ./run_tests.sh ; cd ..; fi; done
-
-after_success:
-  # Create how-to.tar.gz
-  - for dir in */; do base=$(basename "$dir"); if [ $base != 'samples' ] && [ $base != 'build' ]; then tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}; fi; done
-  - aws s3 cp build s3://$BUCKET_NAME/how-to/ --recursive --region us-west-2
+stages:
+  - name: Tests
+    if: type = pull_request OR (type = push AND branch =~ /(master|develop)/)
+  - name: Deployments
+    if: type = push AND branch =~ /(master|develop)/
