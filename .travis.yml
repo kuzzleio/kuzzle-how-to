@@ -58,6 +58,7 @@ jobs:
           - "$HOME/.gem/specs"
           - ".doc/framework/node_modules"
       before_script:
+        - gem install typhoeus
         - npm run doc-prepare
         - $(npm bin)/kuzdoc iterate-repos:install --repos_path doc/framework/.repos/
         - $(npm bin)/kuzdoc framework:link -d /how-to/1/ -v 1
