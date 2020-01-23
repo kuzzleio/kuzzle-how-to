@@ -1,5 +1,4 @@
 ---
-
 # -----------------
 # YAML Templates
 # -----------------
@@ -7,6 +6,7 @@
 _doc-deploy-content: &doc-deploy-content
   install:
     - pip install awscli --upgrade --user
+    - npm ci
   script:
     - npm install
     - npm run doc-prepare
@@ -40,7 +40,6 @@ _deploy-base: &deploy-base
   cache:
     directories:
       - $HOME/.cache/pip
-
 
 # ------------------------
 # Jobs configuration
