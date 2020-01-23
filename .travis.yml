@@ -8,6 +8,7 @@ _doc-deploy-content: &doc-deploy-content
   install:
     - pip install awscli --upgrade --user
   script:
+    - npm install
     - npm run doc-prepare
     - npm run doc-build
   deploy:
