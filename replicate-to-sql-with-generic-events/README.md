@@ -24,14 +24,9 @@ Here we will used Generic events to copy all documents inside an postgres databa
 In order to use this how to, you will need docker and docker-compose to be installed.
 
 1. Build the postgres docker image `cd /project/docker/postgres-sql && docker build -t kuzzle-postgres-test:1.0.0 .`
-1. start the stack `cd /project/ && docker-compose -f docker-compose.yml up`
+1. Run the script `run-features.sh`
 
-The stack is now deployed.
-
-Next steps:
-
-1. `node import-data.js` This script will trigger data to import inside the kuzzle datastore and trigger generic events associated.
-1. `node delete-data.js` This script will trigger data to delete inside the kuzzle datastore and trigger generic events associated.
+> If you want to start the stack yourself run `cd /project/ && docker-compose -f docker-compose.yml up`
 
 
 For those who are not familiar with the postgres sql here is a short cheatsheet.

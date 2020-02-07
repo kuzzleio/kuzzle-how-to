@@ -11,7 +11,7 @@ const collectionName = 'yellow-taxi';
 
 async function searchData() {
   try {
-    const result = await kuzzle.document.search(indexName, collectionName);
+    const result = await kuzzle.document.search(indexName, collectionName, {}, { size: 500 });
     return result.hits;
   } catch (error) {
     return [];
@@ -20,9 +20,7 @@ async function searchData() {
 
 async function deleteData(ids = []) {
   try {
-    console.log(ids);
-    const response = await kuzzle.document.mDelete(indexName, collectionName, ids);
-    console.log(`Successfully deleted ${response.successes.length} documents`);
+    await kuzzle.document.mDelete(indexName, collectionName, ids);
   } catch (error) {
     throw new Error(error);
   }

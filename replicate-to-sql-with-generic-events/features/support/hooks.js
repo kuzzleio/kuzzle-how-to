@@ -1,20 +1,16 @@
-const
-  {
-    BeforeAll,
-    After
-  } = require('cucumber'),
-  Kuzzle = require('kuzzle-sdk'),
+const { BeforeAll, After } = require('cucumber'),
+  { Kuzzle, WebSocket } = require('kuzzle-sdk'),
   KWorld = require('./world'),
   { spawnSync } = require('child_process');
 
-BeforeAll(function(callback) {
+BeforeAll(async function() {
   let maxTries = 10;
   let connected = false;
   let curl;
 
   const world = new KWorld();
 
-  while (! connected && maxTries > 0) {
+  while (!connected && maxTries > 0) {
     curl = spawnSync('curl', [`${world.host}:${world.port}`]);
 
     if (curl.status === 0) {
@@ -27,23 +23,21 @@ BeforeAll(function(callback) {
   }
 
   if (!connected) {
-    return callback(new Error('Unable to start docker-compose stack'));
+    return new Error('Unable to start docker-compose stack');
   }
 
-  const kuzzle = new Kuzzle(world.host, { port: world.port }, error => {
-    if (error) {
-      return callback(error);
-    }
+  const kuzzle = new Kuzzle(new WebSocket('localhost'));
+  const index = 'nyc-open-data';
+  const collection = 'yellow-taxi';
 
-    kuzzle
-      .createIndexPromise('test-index')
-      .then(() => kuzzle.collection('test-collection', 'test-index').createPromise())
-      .then(() => callback())
-      .catch(err => callback(err))
-      .finally(() => kuzzle.disconnect());
-  });
+  try {
+    await kuzzle.index.create(index);
+    await kuzzle.collection.create(index, collection);
+  } catch (error) {
+    return new Error(error);
+  }
 
-  After(function () {
+  After(function() {
     if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
       this.kuzzle.disconnect();
     }

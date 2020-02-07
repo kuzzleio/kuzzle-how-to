@@ -6,13 +6,9 @@ const {
   createCollectionIfNotExists
 } = require('./utils');
 
-const pathToFile = '../samples/Yellow_taxi.csv';
+const pathToFile = 'samples/Yellow_taxi.csv';
 
 const kuzzle = new Kuzzle(new WebSocket('localhost'));
-
-function exitProcess() {
-  process.exit(1);
-}
 
 const indexName = 'nyc-open-data';
 const collectionName = 'yellow-taxi';
@@ -40,7 +36,7 @@ function formatDocument(fields = []) {
 }
 
 function loadData() {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const documents = [];
     const dataFile = readline.createInterface({
       input: fs.createReadStream(pathToFile)
@@ -63,18 +59,13 @@ function loadData() {
       if (documents.length > 0) {
         kuzzle.document
           .mCreate(indexName, collectionName, documents)
-          .then(console.log)
-          .catch(console.error);
+          .then(resolve)
+          .catch(reject);
       } else {
         resolve(true);
       }
     });
   });
-}
-
-function disconnect() {
-  kuzzle.disconnect();
-  exitProcess();
 }
 
 async function run() {
@@ -86,7 +77,7 @@ async function run() {
   } catch (error) {
     console.error(error);
   } finally {
-    disconnect();
+    kuzzle.disconnect();
   }
 }
 
