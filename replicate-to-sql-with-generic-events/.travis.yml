@@ -1,0 +1,19 @@
+group: edge
+
+services:
+  - docker
+
+on:
+  branch: master
+
+env:
+  global:
+  - DOCKER_COMPOSE_VERSION=1.21.0
+
+before_install:
+  - sudo sysctl -w vm.max_map_count=262144
+  - sudo sysctl -w fs.inotify.max_user_watches=524288
+
+script:
+  # Run tests
+  - npm install --unsafe-perm && npm test

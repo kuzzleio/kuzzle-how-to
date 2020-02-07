@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  kuzzle:
+    image: kuzzleio/plugin-dev:2
+    command: /run-dev.sh
+    volumes:
+      - "./docker/run-dev.sh:/run-dev.sh"
+      - "./docker/install-plugins.sh:/install-plugins.sh"
+      - "./docker/pm2.json:/config/pm2.json"
+      - ".:/var/app/plugins/enabled/${PLUGIN_NAME:-replicate-to-sql-with-generic-events}"
+    cap_add:
+      - SYS_PTRACE
+    ulimits:
+      nofile: 65536
+    sysctls:
+      - net.core.somaxconn=8192
+    depends_on:
+      - redis
+      - elasticsearch
+      - postgresql
+    ports:
+      - "9229:9229"
+      - "7512:7512"
+    environment:
+      - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_limits__documentsWriteCount=10000
+      - NODE_ENV=development
+      - DEBUG=kuzzle:plugins
+
+  redis:
+    image: redis:5
+
+  elasticsearch:
+    image: kuzzleio/elasticsearch:7.3.0
+    ports:
+      - "9200:9200"
+    ulimits:
+      nofile: 65536
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - node.name=alyx
+      - cluster.name=kuzzle
+      - discovery.type=single-node
+
+  postgresql:
+    image: "kuzzle-postgres-test:1.0.0"
+    container_name: "postgressql"
+    ports:
+      - "5432:5432"

@@ -1,0 +1,38 @@
+{
+  "name": "kuzzle-core-plugin-boilerplate",
+  "author": "The Kuzzle Team <support@kuzzle.io>",
+  "version": "2.0.0",
+  "description": "Kuzzle plugin boilerplate template",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npm run --silent lint && npm run functional-testing",
+    "lint": "eslint --max-warnings=0 ./lib ./features",
+    "functional-testing": "bash run-features.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuzzleio/kuzzle-core-plugin-boilerplate.git"
+  },
+  "keywords": [
+    "kuzzle",
+    "plugin",
+    "template"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/kuzzleio/kuzzle-core-plugin-boilerplate/issues"
+  },
+  "homepage": "https://github.com/kuzzleio/kuzzle-core-plugin-boilerplate#readme",
+  "devDependencies": {
+    "cucumber": "^5.1.0",
+    "eslint": "^5.16.0",
+    "kuzzle-sdk": "^7.0.1",
+    "nexpect": "^0.6.0"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "pg": "^7.18.1"
+  }
+}
