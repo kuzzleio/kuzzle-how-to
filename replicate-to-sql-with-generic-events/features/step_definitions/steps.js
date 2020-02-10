@@ -2,56 +2,55 @@
 
 const { Given, Then } = require('cucumber'),
   { Kuzzle, WebSocket } = require('kuzzle-sdk'),
-  { execSync } = require('child_process');
+  { exec } = require('child_process');
 
-Given(/A Kuzzle stack with Postgres running/, function(callback) {
+Given(/A Kuzzle stack with Postgres running/, function() {
   try {
     this.kuzzle = new Kuzzle(new WebSocket('localhost'));
-    callback();
   } catch (error) {
-    console.error(error);
-    callback(error);
+    throw new Error(error);
   }
 });
 
-Then(/I can load the test data into Kuzzle/, function(callback) {
-  try {
-    execSync('node scripts/import-data.js');
-    callback();
-  } catch (error) {
-    console.error(error);
-    callback(error);
-  }
+Then(/I can load the test data into Kuzzle/, function(cb) {
+  exec('node scripts/import-data.js', function(error) {
+    if (error) {
+      cb(error);
+    }
+    cb();
+  });
 });
 
-Then(/I can check that data are in postgres and kuzzle/, function(callback) {
-  try {
-    execSync('node scripts/count-data.js');
-    callback();
-  } catch (error) {
-    console.error(error);
-    callback(error);
-  }
+Then(/I can check that data are in postgres and kuzzle/, function(cb) {
+  exec('node scripts/count-data.js', function(error, stdout) {
+    if (error) {
+      console.error('error', error);
+      cb(error);
+    }
+
+    console.log('before', stdout);
+    cb();
+  });
 });
 
-Then(/I can delete data into Kuzzle/, function(callback) {
-  try {
-    execSync('node scripts/delete-data.js');
-    callback();
-  } catch (error) {
-    console.error(error);
-    callback(error);
-  }
+Then(/I can delete data into Kuzzle/, function(cb) {
+  exec('node scripts/delete-data.js', function(error, stdout) {
+    if (error) {
+      console.error('error', error);
+      cb(error);
+    }
+
+    console.log(stdout);
+    cb();
+  });
 });
 
-Then(/I can check that data are not in postgres and kuzzle/, function(
-  callback
-) {
-  try {
-    execSync('node scripts/count-data.js');
-    callback();
-  } catch (error) {
-    console.error(error);
-    callback(error);
-  }
+Then(/I can check that data are not in postgres and kuzzle/, function(cb) {
+  exec('node scripts/count-data.js', function(error, stdout) {
+    if (error) {
+      cb(error);
+    }
+    console.log('After', stdout);
+    cb();
+  });
 });

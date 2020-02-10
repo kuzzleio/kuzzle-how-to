@@ -2,16 +2,17 @@ const { Kuzzle, WebSocket } = require('kuzzle-sdk');
 
 const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
-function exitProcess() {
-  process.exit(1);
-}
-
 const indexName = 'nyc-open-data';
 const collectionName = 'yellow-taxi';
 
 async function searchData() {
   try {
-    const result = await kuzzle.document.search(indexName, collectionName, {}, { size: 500 });
+    const result = await kuzzle.document.search(
+      indexName,
+      collectionName,
+      {},
+      { size: 500 }
+    );
     return result.hits;
   } catch (error) {
     return [];
@@ -26,11 +27,6 @@ async function deleteData(ids = []) {
   }
 }
 
-function disconnect() {
-  kuzzle.disconnect();
-  exitProcess();
-}
-
 async function run() {
   try {
     await kuzzle.connect();
@@ -39,7 +35,7 @@ async function run() {
   } catch (error) {
     console.error(error);
   } finally {
-    disconnect();
+    kuzzle.disconnect();
   }
 }
 

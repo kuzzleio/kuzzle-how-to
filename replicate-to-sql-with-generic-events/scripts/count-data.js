@@ -18,8 +18,8 @@ async function run() {
     postgres.connect();
     const pgResponse = await postgres.countData();
     postgres.end();
-    console.log(`Kuzzle: Total documents : ${count}`);
-    console.log(`Postgres: Total rows : ${pgResponse.rows[0].count}`);
+    console.log(`Kuzzle documents : ${count}`);
+    console.log(`Postgres rows : ${pgResponse.rows[0].count}`);
   } catch (error) {
     console.error(error);
   } finally {
@@ -27,4 +27,4 @@ async function run() {
   }
 }
 
-run().catch(console.error);
+run();
