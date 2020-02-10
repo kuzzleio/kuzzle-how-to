@@ -21,7 +21,9 @@ async function searchData() {
 
 async function deleteData(ids = []) {
   try {
-    await kuzzle.document.mDelete(indexName, collectionName, ids);
+    const result = kuzzle.document.mDelete(indexName, collectionName, ids);
+    await kuzzle.collection.refresh(indexName, collectionName);
+    return result;
   } catch (error) {
     throw new Error(error);
   }
@@ -31,12 +33,15 @@ async function run() {
   try {
     await kuzzle.connect();
     const datas = await searchData();
-    await deleteData(datas.map(d => d._id));
+    const response = await deleteData(datas.map(d => d._id));
+    console.log(`Deleted ${response.successes.length} documents`);
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   } finally {
     kuzzle.disconnect();
   }
 }
 
-run();
+run()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));

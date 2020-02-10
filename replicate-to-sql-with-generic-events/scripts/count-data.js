@@ -13,18 +13,21 @@ async function run() {
       password: 'password',
       port: 5432
     });
-
-    const count = await kuzzle.document.count('nyc-open-data', 'yellow-taxi');
+    const indexName = 'nyc-open-data';
+    const collectionName = 'yellow-taxi';
+    await kuzzle.collection.refresh(indexName, collectionName);
+    const count = await kuzzle.document.count(indexName, collectionName);
     postgres.connect();
     const pgResponse = await postgres.countData();
     postgres.end();
-    console.log(`Kuzzle documents : ${count}`);
-    console.log(`Postgres rows : ${pgResponse.rows[0].count}`);
+    console.log(`Documents : ${count}, ${pgResponse.rows[0].count}`);
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   } finally {
     kuzzle.disconnect();
   }
 }
 
-run();
+run()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));

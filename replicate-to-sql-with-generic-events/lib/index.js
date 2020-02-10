@@ -56,6 +56,7 @@ class CorePlugin {
     } catch (error) {
       console.error(error);
     }
+
     return documents;
   }
 }

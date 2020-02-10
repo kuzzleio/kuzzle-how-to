@@ -59,10 +59,16 @@ function loadData() {
       if (documents.length > 0) {
         kuzzle.document
           .mCreate(indexName, collectionName, documents)
-          .then(resolve)
+          .then(response => {
+            console.log(`Created ${response.successes.length} documents`);
+            kuzzle.collection
+              .refresh(indexName, collectionName)
+              .then(resolve)
+              .catch(reject);
+          })
           .catch(reject);
       } else {
-        resolve(true);
+        reject(new Error('No documents to insert'));
       }
     });
   });
@@ -75,10 +81,12 @@ async function run() {
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   } finally {
     kuzzle.disconnect();
   }
 }
 
-run();
+run()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));
