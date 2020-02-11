@@ -1,7 +1,6 @@
 ---
-# -----------------
 # YAML Templates
-# -----------------
+# -----------------------------------------------------------------------------
 # Documentation build and deploy
 _doc-deploy-content: &doc-deploy-content
   install:
@@ -41,14 +40,19 @@ _deploy-base: &deploy-base
     directories:
       - $HOME/.cache/pip
 
-# ------------------------
-# Jobs configuration
-# ------------------------
+# Stages scheduling
+# -----------------------------------------------------------------------------
+stages:
+  - name: Tests
+    if: type = pull_request OR (type = push AND branch =~ /(master|develop)/)
+  - name: Deployments
+    if: type = push AND branch =~ /(master|develop)/
+
+# Jobs definitions
+# -----------------------------------------------------------------------------
 jobs:
   include:
-    # ----------------------------
-    # Deadlinks Tests
-    # ----------------------------
+    # DEADLINKS
     - name: Dead link check
       stage: Tests
       language: node_js
@@ -66,30 +70,12 @@ jobs:
         - echo "Checking dead links..."
         - cd doc/framework/ && HYDRA_MAX_CONCURRENCY=20 ruby .ci/dead-links.rb -p src/how-to/1/ && cd ../../
 
-    # ----------------------------
-    # Archive deployment
-    # ----------------------------
-    - <<: *deploy-base
-      name: Deploy Archives to dl.kuzzle.io
-      if: branch = master
-      stage: Deployments
-
-      install:
-        - pip install awscli --upgrade --user
+    # FUNCTIONAL TESTS
+    - name: Functional tests
+      stage: Tests
       before_install:
         - sudo sysctl -w vm.max_map_count=262144
-        # Build images
-        - docker login -u kuzzleteam -p $DOCKER_PASSWORD
-        - |
-          for dir in $(\ls -1d */docker)
-          do
-            cd $dir
-            bash build_images.sh
-            bash push_images.sh
-          done
       script:
-        - mkdir build
-        # Run tests
         - |
           for dir in */
           do
@@ -97,12 +83,35 @@ jobs:
             if [ $base != 'samples' ] && [ $base != 'build' ]
             then
               cd ${base}
+              npm install
               ./run_tests.sh
               cd -
             fi
           done
-      after_success:
-        # Create how-to.tar.gz
+
+    # DOCKERHUB
+    - <<: *deploy-base
+      name: Dockerhub
+      if: branch = master
+      install:
+        - docker login -u kuzzleteam -p $DOCKER_PASSWORD
+      script:
+        - |
+          for dir in $(\ls -1d */docker)
+          do
+            cd $dir
+            bash build_images.sh
+            bash push_images.sh
+          done
+
+    # TARBALLS 
+    - <<: *deploy-base
+      name: Archives to dl.kuzzle.io
+      if: branch = master
+      install:
+        - pip install awscli --upgrade --user
+      script:
+        - mkdir build
         - |
           for dir in */
           do
@@ -112,36 +121,26 @@ jobs:
               tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}
             fi
           done
+      after_success:
         - aws s3 cp build s3://$S3_BUCKET/how-to/ --recursive --region us-west-2
 
-    # ----------------------------
-    # Prod deployment
-    # ----------------------------
+    # PRODUCTION DOC
     - <<: *deploy-base
       <<: *doc-deploy-content
-      name: Deploy docs.kuzzle.io
+      name: Documentation (docs.kuzzle.io)
       if: branch = master
-      stage: Deployments
       env:
         - *deploy-base-env
         - S3_BUCKET=docs.kuzzle.io
         - CLOUDFRONT_DISTRIBUTION_ID=E3D6RP0POLCJMM
 
-    # ----------------------------
-    # Dev deployment
-    # ----------------------------
+    # STAGING DOC
     - <<: *deploy-base
       <<: *doc-deploy-content
-      name: Deploy next-docs.kuzzle.io
+      name: Documentation (next-docs.kuzzle.io)
       if: branch = develop
-      stage: Deployments
       env:
         - *deploy-base-env
         - S3_BUCKET=docs-next.kuzzle.io
         - CLOUDFRONT_DISTRIBUTION_ID=E2ZCCEK9GRB49U
 
-stages:
-  - name: Tests
-    if: type = pull_request OR (type = push AND branch =~ /(master|develop)/)
-  - name: Deployments
-    if: type = push AND branch =~ /(master|develop)/
