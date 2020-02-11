@@ -1,5 +1,15 @@
 const { Client } = require('pg');
 
+const pgConfig = {
+  user: 'my_user',
+  database: 'nyc_open_data',
+  password: 'password',
+  port: 5432
+};
+
+const pgConfigLocal = Object.assign({ host: 'localhost' }, pgConfig);
+const pgConfigDocker = Object.assign({ host: 'postgresql' }, pgConfig);
+
 class PostgresWrapper {
   constructor(config) {
     this.config = config;
@@ -11,12 +21,12 @@ class PostgresWrapper {
     this.client = client;
   }
 
-  connect() {
-    this.client.connect();
+  async connect() {
+    return this.client.connect();
   }
 
-  end() {
-    this.client.end();
+  async end() {
+    return this.client.end();
   }
 
   formatIndex(values) {
@@ -28,39 +38,29 @@ class PostgresWrapper {
       .join(',');
   }
 
-  insert(data) {
-    return new Promise((resolve, reject) => {
-      const params = Object.keys(data).join(',');
-      const values = Object.values(data);
-      const indexes = this.formatIndex(values);
-      const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
-      this.client
-        .query(query, values)
-        .then(resolve)
-        .catch(reject);
-    });
+  async insert(data) {
+    const params = Object.keys(data).join(',');
+    const values = Object.values(data);
+    const indexes = this.formatIndex(values);
+    const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
+    const result = await this.client.query(query, values);
+    return result;
   }
 
-  delete(docId) {
-    return new Promise((resolve, reject) => {
-      const query = `DELETE FROM yellow_taxi WHERE yellow_taxi._id='${docId}'`;
-      this.client
-        .query(query)
-        .then(resolve)
-        .catch(reject);
-    });
+  async delete(docId) {
+    const query = `DELETE FROM yellow_taxi WHERE yellow_taxi._id='${docId}'`;
+    const result = this.client.query(query);
+    return result;
   }
-  countData() {
-    return new Promise((resolve, reject) => {
-      const query = 'SELECT COUNT(*) FROM yellow_taxi';
-      this.client
-        .query(query)
-        .then(resolve)
-        .catch(reject);
-    });
+  async countData() {
+    const query = 'SELECT COUNT(*) FROM yellow_taxi';
+    const result = await this.client.query(query);
+    return result;
   }
 }
 
 module.exports = {
-  PostgresWrapper
+  PostgresWrapper,
+  pgConfigLocal,
+  pgConfigDocker
 };

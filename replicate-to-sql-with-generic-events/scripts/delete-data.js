@@ -6,17 +6,8 @@ const indexName = 'nyc-open-data';
 const collectionName = 'yellow-taxi';
 
 async function searchData() {
-  try {
-    const result = await kuzzle.document.search(
-      indexName,
-      collectionName,
-      {},
-      { size: 500 }
-    );
-    return result.hits;
-  } catch (error) {
-    return [];
-  }
+  const result = await kuzzle.document.search(indexName, collectionName, {}, { size: 500 });
+  return result.hits;
 }
 
 async function deleteData(ids = []) {
@@ -32,8 +23,9 @@ async function deleteData(ids = []) {
 async function run() {
   try {
     await kuzzle.connect();
-    const datas = await searchData();
-    const response = await deleteData(datas.map(d => d._id));
+    const data = await searchData();
+    const willDeleteIds = data.map(d => d._id);
+    const response = await deleteData(willDeleteIds);
     console.log(`Deleted ${response.successes.length} documents`);
   } catch (error) {
     throw new Error(error);
@@ -42,6 +34,4 @@ async function run() {
   }
 }
 
-run()
-  .then(() => process.exit(0))
-  .catch(() => process.exit(1));
+run();

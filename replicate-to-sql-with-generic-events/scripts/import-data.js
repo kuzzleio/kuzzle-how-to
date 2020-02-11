@@ -1,10 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const { Kuzzle, WebSocket } = require('kuzzle-sdk');
-const {
-  createIndexIfNotExists,
-  createCollectionIfNotExists
-} = require('./utils');
+const { createIndexIfNotExists, createCollectionIfNotExists } = require('./utils');
 
 const pathToFile = 'samples/Yellow_taxi.csv';
 
@@ -35,8 +32,8 @@ function formatDocument(fields = []) {
   };
 }
 
-function loadData() {
-  return new Promise((resolve, reject) => {
+function getDocuments() {
+  return new Promise(resolve => {
     const documents = [];
     const dataFile = readline.createInterface({
       input: fs.createReadStream(pathToFile)
@@ -55,23 +52,21 @@ function loadData() {
       }
     });
 
-    dataFile.on('close', () => {
-      if (documents.length > 0) {
-        kuzzle.document
-          .mCreate(indexName, collectionName, documents)
-          .then(response => {
-            console.log(`Created ${response.successes.length} documents`);
-            kuzzle.collection
-              .refresh(indexName, collectionName)
-              .then(resolve)
-              .catch(reject);
-          })
-          .catch(reject);
-      } else {
-        reject(new Error('No documents to insert'));
-      }
+    dataFile.on('close', function() {
+      resolve(documents);
     });
   });
+}
+
+async function loadData() {
+  const documents = await getDocuments();
+
+  if (documents.length > 0) {
+    const response = await kuzzle.document.mCreate(indexName, collectionName, documents);
+    console.log(`Created ${response.successes.length} documents`);
+  } else {
+    throw new Error('No documents to insert');
+  }
 }
 
 async function run() {
@@ -87,6 +82,4 @@ async function run() {
   }
 }
 
-run()
-  .then(() => process.exit(0))
-  .catch(() => process.exit(1));
+run();

@@ -1,4 +1,4 @@
-const { PostgresWrapper } = require('./postgres');
+const { PostgresWrapper, pgConfigDocker } = require('./postgres');
 
 class CorePlugin {
   constructor() {
@@ -13,51 +13,47 @@ class CorePlugin {
   init(customConfig, context) {
     this.config = Object.assign(this.config, customConfig);
     this.context = context;
+    this.pg = this.initConnection();
   }
 
   initConnection() {
-    return new PostgresWrapper({
-      user: 'my_user',
-      host: 'postgresql',
-      database: 'postgres',
-      password: 'password',
-      port: 5432
-    });
+    return new PostgresWrapper(pgConfigDocker);
+  }
+
+  getProperties(doc) {
+    const properties = Object.keys(doc._source).reduce((object, key) => {
+      if (key !== '_kuzzle_info') {
+        object[key] = doc[key];
+      }
+      return object;
+    }, {});
+
+    properties._id = doc._id;
+
+    return properties;
   }
 
   async afterWrite(documents = []) {
     try {
-      const pg = this.initConnection();
-      pg.connect();
-      const docs = documents.map(doc => {
-        delete doc._source._kuzzle_info;
-        doc._source._id = doc._id;
-        return pg.insert(doc._source);
-      });
-
+      await this.pg.connect();
+      const docs = documents.map(doc => this.pg.insert(this.getProperties(doc)));
       await Promise.all(docs);
-      pg.end();
+      await this.pg.end();
+      return documents;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
-
-    return documents;
   }
   async afterDelete(documents = []) {
     try {
-      const pg = this.initConnection();
-      pg.connect();
-      const docs = documents.map(doc => {
-        return pg.delete(doc._id);
-      });
-
+      await this.pg.connect();
+      const docs = documents.map(doc => this.pg.delete(doc._id));
       await Promise.all(docs);
-      pg.end();
+      await this.pg.end();
+      return documents;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
-
-    return documents;
   }
 }
 

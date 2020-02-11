@@ -1,11 +1,11 @@
 ---
 code: true
 type: page
-title: Replicate to a sql database using Genegic events
-description: How to replicate to a sql database using Genegic events
+title: Replicate to a sql database using Generic events
+description: How to replicate to a sql database using Generic events
 ---
 
-# Replicate to a sql database using Genegic events
+# Replicate to a sql database using Generic events
 
 ## Requirements
 
@@ -31,7 +31,6 @@ Here we will used Generic events to copy all documents inside an postgres databa
 
 In order to use this how to, you will need docker and docker-compose to be installed.
 
-1. Build the postgres docker image `cd /project/docker/postgres-sql && docker build -t kuzzle-postgres-test:1.0.0 .`
 1. Run the script `run-features.sh` to test the full how-to
 
 

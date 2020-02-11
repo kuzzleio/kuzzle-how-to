@@ -8,7 +8,7 @@ services:
       - "./docker/run-dev.sh:/run-dev.sh"
       - "./docker/install-plugins.sh:/install-plugins.sh"
       - "./docker/pm2.json:/config/pm2.json"
-      - ".:/var/app/plugins/enabled/${PLUGIN_NAME:-replicate-to-sql-with-generic-events}"
+      - ".:/var/app/plugins/enabled/replicate-to-sql-with-generic-events"
     cap_add:
       - SYS_PTRACE
     ulimits:
@@ -34,19 +34,19 @@ services:
     image: redis:5
 
   elasticsearch:
-    image: kuzzleio/elasticsearch:7.3.0
+    image: kuzzleio/elasticsearch:7
     ports:
       - "9200:9200"
-    ulimits:
-      nofile: 65536
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - node.name=alyx
-      - cluster.name=kuzzle
-      - discovery.type=single-node
 
   postgresql:
-    image: "kuzzle-postgres-test:1.0.0"
+    image: "postgres"
     container_name: "postgressql"
+    environment: 
+      - "POSTGRES_USER=my_user"
+      - "POSTGRES_DB=nyc_open_data"
+      - "POSTGRES_PASSWORD=password"
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./init.sql:/sql/init.sql
     ports:
       - "5432:5432"
