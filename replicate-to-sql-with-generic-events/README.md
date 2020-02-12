@@ -148,13 +148,13 @@ async afterDelete(documents = []) {
 
 Each event is link to a function inside the Plugin class. Theses function takes two parameters the first one is
 
-* `documents` which is an array of each documents added by one transaction
+* `documents` which is an array of each documents added by one request
 * `request` which is a [Kuzzle API Request](https://docs.kuzzle.io/core/2/plugins/plugin-context/constructors/request#request)
 
 
 Many more Generic events exists, you can think of many use cases that will fits your needs.
 
-We used [Postgres wrapper](https://node-postgres.com/), witch is the most widely used posgres driver on npm.
+We used [Postgres wrapper](https://node-postgres.com/), witch is the most widely used postgres driver on npm.
 
 ```javascript
 const { Client } = require('pg');
@@ -174,20 +174,14 @@ INSERT INTO yellow_taxi (VendorID, tpep_pickup_datetime, ...) VALUES ($1, $2, ..
 ```javascript
 
 function formatPlaceholders(values) {
-    return values
-      .reduce((prev, cur, index) => {
-        prev.push(`$${index + 1}`);
-        return prev;
-      }, [])
-      .join(',');
+    return values.map((_, i) => `$${i + 1}`).join(',');
 }
 
 async insert(data) {
     const [ params, values ] = Object.entries(data);
     const indexes = this.formatPlaceholders(values);
     const query = `INSERT INTO yellow_taxi (${params.join(',')}) VALUES(${indexes})`;
-    const result = await this.client.query(query, values);
-    return result;
+    return this.client.query(query, values);;
 }
 ```
 
