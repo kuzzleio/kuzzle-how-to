@@ -15,7 +15,7 @@ Kuzzle : `>=2.0.0 <3.0.0`
 
 In this tutorial you will see how to use generic events to trigger action while doing actions such as insert or delete.
 
-1. We will create a plugin [listening synchronously](/core/1/plugins/guides/pipes) to Document Controller events in order to report document changes in Cassandra.
+1. We will create a plugin [listening synchronously](https://docs.kuzzle.io/core/2/plugins/guides/pipes/) to Document Controller events in order to report document changes in PostgresSQL.
 1. We will use [Generic events](https://docs.kuzzle.io/core/2/plugins/guides/events/generic-document-events/) to trigger some controller's actions.
 1. We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
@@ -60,7 +60,7 @@ function formatDocument(fields = []) {
   };
 }
 ```
-In the [scripts/import-data.js](scripts/import-data.js) We parse the whole csv documents using the `readline` core package of NodeJS and then use the `mCreate` method from the [document controller](https://docs.kuzzle.io/sdk/js/7/controllers/document/m-create/). This will generate __an event__ for each entries.
+In the [scripts/import-data.js](scripts/import-data.js) We parse the whole csv documents using the `readline` core package of NodeJS and then use the `mCreate` method from the [document controller](https://docs.kuzzle.io/sdk/js/7/controllers/document/m-create/). This will generate multiple events for each entries.
 
 ```javascript
 async function loadData() {
@@ -78,7 +78,7 @@ async function loadData() {
 We then complete the script by
 
 1. connecting to the running kuzzle instance.
-1. loading Index/Collection inside the kuzzle datastore, witch is [ElasticSeach](https://www.elastic.co/guide/index.html)
+1. loading Index/Collection inside the storage layer, witch is [Elasticseach](https://www.elastic.co/guide/index.html)
 1. Load all data inside Kuzzle.
 
 ```javascript
@@ -88,9 +88,11 @@ async function run() {
     await createIndexIfNotExists(kuzzle, indexName);
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
-  } catch (error) {
-    throw new Error(error);
-  } finally {
+  }
+  catch (error) {
+    throw error;
+  } 
+  finally {
     kuzzle.disconnect();
   }
 }
@@ -112,10 +114,10 @@ class CorePlugin {
 }
 ```
 
-By declaring `this.pipes` inside the constructor of the plugin we can catch events emmitted by the core of kuzzle. Here, we will be listening to 
+By declaring `this.pipes` inside the constructor of the plugin we can catch events emitted by the core of kuzzle. Here, we will be listening to 
 
-1. `generic:document:afterWrite` an event emmitted right after a document have been written.
-1. `generic:document:afterDelete` an event emmitted right after a document have been deleted.
+1. `generic:document:afterWrite` an event emitted right after documents have been written.
+1. `generic:document:afterDelete` an event emitted right after documents have been deleted.
 
 ```javascript
 async afterWrite(documents = []) {
@@ -125,7 +127,8 @@ async afterWrite(documents = []) {
       await Promise.all(docs);
       await this.pg.end();
       return documents;
-    } catch (error) {
+    }
+    catch (error) {
       throw error;
     }
 }
@@ -136,7 +139,8 @@ async afterDelete(documents = []) {
       await Promise.all(docs);
       await this.pg.end();
       return documents;
-    } catch (error) {
+    }
+    catch (error) {
       throw error;
     }
 }
@@ -169,7 +173,7 @@ INSERT INTO yellow_taxi (VendorID, tpep_pickup_datetime, ...) VALUES ($1, $2, ..
 
 ```javascript
 
-funciton formatIndex(values) {
+function formatPlaceholders(values) {
     return values
       .reduce((prev, cur, index) => {
         prev.push(`$${index + 1}`);
@@ -179,10 +183,9 @@ funciton formatIndex(values) {
 }
 
 async insert(data) {
-    const params = Object.keys(data).join(',');
-    const values = Object.values(data);
-    const indexes = this.formatIndex(values);
-    const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
+    const [ params, values ] = Object.entries(data);
+    const indexes = this.formatPlaceholders(values);
+    const query = `INSERT INTO yellow_taxi (${params.join(',')}) VALUES(${indexes})`;
     const result = await this.client.query(query, values);
     return result;
 }

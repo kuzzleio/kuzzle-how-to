@@ -75,9 +75,11 @@ async function run() {
     await createIndexIfNotExists(kuzzle, indexName);
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
-  } catch (error) {
-    throw new Error(error);
-  } finally {
+  }
+  catch (error) {
+    throw error;
+  }
+  finally {
     kuzzle.disconnect();
   }
 }

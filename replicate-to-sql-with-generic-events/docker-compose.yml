@@ -5,10 +5,10 @@ services:
     image: kuzzleio/plugin-dev:2
     command: /run-dev.sh
     volumes:
-      - "./docker/run-dev.sh:/run-dev.sh"
-      - "./docker/install-plugins.sh:/install-plugins.sh"
-      - "./docker/pm2.json:/config/pm2.json"
-      - ".:/var/app/plugins/enabled/replicate-to-sql-with-generic-events"
+      - './docker/run-dev.sh:/run-dev.sh'
+      - './docker/install-plugins.sh:/install-plugins.sh'
+      - './docker/pm2.json:/config/pm2.json'
+      - '.:/var/app/plugins/enabled/replicate-to-sql-with-generic-events'
     cap_add:
       - SYS_PTRACE
     ulimits:
@@ -20,8 +20,8 @@ services:
       - elasticsearch
       - postgresql
     ports:
-      - "9229:9229"
-      - "7512:7512"
+      - '9229:9229'
+      - '7512:7512'
     environment:
       - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
       - kuzzle_services__internalCache__node__host=redis
@@ -36,17 +36,17 @@ services:
   elasticsearch:
     image: kuzzleio/elasticsearch:7
     ports:
-      - "9200:9200"
+      - '9200:9200'
 
   postgresql:
-    image: "postgres"
-    container_name: "postgressql"
-    environment: 
-      - "POSTGRES_USER=my_user"
-      - "POSTGRES_DB=nyc_open_data"
-      - "POSTGRES_PASSWORD=password"
+    image: 'postgres'
+    container_name: 'postgresql'
+    environment:
+      - 'POSTGRES_USER=my_user'
+      - 'POSTGRES_DB=nyc_open_data'
+      - 'POSTGRES_PASSWORD=password'
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./init.sql:/sql/init.sql
     ports:
-      - "5432:5432"
+      - '5432:5432'

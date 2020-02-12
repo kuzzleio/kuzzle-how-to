@@ -5,8 +5,9 @@ async function createIndexIfNotExists(kuzzle, index = '') {
     if (!exists) {
       await kuzzle.index.create(index);
     }
-  } catch (error) {
-    console.error(error.message);
+  }
+  catch (error) {
+    throw error;
   }
 }
 
@@ -17,8 +18,9 @@ async function createCollectionIfNotExists(kuzzle, index = '', collection = '') 
     if (!exists) {
       await kuzzle.collection.create(index, collection);
     }
-  } catch (error) {
-    console.error(error.message);
+  }
+  catch (error) {
+    throw error;
   }
 }
 

@@ -26,12 +26,12 @@ BeforeAll(async function() {
     return new Error('Unable to start docker-compose stack');
   }
 
-  After(function() {
+  After(async function() {
     if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
-      this.kuzzle.disconnect();
+      await this.kuzzle.disconnect();
     }
     if (this.postgres && typeof this.postgres.end === 'function') {
-      this.postgres.end();
+      await this.postgres.end();
     }
   });
 });

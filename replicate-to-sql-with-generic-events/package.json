@@ -7,7 +7,7 @@
   "scripts": {
     "test": "npm run --silent lint && npm run functional-testing",
     "lint": "eslint --max-warnings=0 ./lib ./features",
-    "functional-testing": "bash run-features.sh"
+    "functional-testing": "bash run_tests.sh"
   },
   "repository": {
     "type": "git",
@@ -30,8 +30,6 @@
     "nexpect": "^0.6.0"
   },
   "dependencies": {
-    "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
     "pg": "^7.18.1"
   }
 }
