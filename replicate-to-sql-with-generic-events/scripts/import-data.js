@@ -47,7 +47,8 @@ function getDocuments() {
         documents.push({
           body: formatDocument(fields)
         });
-      } else {
+      }
+      else {
         headerSkipped = true;
       }
     });
@@ -64,7 +65,8 @@ async function loadData() {
   if (documents.length > 0) {
     const response = await kuzzle.document.mCreate(indexName, collectionName, documents);
     console.log(`Created ${response.successes.length} documents`);
-  } else {
+  }
+  else {
     throw new Error('No documents to insert');
   }
 }
