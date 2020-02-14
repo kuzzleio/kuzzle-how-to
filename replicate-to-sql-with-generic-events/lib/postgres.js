@@ -1,4 +1,4 @@
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
 const pgConfig = {
   user: 'my_user',
@@ -13,35 +13,32 @@ const pgConfigDocker = Object.assign({ host: 'postgresql' }, pgConfig);
 class PostgresWrapper {
   constructor(config) {
     this.config = config;
-    this.client = new Client(config);
+    this.pool = new Pool(config);
   }
 
   connect() {
-    return this.client.connect();
-  }
-
-  end() {
-    return this.client.end();
+    return this.pool.connect();
   }
 
   formatPlaceholders(values) {
     return values.map((_, i) => `$${i + 1}`).join(',');
   }
 
-  async insert(data) {
-    const [params, values] = Object.entries(data);
+  async insert(client, data) {
+    const params = Object.keys(data).join(',');
+    const values = Object.values(data);
     const indexes = this.formatPlaceholders(values);
-    const query = `INSERT INTO yellow_taxi (${params.join(',')}) VALUES(${indexes})`;
-    return this.client.query(query, values);
+    const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
+    return client.query(query, values);
   }
 
-  async delete(docId) {
-    const query = `DELETE FROM yellow_taxi WHERE yellow_taxi._id='${docId}'`;
-    return this.client.query(query);
+  async delete(client, docId) {
+    const query = 'DELETE FROM yellow_taxi WHERE yellow_taxi._id=$1';
+    return client.query(query, [docId]);
   }
-  async countData() {
+  async countData(client) {
     const query = 'SELECT COUNT(*) FROM yellow_taxi';
-    return this.client.query(query);
+    return client.query(query);
   }
 }
 

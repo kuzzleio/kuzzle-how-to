@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process');
 
 const KWorld = require('./world');
 
-BeforeAll(async function() {
+BeforeAll(function(done) {
   let maxTries = 10;
   let connected = false;
   let curl;
@@ -15,7 +15,8 @@ BeforeAll(async function() {
 
     if (curl.status === 0) {
       connected = true;
-    } else {
+    }
+    else {
       console.log(`[${maxTries}] Waiting for kuzzle..`);
       maxTries -= 1;
       spawnSync('sleep', ['5']);
@@ -26,12 +27,11 @@ BeforeAll(async function() {
     return new Error('Unable to start docker-compose stack');
   }
 
-  After(async function() {
+  After(function() {
     if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
-      await this.kuzzle.disconnect();
-    }
-    if (this.postgres && typeof this.postgres.end === 'function') {
-      await this.postgres.end();
+      this.kuzzle.disconnect();
     }
   });
+
+  done();
 });

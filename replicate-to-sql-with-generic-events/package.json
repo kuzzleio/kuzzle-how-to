@@ -24,8 +24,8 @@
   },
   "homepage": "https://github.com/kuzzleio/kuzzle-core-plugin-boilerplate#readme",
   "devDependencies": {
-    "cucumber": "^5.1.0",
-    "eslint": "^5.16.0",
+    "cucumber": "^6.0.5",
+    "eslint": "^6.8.0",
     "kuzzle-sdk": "^7.0.1",
     "nexpect": "^0.6.0"
   },

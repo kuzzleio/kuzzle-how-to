@@ -78,12 +78,9 @@ async function run() {
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
   }
-  catch (error) {
-    throw error;
-  }
   finally {
     kuzzle.disconnect();
   }
 }
 
-run();
+run().then(process.exit(0));

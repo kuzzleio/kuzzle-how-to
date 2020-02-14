@@ -1,5 +1,5 @@
 CREATE TABLE yellow_taxi(
-    _id VARCHAR (50) PRIMARY KEY,
+    _id TEXT PRIMARY KEY,
     VendorID VARCHAR (50),
     tpep_pickup_datetime VARCHAR (50),
     tpep_dropoff_datetime VARCHAR (50),

@@ -157,10 +157,10 @@ Many more Generic events exists, you can think of many use cases that will fits 
 We used [Postgres wrapper](https://node-postgres.com/), witch is the most widely used postgres driver on npm.
 
 ```javascript
-const { Client } = require('pg');
+const { Pool } = require('pg');
 
 function createClient(config) {
-    const client = new Client(config);
+    const client = new Pool(config);
     this.client = client;
 }
 ```
