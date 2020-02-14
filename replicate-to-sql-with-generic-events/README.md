@@ -89,9 +89,6 @@ async function run() {
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
   }
-  catch (error) {
-    throw error;
-  } 
   finally {
     kuzzle.disconnect();
   }
@@ -120,30 +117,31 @@ By declaring `this.pipes` inside the constructor of the plugin we can catch even
 1. `generic:document:afterDelete` an event emitted right after documents have been deleted.
 
 ```javascript
-async afterWrite(documents = []) {
+  async afterWrite(documents = []) {
     try {
-      await this.pg.connect();
-      const docs = documents.map(doc => this.pg.insert(this.getProperties(doc)));
-      await Promise.all(docs);
-      await this.pg.end();
-      return documents;
+      const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
+      await Promise.all(promises);
     }
     catch (error) {
+      this.pg.disconnect(); // if an error occur, be sure to close the connection to the database
       throw error;
     }
-}
-async afterDelete(documents = []) {
+
+    return documents;
+  }
+
+  async afterDelete(documents = []) {
     try {
-      await this.pg.connect();
-      const docs = documents.map(doc => this.pg.delete(doc._id));
-      await Promise.all(docs);
-      await this.pg.end();
-      return documents;
+      const promises = documents.map(doc => this.pg.delete(doc._id));
+      await Promise.all(promises);
     }
     catch (error) {
+      this.pg.disconnect(); // if an error occur, be sure to close the connection to the database
       throw error;
     }
-}
+
+    return documents;
+  }
 ```
 
 Each event is link to a function inside the Plugin class. Theses function takes two parameters the first one is
@@ -159,9 +157,8 @@ We used [Postgres wrapper](https://node-postgres.com/), witch is the most widely
 ```javascript
 const { Pool } = require('pg');
 
-function createClient(config) {
-    const client = new Pool(config);
-    this.client = client;
+function createPool(config) {
+    const pool = new Pool(config);
 }
 ```
 
@@ -174,14 +171,15 @@ INSERT INTO yellow_taxi (VendorID, tpep_pickup_datetime, ...) VALUES ($1, $2, ..
 ```javascript
 
 function formatPlaceholders(values) {
-    return values.map((_, i) => `$${i + 1}`).join(',');
+  return values.map((_, i) => `$${i + 1}`).join(',');
 }
 
 async insert(data) {
-    const [ params, values ] = Object.entries(data);
-    const indexes = this.formatPlaceholders(values);
-    const query = `INSERT INTO yellow_taxi (${params.join(',')}) VALUES(${indexes})`;
-    return this.client.query(query, values);;
+  const params = Object.keys(data).join(',');
+  const values = Object.values(data);
+  const indexes = this.formatPlaceholders(values);
+  const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
+  return this.pool.query(query, values);
 }
 ```
 

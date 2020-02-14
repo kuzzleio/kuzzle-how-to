@@ -20,25 +20,29 @@ class PostgresWrapper {
     return this.pool.connect();
   }
 
+  disconnect() {
+    return this.pool.end();
+  }
+
   formatPlaceholders(values) {
     return values.map((_, i) => `$${i + 1}`).join(',');
   }
 
-  async insert(client, data) {
+  async insert(data) {
     const params = Object.keys(data).join(',');
     const values = Object.values(data);
     const indexes = this.formatPlaceholders(values);
     const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
-    return client.query(query, values);
+    return this.pool.query(query, values);
   }
 
-  async delete(client, docId) {
+  async delete(docId) {
     const query = 'DELETE FROM yellow_taxi WHERE yellow_taxi._id=$1';
-    return client.query(query, [docId]);
+    return this.pool.query(query, [docId]);
   }
-  async countData(client) {
+  async countData() {
     const query = 'SELECT COUNT(*) FROM yellow_taxi';
-    return client.query(query);
+    return this.pool.query(query);
   }
 }
 

@@ -5,10 +5,8 @@ const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
 async function countFromPostgres() {
   const postgres = new PostgresWrapper(pgConfigLocal);
-  const client = await postgres.connect();
-  const pgResponse = await postgres.countData(client);
-  client.release();
-
+  const pgResponse = await postgres.countData();
+  postgres.disconnect();
   return pgResponse.rows[0].count;
 }
 
@@ -26,4 +24,4 @@ async function run() {
   }
 }
 
-run().then(process.exit(0));
+run();

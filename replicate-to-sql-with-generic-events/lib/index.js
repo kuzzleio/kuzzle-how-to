@@ -14,6 +14,7 @@ class CorePlugin {
     this.config = Object.assign(this.config, customConfig);
     this.context = context;
     this.pg = new PostgresWrapper(pgConfigDocker);
+    this.pg.connect().then(() => console.log('database connected'));
   }
 
   getProperties(doc) {
@@ -30,32 +31,29 @@ class CorePlugin {
   }
 
   async afterWrite(documents = []) {
-    let client;
     try {
-      client = await this.pg.connect();
-      const promises = documents.map(doc => this.pg.insert(client, this.getProperties(doc)));
+      const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
       await Promise.all(promises);
     }
-    finally {
-      if (typeof client.release === 'function') {
-        client.release();
-      }
+    catch (error) {
+      this.pg.disconnect();
+      throw error;
     }
+
     return documents;
   }
 
   async afterDelete(documents = []) {
-    let client;
     try {
-      client = await this.pg.connect();
-      const promises = documents.map(doc => this.pg.delete(client, doc._id));
+      const promises = documents.map(doc => this.pg.delete(doc._id));
       await Promise.all(promises);
     }
-    finally {
-      if (typeof client.release === 'function') {
-        client.release();
-      }
+    catch (error) {
+      this.pg.disconnect();
+      throw error;
     }
+
+    return documents;
   }
 }
 

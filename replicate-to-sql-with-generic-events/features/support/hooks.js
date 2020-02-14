@@ -3,7 +3,7 @@ const { spawnSync } = require('child_process');
 
 const KWorld = require('./world');
 
-BeforeAll(function(done) {
+BeforeAll(async function() {
   let maxTries = 10;
   let connected = false;
   let curl;
@@ -24,14 +24,17 @@ BeforeAll(function(done) {
   }
 
   if (!connected) {
-    return new Error('Unable to start docker-compose stack');
+    throw new Error('Unable to start docker-compose stack');
   }
 
-  After(function() {
+  After(async function() {
     if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
       this.kuzzle.disconnect();
+      console.log('disconnect kuzzle');
+    }
+    if (this.pool && typeof this.pool.end === 'function') {
+      await this.pool.end();
+      console.log('disconnect postgres');
     }
   });
-
-  done();
 });

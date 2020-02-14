@@ -9,6 +9,7 @@ Given(/A Kuzzle stack with Postgres running/, async function() {
   this.kuzzle = new Kuzzle(new WebSocket('localhost'));
   this.postgres = new PostgresWrapper(pgConfigLocal);
   await this.kuzzle.connect();
+  this.pool = await this.postgres.connect();
 });
 
 Then(/I can load the test data into Kuzzle/, function(done) {
