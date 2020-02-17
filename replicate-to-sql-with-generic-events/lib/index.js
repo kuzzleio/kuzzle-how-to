@@ -18,13 +18,8 @@ class CorePlugin {
   }
 
   getProperties(doc) {
-    const properties = Object.keys(doc._source).reduce((object, key) => {
-      if (key !== '_kuzzle_info') {
-        object[key] = doc[key];
-      }
-      return object;
-    }, {});
-
+    const properties = doc._source;
+    delete properties._kuzzle_info;
     properties._id = doc._id;
 
     return properties;
