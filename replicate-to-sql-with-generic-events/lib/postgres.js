@@ -40,6 +40,7 @@ class PostgresWrapper {
     const query = 'DELETE FROM yellow_taxi WHERE yellow_taxi._id=$1';
     return this.pool.query(query, [docId]);
   }
+
   async countData() {
     const query = 'SELECT COUNT(*) FROM yellow_taxi';
     return this.pool.query(query);
