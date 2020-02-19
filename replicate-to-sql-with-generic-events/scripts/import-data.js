@@ -3,7 +3,7 @@ const readline = require('readline');
 const { Kuzzle, WebSocket } = require('kuzzle-sdk');
 const { createIndexIfNotExists, createCollectionIfNotExists } = require('./utils');
 
-const pathToFile = 'Yellow_taxi.csv';
+const filePath = '/Yellow_taxi.csv';
 
 const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
@@ -36,7 +36,7 @@ function getDocuments() {
   return new Promise(resolve => {
     const documents = [];
     const dataFile = readline.createInterface({
-      input: fs.createReadStream(pathToFile)
+      input: fs.createReadStream(filePath)
     });
 
     let headerSkipped = false;

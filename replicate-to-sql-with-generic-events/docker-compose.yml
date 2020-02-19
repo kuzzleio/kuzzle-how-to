@@ -6,7 +6,6 @@ services:
     command: /run-dev.sh
     volumes:
       - './samples/Yellow_taxi.csv:/Yellow_taxi.csv'
-      - './scripts/:/scripts'
       - './docker/run-dev.sh:/run-dev.sh'
       - './docker/install-plugins.sh:/install-plugins.sh'
       - './docker/pm2.json:/config/pm2.json'

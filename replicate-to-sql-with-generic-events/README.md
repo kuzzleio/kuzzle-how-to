@@ -191,10 +191,12 @@ By launching the `run_tests.sh` you will execute all steps decribed in the secti
 
 Launch all test in this specific order to fully test this plugin.
 
-1. `node scripts/import-data.js`
-1. `node scripts/count-data.js`
-1. `node scripts/delete-data.js`
-1. `node scripts/count-data.js`
+All script are located at `/var/app/plugins/enabled/replicate-to-sql-with-generic-events/`
+
+1. `scripts/import-data.js`
+1. `scripts/count-data.js`
+1. `scripts/delete-data.js`
+1. `scripts/count-data.js`
 
 For those who are not familiar with the postgres sql here is a short cheatsheet.
 
