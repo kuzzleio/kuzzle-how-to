@@ -1,12 +1,12 @@
 const { Kuzzle, WebSocket } = require('kuzzle-sdk');
-const { PostgresWrapper, pgConfigLocal } = require('../lib/postgres');
+const { PostgresWrapper, pgConfigDocker } = require('../lib/postgres');
 
 const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
 async function countFromPostgres() {
-  const postgres = new PostgresWrapper(pgConfigLocal);
+  const postgres = new PostgresWrapper(pgConfigDocker);
   const pgResponse = await postgres.countData();
-  postgres.disconnect();
+  await postgres.disconnect();
   return pgResponse.rows[0].count;
 }
 

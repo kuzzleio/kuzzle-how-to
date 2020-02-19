@@ -5,6 +5,8 @@ services:
     image: kuzzleio/plugin-dev:2
     command: /run-dev.sh
     volumes:
+      - './samples/Yellow_taxi.csv:/Yellow_taxi.csv'
+      - './scripts/:/scripts'
       - './docker/run-dev.sh:/run-dev.sh'
       - './docker/install-plugins.sh:/install-plugins.sh'
       - './docker/pm2.json:/config/pm2.json'
@@ -29,6 +31,9 @@ services:
       - kuzzle_limits__documentsWriteCount=10000
       - NODE_ENV=development
       - DEBUG=kuzzle:plugins
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=nyc_open_data
+      - POSTGRES_USER=my_user
 
   redis:
     image: redis:5
@@ -42,9 +47,9 @@ services:
     image: 'postgres'
     container_name: 'postgresql'
     environment:
-      - 'POSTGRES_USER=my_user'
-      - 'POSTGRES_DB=nyc_open_data'
-      - 'POSTGRES_PASSWORD=password'
+      - POSTGRES_USER=my_user
+      - POSTGRES_DB=nyc_open_data
+      - POSTGRES_PASSWORD=password
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - ./init.sql:/sql/init.sql

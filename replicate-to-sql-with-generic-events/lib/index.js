@@ -10,11 +10,12 @@ class CorePlugin {
     };
   }
 
-  init(customConfig, context) {
+  async init(customConfig, context) {
     this.config = Object.assign(this.config, customConfig);
     this.context = context;
     this.pg = new PostgresWrapper(pgConfigDocker);
-    this.pg.connect().then(() => console.log('database connected'));
+    await this.pg.connect();
+    context.log.info('database connected');
   }
 
   getProperties(doc) {
@@ -26,27 +27,15 @@ class CorePlugin {
   }
 
   async afterWrite(documents = []) {
-    try {
-      const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
-      await Promise.all(promises);
-    }
-    catch (error) {
-      this.pg.disconnect();
-      throw error;
-    }
+    const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
+    await Promise.all(promises);
 
     return documents;
   }
 
   async afterDelete(documents = []) {
-    try {
-      const promises = documents.map(doc => this.pg.delete(doc._id));
-      await Promise.all(promises);
-    }
-    catch (error) {
-      this.pg.disconnect();
-      throw error;
-    }
+    const promises = documents.map(doc => this.pg.delete(doc._id));
+    await Promise.all(promises);
 
     return documents;
   }

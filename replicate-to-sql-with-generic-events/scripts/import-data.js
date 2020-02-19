@@ -3,7 +3,7 @@ const readline = require('readline');
 const { Kuzzle, WebSocket } = require('kuzzle-sdk');
 const { createIndexIfNotExists, createCollectionIfNotExists } = require('./utils');
 
-const pathToFile = 'samples/Yellow_taxi.csv';
+const pathToFile = 'Yellow_taxi.csv';
 
 const kuzzle = new Kuzzle(new WebSocket('localhost'));
 

@@ -1,13 +1,12 @@
 const { Pool } = require('pg');
 
 const pgConfig = {
-  user: 'my_user',
-  database: 'nyc_open_data',
-  password: 'password',
+  user: process.env.POSTGRES_USER,
+  database: process.env.POSTGRES_DB,
+  password: process.env.POSTGRES_PASSWORD,
   port: 5432
 };
 
-const pgConfigLocal = Object.assign({ host: 'localhost' }, pgConfig);
 const pgConfigDocker = Object.assign({ host: 'postgresql' }, pgConfig);
 
 class PostgresWrapper {
@@ -49,6 +48,5 @@ class PostgresWrapper {
 
 module.exports = {
   PostgresWrapper,
-  pgConfigLocal,
   pgConfigDocker
 };
