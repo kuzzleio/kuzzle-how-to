@@ -18,7 +18,7 @@ _doc-deploy-content: &doc-deploy-content
     skip_cleanup: true
     on:
       all_branches: true
-      condition: $TRAVIS_BRANCH =~ ^(master|develop)$
+      condition: $TRAVIS_BRANCH =~ ^(kuzzle-1|kuzzle-1-dev)$
   after_deploy:
     - npm run doc-cloudfront
 
@@ -71,7 +71,7 @@ jobs:
     # ----------------------------
     - <<: *deploy-base
       name: Deploy Archives to dl.kuzzle.io
-      if: branch = master
+      if: branch = kuzzle-1
       stage: Deployments
 
       install:
@@ -120,7 +120,7 @@ jobs:
     - <<: *deploy-base
       <<: *doc-deploy-content
       name: Deploy docs.kuzzle.io
-      if: branch = master
+      if: branch = kuzzle-1
       stage: Deployments
       env:
         - *deploy-base-env
@@ -133,7 +133,7 @@ jobs:
     - <<: *deploy-base
       <<: *doc-deploy-content
       name: Deploy next-docs.kuzzle.io
-      if: branch = develop
+      if: branch = kuzzle-1-dev
       stage: Deployments
       env:
         - *deploy-base-env
@@ -142,6 +142,6 @@ jobs:
 
 stages:
   - name: Tests
-    if: type = pull_request OR (type = push AND branch =~ /(master|develop)/)
+    if: type = pull_request OR (type = push AND branch =~ /(kuzzle-1|kuzzle-1-dev)/)
   - name: Deployments
-    if: type = push AND branch =~ /(master|develop)/
+    if: type = push AND branch =~ /(kuzzle-1|kuzzle-1-dev)/
