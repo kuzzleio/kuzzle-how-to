@@ -40,7 +40,7 @@ For this tutorial, you need the following components:
 ## Preparing the Kuzzle IoT Environment
 
 Our IoT application requires a simple storage setup: a data index, data collections and their corresponding mappings.  
-Read our [persistence layer documentation](/core/1/guides/essentials/store-access-data) for more information.
+Read our [persistence layer documentation](https://docs.kuzzle.io/core/2/guides/essentials/store-access-data/) for more information.
 
 ![kuzzle admin console](./img/kuzzle-iot-backoffice.png)
 
@@ -334,4 +334,4 @@ Once you click on the Create button to validate your document, the RGB light sho
 
 ## Going Further
 
-Check out the Kuzzle [JS SDK](/sdk/js/6/getting-started/node-js) to control your RGB light using a Javascript application: 
+Check out the Kuzzle [JS SDK](https://docs.kuzzle.io/sdk/js/7/getting-started/node-js/) to control your RGB light using a Javascript application: 
