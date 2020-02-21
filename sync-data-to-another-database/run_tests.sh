@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 echo "Install cucumber"
 gem install cucumber
 

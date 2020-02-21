@@ -1,5 +1,4 @@
 ---
-
 # -----------------
 # YAML Templates
 # -----------------
@@ -7,7 +6,9 @@
 _doc-deploy-content: &doc-deploy-content
   install:
     - pip install awscli --upgrade --user
+    - npm ci
   script:
+    - npm install
     - npm run doc-prepare
     - npm run doc-build
   deploy:
@@ -39,7 +40,6 @@ _deploy-base: &deploy-base
   cache:
     directories:
       - $HOME/.cache/pip
- 
 
 # ------------------------
 # Jobs configuration
@@ -58,11 +58,13 @@ jobs:
           - "$HOME/.gem/specs"
           - ".doc/framework/node_modules"
       before_script:
-        - npm run doc-prepare
-        - npm run --prefix doc/framework clone-repos
-      script:
         - gem install typhoeus
-        - HYDRA_MAX_CONCURRENCY=20 npm run --prefix doc/framework dead-links
+        - npm run doc-prepare
+        - $(npm bin)/kuzdoc iterate-repos:install --repos_path doc/framework/.repos/
+        - $(npm bin)/kuzdoc framework:link -d /how-to/2/ -v 2
+      script:
+        - echo "Checking dead links..."
+        - cd doc/framework/ && HYDRA_MAX_CONCURRENCY=20 ruby .ci/dead-links.rb -p src/how-to/2/ && cd ../../
 
     # ----------------------------
     # Archive deployment
@@ -110,8 +112,8 @@ jobs:
               tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}
             fi
           done
-        - aws s3 cp build s3://$S3_BUCKET/how-to/ --recursive --region us-west-2
-    
+        - aws s3 cp build s3://$S3_BUCKET/how-to/2 --recursive --region us-west-2
+
     # ----------------------------
     # Prod deployment
     # ----------------------------
@@ -124,7 +126,7 @@ jobs:
         - *deploy-base-env
         - S3_BUCKET=docs.kuzzle.io
         - CLOUDFRONT_DISTRIBUTION_ID=E3D6RP0POLCJMM
-  
+
     # ----------------------------
     # Dev deployment
     # ----------------------------
