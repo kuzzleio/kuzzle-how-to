@@ -1,7 +1,0 @@
----
-code: false
-type: root
-order: 0
-title: How-To
-description: Kuzzle v1 How-To examples
----
