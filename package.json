@@ -5,7 +5,7 @@
     "doc-build": "kuzdoc repo:build -b doc/ -d /how-to/2/ -v 2",
     "doc-netlify": "npm run doc-prepare && kuzdoc repo:build -b doc/ -d / -v 2",
     "doc-upload": "kuzdoc repo:deploy -b doc/ -d /how-to/2/ -v 2",
-    "doc-cloudfront": "kuzdoc repo:build -b doc/ -d /how-to/2/",
+    "doc-cloudfront": "kuzdoc repo:build -b doc/ -d /how-to/2/ -v 2",
     "doc-deploy": "npm run doc-upload && npm run doc-cloudfront"
   },
   "dependencies": {
