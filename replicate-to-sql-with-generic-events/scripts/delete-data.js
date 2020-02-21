@@ -13,8 +13,14 @@ async function run() {
     const response = await kuzzle.document.mDelete(indexName, collectionName, willDeleteIds);
     console.log(`Deleted ${response.successes.length} documents`);
   }
+  catch(error) {
+    console.error(error);
+    process.exit(1);
+  }
   finally {
     kuzzle.disconnect();
+    console.log('Closed kuzzle');
+    process.exit(0);
   }
 }
 

@@ -3,28 +3,26 @@ const { spawnSync } = require('child_process');
 
 const KWorld = require('./world');
 
-BeforeAll(async function() {
+const ONE_MINUTE = 60000;
+
+async function testKWorld(world) {
+  await new Promise(resolve => setTimeout(resolve, 5000));
+  const curl = spawnSync('curl', [`${world.host}:${world.port}`]);
+  return curl.status === 0;
+}
+
+BeforeAll({ timeout: ONE_MINUTE }, async function() {
   let maxTries = 10;
-  let connected = false;
-  let curl;
-
   const world = new KWorld();
-
+  let connected = await testKWorld(world);
   while (!connected && maxTries > 0) {
-    curl = spawnSync('curl', [`${world.host}:${world.port}`]);
-
-    if (curl.status === 0) {
-      connected = true;
-    }
-    else {
-      console.log(`[${maxTries}] Waiting for kuzzle..`);
-      maxTries -= 1;
-      spawnSync('sleep', ['5']);
-    }
+    maxTries--;
+    console.log(`[${maxTries}] Trying to connect ...`);
+    connected = await testKWorld(world);
   }
 
   if (!connected) {
-    throw new Error('Unable to start docker-compose stack');
+    throw new Error('could not start Kuzzle stack');
   }
 
   After(async function() {
@@ -37,4 +35,5 @@ BeforeAll(async function() {
       console.log('disconnect postgres');
     }
   });
+  
 });
