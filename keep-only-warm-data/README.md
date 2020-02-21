@@ -38,7 +38,7 @@ Kuzzle will store "Hot" data in the `yellow-taxi` collection of the `nyc-open-da
 }
 ```
 
-In addition to document content, Kuzzle stores a set of [metadata](https://docs.kuzzle.io/core/2/guides/essentials/document-metadata/) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).
+In addition to document content, Kuzzle stores a set of [metadata](/core/1/guides/essentials/document-metadata) in Elasticsearch. These metadata are contained in the `_kuzzle_info` field (exposed as `_meta` in Kuzzle API).
 
 For the purpose of this How-To, we will insert documents directly into Elasticsearch so that we can override the value of the `createdAt` metadata field. This way we can set a `createdAt` date in the past and simulate a scenario where Kuzzle has older data in its datastore (i.e Elasticsearch).
 
