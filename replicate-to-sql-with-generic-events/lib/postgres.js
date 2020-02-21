@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const format = require('pg-format');
 
 const pgConfig = {
   user: process.env.POSTGRES_USER,
@@ -23,21 +24,17 @@ class PostgresWrapper {
     return this.pool.end();
   }
 
-  formatPlaceholders(values) {
-    return values.map((_, i) => `$${i + 1}`).join(',');
+  async multiLineInsert(docs = []) {
+    const keys = docs.length > 0 ? Object.keys(docs[0]).join(',') : {};
+    const result = docs.map(doc => Object.values(doc));
+    const query = format(`INSERT INTO yellow_taxi (${keys}) VALUES %L`, result);
+    return this.pool.query(query);
   }
 
-  async insert(data) {
-    const params = Object.keys(data).join(',');
-    const values = Object.values(data);
-    const indexes = this.formatPlaceholders(values);
-    const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
-    return this.pool.query(query, values);
-  }
-
-  async delete(docId) {
-    const query = 'DELETE FROM yellow_taxi WHERE yellow_taxi._id=$1';
-    return this.pool.query(query, [docId]);
+  async mDelete(docIds) {
+    const values = docIds.map((_, idx) => `$${idx + 1}`);
+    const query = `DELETE FROM yellow_taxi WHERE yellow_taxi._id IN (${values})`;
+    return this.pool.query(query, docIds);
   }
 
   async countData() {

@@ -27,15 +27,18 @@ class CorePlugin {
   }
 
   async afterWrite(documents = []) {
-    const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
-    await Promise.all(promises);
+    if (documents.length) {
+      const docs = documents.map(doc => this.getProperties(doc));
+      await this.pg.multiLineInsert(docs);
+      return documents;
+    }
 
     return documents;
   }
 
   async afterDelete(documents = []) {
-    const promises = documents.map(doc => this.pg.delete(doc._id));
-    await Promise.all(promises);
+    const docIds = documents.map(docs => docs._id);
+    await this.pg.mDelete(docIds);
 
     return documents;
   }

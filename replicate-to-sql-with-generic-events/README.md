@@ -31,11 +31,11 @@ In order to use this how to, you will need docker and docker-compose to be insta
 
 3 scripts have been created, and they allow you to test this plugin.
 
-* import-data.js load open data into kuzzle.
-* count-data.js count data inside the kuzzle ES datastore and the postgres Database.
-* delete-data.js search all data inside the kuzzle datastore and delete them.
+- import-data.js load data into kuzzle.
+- count-data.js count data inside the kuzzle ES datastore and the postgres Database.
+- delete-data.js search all data inside the kuzzle datastore and delete them.
 
-We will be using this data model to load data into kuzzle, and replicate this into Postgres using the same model. Those data are load from the file located in `samples/Yellow_taxi.csv`
+We will be using this data model to load data into kuzzle, and replicate them into Postgres using the same model. Those data are loaded from the file located in `samples/Yellow_taxi.csv`
 
 ```javascript
 function formatDocument(fields = []) {
@@ -60,7 +60,8 @@ function formatDocument(fields = []) {
   };
 }
 ```
-In the [scripts/import-data.js](scripts/import-data.js) We parse the whole csv documents using the `readline` core package of NodeJS and then use the `mCreate` method from the [document controller](https://docs.kuzzle.io/sdk/js/7/controllers/document/m-create/). This will generate multiple events for each entries.
+
+In the [scripts/import-data.js](scripts/import-data.js), the whole CSV document is parsed using the `readline` core package of NodeJS and then the `mCreate` method from Kuzzle's [document controller](https://docs.kuzzle.io/sdk/js/7/controllers/document/m-create/) is used. This will generate one event for the entire request, sending an array of new documents as the event payload.
 
 ```javascript
 async function loadData() {
@@ -78,8 +79,8 @@ async function loadData() {
 We then complete the script by
 
 1. connecting to the running kuzzle instance.
-1. loading Index/Collection inside the storage layer, witch is [Elasticseach](https://www.elastic.co/guide/index.html)
-1. Load all data inside Kuzzle.
+1. creating the index/collection that will hold our data
+1. loading data to Kuzzle
 
 ```javascript
 async function run() {
@@ -88,15 +89,13 @@ async function run() {
     await createIndexIfNotExists(kuzzle, indexName);
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
-  }
-  finally {
+  } finally {
     kuzzle.disconnect();
   }
 }
-
 ```
 
-Looking at the [Plugin file](lib/index.js), we can observe how __Generic Events__ are being catch by the Plugin.
+Looking at the [plugin file](lib/index.js), we can observe how **Generic Events** are being catch by the Plugin.
 
 ```javascript
 class CorePlugin {
@@ -111,75 +110,53 @@ class CorePlugin {
 }
 ```
 
-By declaring `this.pipes` inside the constructor of the plugin we can catch events emitted by the core of kuzzle. Here, we will be listening to 
+By declaring `this.pipes` inside the constructor of the plugin we can catch events emitted by the core of kuzzle. Here, we will be listening to
 
 1. `generic:document:afterWrite` an event emitted right after documents have been written.
 1. `generic:document:afterDelete` an event emitted right after documents have been deleted.
 
 ```javascript
   async afterWrite(documents = []) {
-    try {
-      const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
-      await Promise.all(promises);
-    }
-    catch (error) {
-      this.pg.disconnect(); // if an error occur, be sure to close the connection to the database
-      throw error;
-    }
+    const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
+    await Promise.all(promises);
 
     return documents;
   }
 
   async afterDelete(documents = []) {
-    try {
-      const promises = documents.map(doc => this.pg.delete(doc._id));
-      await Promise.all(promises);
-    }
-    catch (error) {
-      this.pg.disconnect(); // if an error occur, be sure to close the connection to the database
-      throw error;
-    }
+    const promises = documents.map(doc => this.pg.delete(doc._id));
+    await Promise.all(promises);
 
     return documents;
   }
 ```
 
-Each event is link to a function inside the Plugin class. Theses function takes two parameters the first one is
+More generic and non-generic events can be used: [Kuzzle events documentation](https://docs.kuzzle.io/core/2/plugins/guides/events/intro).
 
-* `documents` which is an array of each documents added by one request
-* `request` which is a [Kuzzle API Request](https://docs.kuzzle.io/core/2/plugins/plugin-context/constructors/request#request)
-
-
-Many more Generic events exists, you can think of many use cases that will fits your needs.
-
-We used [Postgres wrapper](https://node-postgres.com/), witch is the most widely used postgres driver on npm.
+We used the well-known [node-postgres](https://node-postgres.com/) client to interface our plugin with a postgres database.
 
 ```javascript
 const { Pool } = require('pg');
 
 function createPool(config) {
-    const pool = new Pool(config);
+  const pool = new Pool(config);
 }
 ```
 
-Once the client is instanciated, we can use the Insert sql method to pipe data from Kuzzle to postgres. To properly use the driver, you need a little work to format your request like so:
+We will use the [Pool](https://node-postgres.com/api/pool) constructor to instanciate the Postgres driver within the kuzzle plugin.
 
-```bash
-INSERT INTO yellow_taxi (VendorID, tpep_pickup_datetime, ...) VALUES ($1, $2, ...); # And the you populate placeholder's data given an array of values.
-```
+The pool acquires a client from the pool. If the pool is 'full' and all clients are currently checked out, this will wait in a FIFO queue until a client becomes available by it being released back to the pool.
+
+To make a correct insert inside the database, we will use a multiline insert. Since generic events will send a set of records as a payload, it is wise to insert them together rather than one by one.
 
 ```javascript
+const format = require('pg-format');
 
-function formatPlaceholders(values) {
-  return values.map((_, i) => `$${i + 1}`).join(',');
-}
-
-async insert(data) {
-  const params = Object.keys(data).join(',');
-  const values = Object.values(data);
-  const indexes = this.formatPlaceholders(values);
-  const query = `INSERT INTO yellow_taxi (${params}) VALUES(${indexes})`;
-  return this.pool.query(query, values);
+async multiLineInsert(docs = []) {
+  const keys = docs.length > 0 ? Object.keys(docs[0]).join(',') : {};
+  const result = docs.map(doc => Object.values(doc));
+  const query = format(`INSERT INTO yellow_taxi (${keys}) VALUES %L`, result);
+  return this.pool.query(query);
 }
 ```
 
@@ -189,26 +166,24 @@ By launching the `run_tests.sh` you will execute all steps decribed in the secti
 
 > If you want to start the stack yourself run `cd /project/ && docker-compose -f docker-compose.yml up`
 
-Launch all test in this specific order to fully test this plugin.
+Launch all tests in this specific order to fully test this plugin.
 
-All script are located at `/var/app/plugins/enabled/replicate-to-sql-with-generic-events/`
+All scripts are located at `/var/app/plugins/enabled/replicate-to-sql-with-generic-events/`
 
 1. `scripts/import-data.js`
 1. `scripts/count-data.js`
 1. `scripts/delete-data.js`
 1. `scripts/count-data.js`
 
-For those who are not familiar with the postgres sql here is a short cheatsheet.
+For those who are not familiar with postgres' psql client, here is a short sheatsheet:
 
-* Connect to the postgres docker `docker exec -ti <docker postgre id> bash`
-* Once you are inside the docker launch `psql` to connect to the postgres shell
-* List all db `\l`
-* Connect to a db `\c <dbname>`
-* List all tables `\d`
-* List data inside a table`SELECT * FROM yellow_taxi`
+- Start the psql client of a dockerized postgres: `docker exec -ti <docker postgre id> psql`
+- List all database: `\l`
+- Connect to a database: `\c <dbname>`
+- List all tables: `\d`
+- List data inside a table: `SELECT * FROM yellow_taxi;`
 
-
-Hope you enjoyed this How-to, be sure to read them all to give you a wide variety of usages about Kuzzle !!
+Hope you enjoyed this How-to, be sure to read them all to give you a wide variety of usages about Kuzzle!
 
 Hope to see you soon on [Gitter](https://gitter.im/kuzzleio/kuzzle)
 

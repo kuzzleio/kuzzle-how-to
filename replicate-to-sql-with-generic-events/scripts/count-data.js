@@ -5,9 +5,13 @@ const kuzzle = new Kuzzle(new WebSocket('localhost'));
 
 async function countFromPostgres() {
   const postgres = new PostgresWrapper(pgConfigDocker);
-  const pgResponse = await postgres.countData();
-  await postgres.disconnect();
-  return pgResponse.rows[0].count;
+  try {
+    const pgResponse = await postgres.countData();
+    return pgResponse.rows[0].count;
+  }
+  finally {
+    await postgres.disconnect();
+  }
 }
 
 async function run() {
