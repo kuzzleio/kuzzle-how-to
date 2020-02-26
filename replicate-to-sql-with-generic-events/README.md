@@ -13,17 +13,17 @@ Kuzzle : `>=2.0.0 <3.0.0`
 
 ## Introduction
 
-In this tutorial you will see how to use generic events to trigger action while doing actions such as insert or delete.
+In this tutorial you will see how to use generic events to trigger actions such as replicating data to a SQL database.
 
 1. We will create a plugin [listening synchronously](https://docs.kuzzle.io/core/2/plugins/guides/pipes/) to Document Controller events in order to report document changes in PostgresSQL.
-1. We will use [Generic events](https://docs.kuzzle.io/core/2/plugins/guides/events/generic-document-events/) to trigger some controller's actions.
+1. We will use [Generic events](https://docs.kuzzle.io/core/2/plugins/guides/events/generic-document-events/) triggered some controller's actions.
 1. We will be using the open-source Kuzzle stack. (Check [docker-compose.yml](docker-compose.yml) for more details)
 
-Here we will used Generic events to copy all documents inside an postgres database when a new insert happen on The Kuzzle server, and we will do the same action when Kuzzle erase/delete data from the datastorage.
+Generic events will be used to insert data into Postgres upon receiving new documents in Kuzzle, and to delete data from Postgres when asking Kuzzle to delete documents.
 
 ## Usage
 
-In order to use this how to, you will need docker and docker-compose to be installed.
+In order to use this how-to, you will need docker and docker-compose installed.
 
 1. Run the script `run_tests.sh` to test the full how-to
 
@@ -35,7 +35,11 @@ In order to use this how to, you will need docker and docker-compose to be insta
 - count-data.js count data inside the kuzzle ES datastore and the postgres Database.
 - delete-data.js search all data inside the kuzzle datastore and delete them.
 
-We will be using this data model to load data into kuzzle, and replicate them into Postgres using the same model. Those data are loaded from the file located in `samples/Yellow_taxi.csv`
+We will be using this data model below
+
+![Yellow_taxi_model](./images/table-yellow-taxi.png)
+
+expressed in javascript like below
 
 ```javascript
 function formatDocument(fields = []) {
@@ -60,6 +64,8 @@ function formatDocument(fields = []) {
   };
 }
 ```
+
+to load data into kuzzle, and replicate them into Postgres using the same model. Those data are loaded from the file located in `samples/Yellow_taxi.csv`
 
 In the [scripts/import-data.js](scripts/import-data.js), the whole CSV document is parsed using the `readline` core package of NodeJS and then the `mCreate` method from Kuzzle's [document controller](https://docs.kuzzle.io/sdk/js/7/controllers/document/m-create/) is used. This will generate one event for the entire request, sending an array of new documents as the event payload.
 
@@ -89,13 +95,17 @@ async function run() {
     await createIndexIfNotExists(kuzzle, indexName);
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
-  } finally {
     kuzzle.disconnect();
+    process.exit(0);
+  }
+  catch(error) {
+    console.error(error);
+    process.exit(1);
   }
 }
 ```
 
-Looking at the [plugin file](lib/index.js), we can observe how **Generic Events** are being catch by the Plugin.
+Looking at the [plugin file](lib/index.js), we can observe how **Generic Events** are being caught by the plugin.
 
 ```javascript
 class CorePlugin {
@@ -103,8 +113,8 @@ class CorePlugin {
     this.context = null;
     this.config = {};
     this.pipes = {
-      'generic:document:afterWrite': 'afterWrite',
-      'generic:document:afterDelete': 'afterDelete'
+      'generic:document:beforeWrite': 'beforeWrite',
+      'generic:document:beforeDelete': 'beforeDelete'
     };
   }
 }
@@ -112,23 +122,29 @@ class CorePlugin {
 
 By declaring `this.pipes` inside the constructor of the plugin we can catch events emitted by the core of kuzzle. Here, we will be listening to
 
-1. `generic:document:afterWrite` an event emitted right after documents have been written.
-1. `generic:document:afterDelete` an event emitted right after documents have been deleted.
+1. `generic:document:beforeWrite` an event emitted right before documents will be written.
+1. `generic:document:beforeDelete` an event emitted right before documents will be deleted.
 
 ```javascript
-  async afterWrite(documents = []) {
-    const promises = documents.map(doc => this.pg.insert(this.getProperties(doc)));
-    await Promise.all(promises);
+async beforeWrite(documents = []) {
+  const withIds = documents.map(doc => Object.assign(doc, { _id: uuidv4() }));
 
-    return documents;
+  if (withIds.length) {
+    const docs = withIds.map(doc => Object.assign({ _id: doc._id }, doc._source));
+    await this.pg.multiLineInsert(docs);
   }
 
-  async afterDelete(documents = []) {
-    const promises = documents.map(doc => this.pg.delete(doc._id));
-    await Promise.all(promises);
+  return withIds;
+}
 
-    return documents;
+async beforeDelete(documents = []) {
+  if (documents.length) {
+    const docIds = documents.map(docs => docs._id);
+    await this.pg.mDelete(docIds);
   }
+
+  return documents;
+}
 ```
 
 More generic and non-generic events can be used: [Kuzzle events documentation](https://docs.kuzzle.io/core/2/plugins/guides/events/intro).
@@ -143,11 +159,7 @@ function createPool(config) {
 }
 ```
 
-We will use the [Pool](https://node-postgres.com/api/pool) constructor to instanciate the Postgres driver within the kuzzle plugin.
-
-The pool acquires a client from the pool. If the pool is 'full' and all clients are currently checked out, this will wait in a FIFO queue until a client becomes available by it being released back to the pool.
-
-To make a correct insert inside the database, we will use a multiline insert. Since generic events will send a set of records as a payload, it is wise to insert them together rather than one by one.
+We use the [Pool](https://node-postgres.com/api/pool) constructor to instantiate the Postgres driver within the kuzzle plugin.
 
 ```javascript
 const format = require('pg-format');

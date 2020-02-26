@@ -12,15 +12,12 @@ async function run() {
     const willDeleteIds = result.hits.map(d => d._id);
     const response = await kuzzle.document.mDelete(indexName, collectionName, willDeleteIds);
     console.log(`Deleted ${response.successes.length} documents`);
+    kuzzle.disconnect();
+    process.exit(0);
   }
   catch(error) {
     console.error(error);
     process.exit(1);
-  }
-  finally {
-    kuzzle.disconnect();
-    console.log('Closed kuzzle');
-    process.exit(0);
   }
 }
 

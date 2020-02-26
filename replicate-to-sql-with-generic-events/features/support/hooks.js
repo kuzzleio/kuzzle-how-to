@@ -24,16 +24,15 @@ BeforeAll({ timeout: ONE_MINUTE }, async function() {
   if (!connected) {
     throw new Error('could not start Kuzzle stack');
   }
+});
 
-  After(async function() {
-    if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
-      this.kuzzle.disconnect();
-      console.log('disconnect kuzzle');
-    }
-    if (this.pool && typeof this.pool.end === 'function') {
-      await this.pool.end();
-      console.log('disconnect postgres');
-    }
-  });
-  
+After(async function() {
+  if (this.kuzzle && typeof this.kuzzle.disconnect === 'function') {
+    this.kuzzle.disconnect();
+    console.log('disconnect kuzzle');
+  }
+  if (this.pool && typeof this.pool.end === 'function') {
+    await this.pool.end();
+    console.log('disconnect postgres');
+  }
 });

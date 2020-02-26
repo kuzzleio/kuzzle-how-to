@@ -1,6 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const { Kuzzle, WebSocket } = require('kuzzle-sdk');
+
 const { createIndexIfNotExists, createCollectionIfNotExists } = require('./utils');
 
 const filePath = '/Yellow_taxi.csv';
@@ -77,15 +78,12 @@ async function run() {
     await createIndexIfNotExists(kuzzle, indexName);
     await createCollectionIfNotExists(kuzzle, indexName, collectionName);
     await loadData();
+    kuzzle.disconnect();
+    process.exit(0);
   }
   catch(error) {
     console.error(error);
     process.exit(1);
-  }
-  finally {
-    kuzzle.disconnect();
-    console.log('Closed kuzzle');
-    process.exit(0);
   }
 }
 

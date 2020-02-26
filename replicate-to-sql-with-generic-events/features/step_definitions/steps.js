@@ -27,7 +27,7 @@ Then(/I can load the test data into Kuzzle/, function(done) {
   spawn('docker-compose', ['exec', 'kuzzle', 'node', scriptPath], options)
     .run(function(err, stdout, exitcode) {
       if (err || exitcode === 1) {
-        throw new Error('failed to execute test');
+        done(new Error('failed to execute test'));
       } else {
         done();
       }
@@ -39,7 +39,7 @@ Then(/I can check that data are in postgres and kuzzle/, function(done) {
   spawn('docker-compose', ['exec', 'kuzzle', 'node', scriptPath], options)
     .run(function(err, stdout, exitcode) {
       if (err || exitcode === 1) {
-        throw new Error('failed to execute test');
+        done(new Error('failed to execute test'));
       } else {
         done();
       }
@@ -51,7 +51,7 @@ Then(/I can delete data into Kuzzle/, function(done) {
   spawn('docker-compose', ['exec', 'kuzzle', 'node', scriptPath], options)
     .run(function(err, stdout, exitcode) {
       if (err || exitcode === 1) {
-        throw new Error('failed to execute test');
+        done(new Error('failed to execute test'));
       } else {
         done();
       }
@@ -63,7 +63,7 @@ Then(/I can check that data are not in postgres and kuzzle/, function(done) {
   spawn('docker-compose', ['exec', 'kuzzle', 'node', scriptPath], options)
     .run(function(err, stdout, exitcode) {
       if (err || exitcode === 1) {
-        throw new Error('failed to execute test');
+        done(new Error('failed to execute test'));
       } else {
         done();
       }

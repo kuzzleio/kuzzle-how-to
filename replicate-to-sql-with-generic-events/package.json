@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "pg": "^7.18.1",
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "uuid": "^7.0.1"
   }
 }

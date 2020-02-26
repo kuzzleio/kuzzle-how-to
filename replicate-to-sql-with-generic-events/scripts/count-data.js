@@ -23,15 +23,12 @@ async function run() {
     const count = await kuzzle.document.count(indexName, collectionName);
     const pgCount = await countFromPostgres();
     console.log(`Count: ${count}, ${pgCount}`);
+    kuzzle.disconnect();
+    process.exit(0);
   }
   catch(error) {
     console.error(error);
     process.exit(1);
-  }
-  finally {
-    kuzzle.disconnect();
-    console.log('Closed kuzzle');
-    process.exit(0);
   }
 }
 
