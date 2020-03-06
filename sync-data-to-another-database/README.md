@@ -216,3 +216,5 @@ We can then check that the synchronization worked as expected:
 ```bash
 docker-compose exec kuzzle node /scripts/countData.js
 ```
+
+[You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/massive-data-import)

@@ -142,3 +142,5 @@ Check documents deletion:
 ```bash
 docker-compose exec kuzzle node /scripts/countData.js
 ```
+
+[You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/keep-only-warm-data)
