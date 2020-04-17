@@ -51,3 +51,7 @@ Launch `node iot-init.js` to create an **iot** index with base collections to ha
       }
 }
 ```
+
+
+Discord: [Join our community](https://discord.gg/tAEtyDZ)  
+Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/kuzzle-esp32/01-rgb-led/iot-deploy)
