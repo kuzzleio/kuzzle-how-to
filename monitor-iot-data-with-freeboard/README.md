@@ -217,5 +217,5 @@ Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource f
 
 For now, Kuzzle Freeboard Datasource plugin is limited to monitoring document when they are **created**, but you could easily adapt it to monitor document when they are **updated**, **deleted**, or **published**.
 
-Discord: [Join our community](https://discord.gg/tAEtyDZ)  
+Discord: [Join our community](https://join.discord.kuzzle.io)  
 Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/monitor-iot-data-with-freeboard)

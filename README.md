@@ -44,4 +44,4 @@ You can run them by executing the `run_tests.sh` script present in each How-To f
 
 ## Community
 
-Discord: [Join our community](https://discord.gg/tAEtyDZ)
+Discord: [Join our community](https://join.discord.kuzzle.io)

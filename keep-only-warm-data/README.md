@@ -143,5 +143,5 @@ Check documents deletion:
 docker-compose exec kuzzle node /scripts/countData.js
 ```
 
-Discord: [Join our community](https://discord.gg/tAEtyDZ)  
+Discord: [Join our community](https://join.discord.kuzzle.io)  
 Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/keep-only-warm-data)
