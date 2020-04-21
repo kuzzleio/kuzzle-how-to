@@ -197,6 +197,5 @@ For those who are not familiar with postgres' psql client, here is a short sheat
 
 Hope you enjoyed this How-to, be sure to read them all to give you a wide variety of usages about Kuzzle!
 
-Hope to see you soon on [Gitter](https://gitter.im/kuzzleio/kuzzle)
-
-[You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/replicate-to-sql-with-generic-events)
+Discord: [Join our community](https://join.discord.kuzzle.io)  
+Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/replicate-to-sql-with-generic-events)

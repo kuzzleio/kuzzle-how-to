@@ -41,3 +41,7 @@ All Scenarios are tested and built with Travis CI. They're available [here](http
 
 Each How-To come with End2End tests against the latest version of Kuzzle.  
 You can run them by executing the `run_tests.sh` script present in each How-To folder.
+
+## Community
+
+Discord: [Join our community](https://join.discord.kuzzle.io)
