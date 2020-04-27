@@ -217,5 +217,5 @@ We can then check that the synchronization worked as expected:
 docker-compose exec kuzzle node /scripts/countData.js
 ```
 
-Discord: [Join our community](https://join.discord.kuzzle.io)  
+Discord: [Join our community](http://join.discord.kuzzle.io)  
 Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/massive-data-import)

@@ -202,5 +202,5 @@ In conclusion, Kuzzle offers 2 methods for mass data import, each one with a dif
 * [bulk import](https://docs.kuzzle.io/core/2/api/controllers/bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
 * [multi-documents creation](https://docs.kuzzle.io/core/2/api/controllers/document/m-create/): allowing any real-time subscribers to be notified about what's going on. While it's quite fast, it's about 40% slower than its bulk method counterpart
 
-Discord: [Join our community](https://join.discord.kuzzle.io)  
+Discord: [Join our community](http://join.discord.kuzzle.io)  
 Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/massive-data-import)

@@ -130,14 +130,14 @@ Once you clicked on **Kuzzle Datasource** entry, you see the plugin settings scr
 
 Settings:
 
-| Name | Description |
-|----------------------|------|
-| Kuzzle host  | The hostname of the machine *Kuzzle*  instance is running on, default is `localhost`. |
-| Kuzzle port | The port through which Kuzzle Server is accessible, default is `7512` |
-| Token | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/core/2/api/controllers/auth/login/) to learn how to generate a JWT encrypted token |
-| Index | The Kuzzle *index* that holds the documents your are interested in. |
-| Collection | The Kuzzle *collection* that holds the documents your are interested in. |
-| Filter | The filter the document you are interested in must match. Refer [Koncord documentation](https://docs.kuzzle.io/core/2/guides/cookbooks/realtime-api/introduction/) for further information about Kuzzle realtime filters.|
+| Name        | Description                                                                                                                                                                                                               |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Kuzzle host | The hostname of the machine *Kuzzle*  instance is running on, default is `localhost`.                                                                                                                                     |
+| Kuzzle port | The port through which Kuzzle Server is accessible, default is `7512`                                                                                                                                                     |
+| Token       | You can provide a token to be used if anonymous access has been removed. See [Kuzzle login API](https://docs.kuzzle.io/core/2/api/controllers/auth/login/) to learn how to generate a JWT encrypted token                 |
+| Index       | The Kuzzle *index* that holds the documents your are interested in.                                                                                                                                                       |
+| Collection  | The Kuzzle *collection* that holds the documents your are interested in.                                                                                                                                                  |
+| Filter      | The filter the document you are interested in must match. Refer [Koncord documentation](https://docs.kuzzle.io/core/2/guides/cookbooks/realtime-api/introduction/) for further information about Kuzzle realtime filters. |
 
 The Kuzzle Datasource plugin will receive a notification each time a document is **created** in the specified `index/collection` that matches the `filter`.
 
@@ -217,5 +217,5 @@ Using [Kuzzle](http://www.kuzzle.io) Realtime capabilities, [Kuzzle Datasource f
 
 For now, Kuzzle Freeboard Datasource plugin is limited to monitoring document when they are **created**, but you could easily adapt it to monitor document when they are **updated**, **deleted**, or **published**.
 
-Discord: [Join our community](https://join.discord.kuzzle.io)  
+Discord: [Join our community](http://join.discord.kuzzle.io)  
 Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/monitor-iot-data-with-freeboard)
