@@ -29,11 +29,11 @@ Launch `node iot-init.js` to create an **iot** index with base collections to ha
 
 ## Collections
 
-| Collection | Usage |
-|------------|:----------|
-| **device-state** | This collection stores the state of the devices |
-| **device-info** | This collection is where to store static information about the device (user it belongs to, current firmware version, friendly name...) |
-| **fw-update** | This collection allow handling firmware updates for devices |
+| Collection       | Usage                                                                                                                                  |
+|------------------|:---------------------------------------------------------------------------------------------------------------------------------------|
+| **device-state** | This collection stores the state of the devices                                                                                        |
+| **device-info**  | This collection is where to store static information about the device (user it belongs to, current firmware version, friendly name...) |
+| **fw-update**    | This collection allow handling firmware updates for devices                                                                            |
 
 ### device-state mapping
 
@@ -51,3 +51,7 @@ Launch `node iot-init.js` to create an **iot** index with base collections to ha
       }
 }
 ```
+
+
+Discord: [Join our community](http://join.discord.kuzzle.io)  
+Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/kuzzle-esp32/01-rgb-led/iot-deploy)

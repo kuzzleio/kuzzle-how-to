@@ -1,0 +1,36 @@
+{
+  "name": "replicate-to-sql-with-generic-events",
+  "author": "The Kuzzle Team <support@kuzzle.io>",
+  "version": "2.0.0",
+  "description": "plugin to replicate data to postgres using generic events",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npm run --silent lint && npm run functional-testing",
+    "lint": "eslint --max-warnings=0 ./lib ./features",
+    "functional-testing": "bash run_tests.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuzzleio/kuzzle-how-to.git"
+  },
+  "keywords": [
+    "kuzzle",
+    "plugin"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/kuzzleio/kuzzle-how-to/issues"
+  },
+  "homepage": "https://github.com/kuzzleio/kuzzle-how-to#readme",
+  "devDependencies": {
+    "cucumber": "^6.0.5",
+    "eslint": "^6.8.0",
+    "kuzzle-sdk": "^7.0.1",
+    "nexpect": "^0.6.0"
+  },
+  "dependencies": {
+    "pg": "^7.18.1",
+    "pg-format": "^1.0.4",
+    "uuid": "^7.0.1"
+  }
+}

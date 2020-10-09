@@ -31,6 +31,7 @@ With this sample you will be able to perform a massive data import with live geo
  - [Synchronize Kuzzle with another database](sync-data-to-another-database/)
  - [Keep only warm data in Kuzzle](keep-only-warm-data/)
  - [Monitor IoT data with Freeboard](monitor-iot-data-with-freeboard/)
+ - [Generic Events and sql-replication](replicate-to-sql-with-generic-events/)
 
 ## Distribution process
 
@@ -40,3 +41,7 @@ All Scenarios are tested and built with Travis CI. They're available [here](http
 
 Each How-To come with End2End tests against the latest version of Kuzzle.  
 You can run them by executing the `run_tests.sh` script present in each How-To folder.
+
+## Community
+
+Discord: [Join our community](http://join.discord.kuzzle.io)

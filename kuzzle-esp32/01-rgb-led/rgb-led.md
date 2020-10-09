@@ -19,7 +19,7 @@ Specifically, we will build a basic IoT device featuring a RGB LED, and change i
 
 ## Install Kuzzle
 
-The following guide allows you to quickly run a Kuzzle instance: [Getting Started](/core/1/guides/getting-started/running-kuzzle)
+The following guide allows you to quickly run a Kuzzle instance: [Getting Started](https://docs.kuzzle.io/core/2/guides/essentials/installing-kuzzle/)
 
 By default, Kuzzle does not support MQTT communication, but it features an extensible protocol system: install our official [MQTT Protocol](https://github.com/kuzzleio/protocol-mqtt) to add MQTT capabilities.
 
@@ -40,7 +40,7 @@ For this tutorial, you need the following components:
 ## Preparing the Kuzzle IoT Environment
 
 Our IoT application requires a simple storage setup: a data index, data collections and their corresponding mappings.  
-Read our [persistence layer documentation](/core/1/guides/essentials/store-access-data) for more information.
+Read our [persistence layer documentation](https://docs.kuzzle.io/core/2/guides/essentials/store-access-data/) for more information.
 
 ![kuzzle admin console](./img/kuzzle-iot-backoffice.png)
 
@@ -334,4 +334,4 @@ Once you click on the Create button to validate your document, the RGB light sho
 
 ## Going Further
 
-Check out the Kuzzle [JS SDK](/sdk/js/6/getting-started/node-js) to control your RGB light using a Javascript application: 
+Check out the Kuzzle [JS SDK](https://docs.kuzzle.io/sdk/js/7/getting-started/node-js/) to control your RGB light using a Javascript application: 

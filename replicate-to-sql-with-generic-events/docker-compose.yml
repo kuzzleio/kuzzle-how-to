@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  kuzzle:
+    image: kuzzleio/plugin-dev:2
+    command: /run-dev.sh
+    volumes:
+      - './samples/Yellow_taxi.csv:/Yellow_taxi.csv'
+      - './docker/run-dev.sh:/run-dev.sh'
+      - './docker/install-plugins.sh:/install-plugins.sh'
+      - './docker/pm2.json:/config/pm2.json'
+      - '.:/var/app/plugins/enabled/replicate-to-sql-with-generic-events'
+    cap_add:
+      - SYS_PTRACE
+    ulimits:
+      nofile: 65536
+    sysctls:
+      - net.core.somaxconn=8192
+    depends_on:
+      - redis
+      - elasticsearch
+      - postgresql
+    ports:
+      - '9229:9229'
+      - '7512:7512'
+    environment:
+      - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_limits__documentsWriteCount=10000
+      - NODE_ENV=development
+      - DEBUG=kuzzle:plugins
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=nyc_open_data
+      - POSTGRES_USER=my_user
+
+  redis:
+    image: redis:5
+
+  elasticsearch:
+    image: kuzzleio/elasticsearch:7
+    ports:
+      - '9200:9200'
+
+  postgresql:
+    image: 'postgres'
+    container_name: 'postgresql'
+    environment:
+      - POSTGRES_USER=my_user
+      - POSTGRES_DB=nyc_open_data
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./init.sql:/sql/init.sql
+    ports:
+      - '5432:5432'
