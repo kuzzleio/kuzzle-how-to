@@ -45,3 +45,17 @@ You can run them by executing the `run_tests.sh` script present in each How-To f
 ## Community
 
 Discord: [Join our community](http://join.discord.kuzzle.io)
+
+## Start the documentation framework
+
+```sh
+# Install kuzdoc as a global deps
+npm install -g kuzdoc
+
+# Install the framework that kuzzle use to display locally the doc
+kuzdoc framework:install
+
+# Clone the kuzzle-how-to-<kuzzle-version>
+kuzdoc iterate-repos:install --repositories=kuzzle-how-to-2
+```
+
