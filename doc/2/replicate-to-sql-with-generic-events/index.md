@@ -37,10 +37,6 @@ In order to use this how-to, you will need docker and docker-compose installed.
 
 We will be using this data model below
 
-![Yellow_taxi_model](./images/table-yellow-taxi.png)
-
-expressed in javascript like below
-
 ```javascript
 function formatDocument(fields = []) {
   return {
