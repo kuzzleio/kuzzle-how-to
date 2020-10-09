@@ -16,8 +16,8 @@ Kuzzle : `>= 1.2.11`
 When processing large volumes of data with Kuzzle, you may need to import large datasets quickly.
 
 Kuzzle supports two massive data import options:
-1. [Bulk Import](https://docs.kuzzle.io/api/1/controller-bulk/import/): used when you need to import data as fast as possible
-2. [Multi-document Creation](https://docs.kuzzle.io/api/1/controller-document/m-create/): used when you want to allow real-time notifications or plugin events during import (this option is a bit slower than the bulk import).
+1. [Bulk Import](https://docs.kuzzle.io/core/2/api/controllers/bulk/import/): used when you need to import data as fast as possible
+2. [Multi-document Creation](https://docs.kuzzle.io/core/2/api/controllers/document/m-create/): used when you want to allow real-time notifications or plugin events during import (this option is a bit slower than the bulk import).
 
 Using an AWS production environment with Kuzzle on a `m5.large`, Elasticsearch on a `i3.xlarge.elasticsearch` and Redis on a `cache.t2.micro` instance, we were able to achieve 9700 docs/sec with Bulk import and 5800 docs/sec with the mCreate route.
 
@@ -32,7 +32,7 @@ We are going to change some Kuzzle configuration for this How-To to allow insert
   - `documentsWriteCount` will be set to 100 000
   - `maxRequestSize` will be set to `1GB`
 
-These configuration are set in the [/etc/kuzzle/config](etc/kuzzle/config) , check [Kuzzle Configuration](https://docs.kuzzle.io/guide/1/essentials/configuration/) for more informations.
+These configuration are set in the [/etc/kuzzle/config](etc/kuzzle/config) , check [Kuzzle Configuration](https://docs.kuzzle.io/core/2/guides/essentials/configuration/) for more informations.
 
 On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-open-data` index according to the following mapping:
 
@@ -52,10 +52,10 @@ On Kuzzle, the data will be stored in the `yellow-taxi` collection of the `nyc-o
 
 ### Bulk API
 
-The first way to import important data sets into Kuzzle is to use the [Bulk Controller import action](https://docs.kuzzle.io/api/1/controller-bulk/import/).
+The first way to import important data sets into Kuzzle is to use the [Bulk Controller import action](https://docs.kuzzle.io/core/2/api/controllers/bulk/import/).
 Its operation and syntax is similar to that of the [Elasticsearch Bulk API](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docs-bulk.html).
 
-This method is very fast but it writes almost directly into Elasticsearch. Other Kuzzle features such as [real-time notifications](https://docs.kuzzle.io/guide/1/essentials/real-time/) will not be available.
+This method is very fast but it writes almost directly into Elasticsearch. Other Kuzzle features such as [real-time notifications](https://docs.kuzzle.io/core/2/guides/essentials/real-time/) will not be available.
 
 To use it, you must go directly through a request sent to the Bulk Controller.
 This query contains an array of objects organized by peers. The n element of the array is an object containing the name of the index and the collection and the n+1 element contains the document to insert.
@@ -90,7 +90,7 @@ const bulkQuery = {
 }
 ```
 
-This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](/sdk/js/6/controllers/bulk/import) method from the SDK Javascript.
+This request is then sent to the Bulk Controller with the [Kuzzle.bulk.import](https://docs.kuzzle.io/sdk/js/7/controllers/bulk/import/) method from the SDK Javascript.
 
 ```js
 kuzzle.bulk.import(bulkData)
@@ -114,7 +114,7 @@ kuzzle.bulk.import(bulkData)
 
 The second method is about half as fast but it allows you to benefit from all the usual Kuzzle features.
 
-It uses the [Document Controller's mCreate](https://docs.kuzzle.io/api/1/controller-document/m-create/) action to insert multiple documents into the same query.
+It uses the [Document Controller's mCreate](https://docs.kuzzle.io/core/2/api/controllers/document/m-create/) action to insert multiple documents into the same query.
 When a document is created, Kuzzle will send a notification to clients that have subscribed to the document changes.
 
 We are going to use a geofencing subscription to get notified every time a taxi drops a passenger off at Time Square.
@@ -135,7 +135,7 @@ kuzzle.realtime.subscribe('nyc-open-data', 'yellow-taxi', filters, notification 
 ```
 
 After that we are going to import our documents.
-The documents to be inserted will have to be collected in an array before being passed to the [Kuzzle.document.mCreate](/sdk/js/6/controllers/document/m-create) method of the SDK:
+The documents to be inserted will have to be collected in an array before being passed to the [Kuzzle.document.mCreate](https://docs.kuzzle.io/core/2/api/controllers/document/m-create/) method of the SDK:
 
 ```js
 const documents = [
@@ -183,7 +183,7 @@ The containers are preconfigured to work with NYC Open Data's Yellow Taxi datase
 docker-compose u
 ```
 
-Then in another terminal we are going to subscribe to a room with [geoBoundingBox](/core/1/guides/cookbooks/realtime-api/terms#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
+Then in another terminal we are going to subscribe to a room with [geoBoundingBox](https://docs.kuzzle.io/core/2/guides/cookbooks/realtime-api/terms/#geoboundingbox) corresponding to the Time Square area. We will receive a notification each time a new document corresponds to a passenger being dropped off in this area.
 
 ```bash
 docker-compose exec kuzzle node /scripts/subscribe.js
@@ -199,5 +199,8 @@ time docker-compose exec kuzzle node /scripts/loadMCreate.js
 
 In conclusion, Kuzzle offers 2 methods for mass data import, each one with a different purpose:
 
-* [bulk import](https://docs.kuzzle.io/api/1/controller-bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
-* [multi-documents creation](https://docs.kuzzle.io/api/1/controller-document/m-create/): allowing any real-time subscribers to be notified about what's going on. While it's quite fast, it's about 40% slower than its bulk method counterpart
+* [bulk import](https://docs.kuzzle.io/core/2/api/controllers/bulk/import/) import, an almost direct path to the database: the fastest way to import data into Kuzzle, but with an unfriendly format and no real-time capabilities
+* [multi-documents creation](https://docs.kuzzle.io/core/2/api/controllers/document/m-create/): allowing any real-time subscribers to be notified about what's going on. While it's quite fast, it's about 40% slower than its bulk method counterpart
+
+Discord: [Join our community](http://join.discord.kuzzle.io)  
+Github: [You can also see this on Github](https://github.com/kuzzleio/kuzzle-how-to/tree/master/massive-data-import)

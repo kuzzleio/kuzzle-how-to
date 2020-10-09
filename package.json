@@ -1,12 +1,14 @@
 {
-    "scripts": {
-        "doc-prepare": "cd doc && bash doc.sh prepare",
-        "doc-dev": "cd doc && bash doc.sh dev",
-        "doc-build": "cd doc && bash doc.sh build",
-        "doc-netlify": "cd doc && bash doc.sh build-netlify",
-        "doc-upload": "cd doc && bash doc.sh upload",
-        "doc-cloudfront": "cd doc && bash doc.sh cloudfront",
-        "doc-deploy": "npm run doc-upload && npm run doc-cloudfront"
-
-    }
+  "scripts": {
+    "doc-prepare": "kuzdoc framework:install",
+    "doc-dev": "kuzdoc repo:dev -b doc/ -d /how-to/2/ -v 2",
+    "doc-build": "kuzdoc repo:build -b doc/ -d /how-to/2/ -v 2",
+    "doc-netlify": "npm run doc-prepare && kuzdoc repo:build -b doc/ -d / -v 2",
+    "doc-upload": "kuzdoc repo:deploy -b doc/ -d /how-to/2/ -v 2",
+    "doc-cloudfront": "kuzdoc repo:build -b doc/ -d /how-to/2/ -v 2",
+    "doc-deploy": "npm run doc-upload && npm run doc-cloudfront"
+  },
+  "dependencies": {
+    "kuzdoc": "^1.2.2"
+  }
 }

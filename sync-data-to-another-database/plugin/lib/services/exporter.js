@@ -49,7 +49,7 @@ class Exporter {
       documentChunks.map(documentsBatch => {
 
         // Create an array of update queries and an array of matching values
-        const { queries, values } = documentsBatch.reduce(({ queries, values }, document) => {
+        const result = documentsBatch.reduce(({ queries, values }, document) => {
 
           // List of exported document fields
           const exportedFields = Object.keys(document._source).filter(key => ['_id', '_kuzzle_info'].indexOf(key) === -1);
@@ -78,9 +78,9 @@ class Exporter {
           return { queries, values };
         }, { queries: [], values: [] });
 
-        const batchQuery = `BEGIN BATCH ${queries.join(';')} APPLY BATCH`;
+        const batchQuery = `BEGIN BATCH ${result.queries.join(';')} APPLY BATCH`;
         // Create a promise to execute the query
-        return this.client.execute(batchQuery, values, { prepare: true });
+        return this.client.execute(batchQuery, result.values, { prepare: true });
       });
 
     return Promise.all(requestPromises);

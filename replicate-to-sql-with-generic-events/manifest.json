@@ -1,0 +1,4 @@
+{
+  "name": "replicate-to-sql-with-generic-events",
+  "kuzzleVersion": ">=2.0.0 <3.0.0"
+}
