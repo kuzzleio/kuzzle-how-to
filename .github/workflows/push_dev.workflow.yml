@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  functional-tests:
+  functional_tests:
     name: Functional tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -26,9 +26,9 @@ jobs:
       - uses: actions/setup-node@v1.4.4
         with:
           node-version: "12"
-      - uses: ./.github/actions/functional-tests
+      - uses: ./.github/actions/functional_tests
 
-  doc-dead-links:
+  doc_dead_links:
     name: Check dead-links
     runs-on: ubuntu-latest
     steps:
@@ -51,10 +51,10 @@ jobs:
           ref: ${{ steps.extract-refs.outputs.fw-branch }}
           inputs: '{"repo_name": "${{ steps.extract-refs.outputs.repo }}", "branch": "${{ github.head_ref }}", "version": "${{ steps.extract-refs.outputs.version }}"}'
 
-  doc-deploy:
+  doc_deploy:
     name: Deployment Doc to Next
     runs-on: ubuntu-latest
-    needs: [functional-tests, doc-dead-links]
+    needs: [functional_tests, doc_dead_links]
     steps:
       - uses: actions/checkout@v2
         with:

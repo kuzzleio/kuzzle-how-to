@@ -3,7 +3,7 @@ name: Push to develop
 on: [pull_request]
 
 jobs:
-  functional-tests:
+  functional_tests:
     name: Functional tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -23,9 +23,9 @@ jobs:
       - uses: actions/setup-node@v1.4.4
         with:
           node-version: "12"
-      - uses: ./.github/actions/functional-tests
+      - uses: ./.github/actions/functional_tests
 
-  doc-dead-links:
+  doc_dead_links:
     name: Check dead-links
     runs-on: ubuntu-latest
     steps:
