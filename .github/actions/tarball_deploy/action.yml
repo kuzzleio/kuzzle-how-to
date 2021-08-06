@@ -1,0 +1,38 @@
+name: Deploy tarballs
+description: Deploys all the tarballs to the S3 bucket
+inputs:
+  AWS_SECRET_ACCESS_KEY:
+    description: AWS access key secret
+    required: true
+  AWS_ACCESS_KEY_ID:
+    description: AWS access key ID
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install pip
+      run: pip install awscli --upgrade --user
+      shell: bash
+    - name: Deploy all the tarballs
+      run: |
+        mkdir build
+        for dir in */
+          do
+            base=$(basename "$dir")
+            if [ $base != 'samples' ] && [ $base != 'build' ]
+            then
+              tar $TAR_EXCLUDES -cvzf build/${base}.tar.gz ${base}
+            fi
+          done
+      shell: bash
+      env:
+        TAR_EXCLUDES: "--exclude=docker --exclude=features --exclude=run_tests.sh --exclude=*node_modules"
+    - name: Copy the tarballs to the S3 bucket
+      run: aws s3 cp build s3://$S3_BUCKET/how-to/2 --recursive --region us-west-2
+      shell: bash
+      env:
+        AWS_DEFAULT_REGION: us-west-2
+        S3_BUCKET: dl.kuzzle.io
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}

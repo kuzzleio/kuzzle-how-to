@@ -1,0 +1,28 @@
+name: Deploy to Docker Hub
+description: Deploys all the images to Docker Hub
+inputs:
+  DOCKER_USERNAME:
+    description: Dockerhub Username
+    required: true
+  DOCKER_PASSWORD:
+    description: Dockerhub Username
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Login to Docker Hub"
+      run: docker login -u ${{ inputs.DOCKER_USERNAME }} -p ${{ inputs.DOCKER_PASSWORD }}
+      shell: bash
+    - name: "Deploy all images to Docker Hub"
+      run: |
+        for dir in $(\ls -1d */docker)
+          do
+            cd $dir
+            bash build_images.sh
+            bash push_images.sh
+          done
+      shell: bash
+      env:
+        DOCKER_COMPOSE_VERSION: 1.12.0
+        NODE_ENV: production

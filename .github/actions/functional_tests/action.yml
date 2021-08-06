@@ -1,0 +1,22 @@
+name: Functional Tests
+description: Runs cucumber tests on the code snippets
+runs:
+  using: "composite"
+  steps:
+    - name: Change memory settings
+      run: sudo sysctl -w vm.max_map_count=262144
+      shell: bash
+    - name: Run the tests
+      run: |
+        for dir in */
+          do
+            base=$(basename "$dir")
+            if [ $base != 'samples' ] && [ $base != 'build' ]
+            then
+              cd ${base}
+              npm install
+              ./run_tests.sh
+              cd -
+            fi
+          done
+      shell: bash
