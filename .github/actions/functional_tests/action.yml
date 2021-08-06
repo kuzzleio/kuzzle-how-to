@@ -11,7 +11,7 @@ runs:
         for dir in */
           do
             base=$(basename "$dir")
-            if [ $base != 'samples' ] && [ $base != 'build' ]
+            if [ $base != 'samples' ] && [ $base != 'build' ] && [ $base != 'articles' ] && [ $base != 'doc' ]
             then
               cd ${base}
               npm install
